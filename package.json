@@ -1,0 +1,12 @@
+{
+  "name": "foss-directory-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "npm start --prefix server"
+  },
+  "keywords": [],
+  "author": "Max Kyrychenko <iam.maxkyrychenko@gmail.com>",
+  "license": "ISC"
+}
