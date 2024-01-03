@@ -5,13 +5,23 @@
   "main": "index.ts",
   "scripts": {
     "start": "ts-node ./src/index.ts",
-    "dev": "nodemon --watch src/** --exec npm start"
+    "dev": "nodemon --watch src/** --exec npm start",
+    "lint": "npx eslint src --ext .ts"
   },
   "keywords": [],
   "author": "Max Kyrychenko <iam.maxkyrychenko@gmail.com>",
   "license": "ISC",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/parser": "^6.17.0",
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.1.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-prettier": "^5.1.2",
     "nodemon": "^3.0.2",
+    "prettier": "^3.1.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }

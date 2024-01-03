@@ -1,0 +1,26 @@
+{
+	"env": {
+		"commonjs": true,
+		"es2021": true,
+		"node": true
+	},
+	"extends": [
+		"plugin:prettier/recommended",
+		"eslint:recommended",
+		"airbnb-base",
+		"airbnb-typescript/base",
+		"prettier"
+	],
+	"plugins": ["prettier"],
+	"parserOptions": {
+		"ecmaVersion": "latest",
+		"project": "./tsconfig.json"
+	},
+	"rules": {
+		"prettier/prettier": ["error", {"endOfLine": "auto"}],
+		"no-console": "off",
+		"lines-between-class-members": "off",
+		"import/prefer-default-export": "off",
+		"@typescript-eslint/lines-between-class-members": "off"
+	}
+}

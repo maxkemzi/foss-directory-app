@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "server": "npm start --prefix server"
+    "server": "npm start --prefix server",
+    "check": "npm run lint --prefix server"
   },
   "keywords": [],
   "author": "Max Kyrychenko <iam.maxkyrychenko@gmail.com>",
