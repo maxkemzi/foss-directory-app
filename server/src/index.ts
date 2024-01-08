@@ -1,16 +1,14 @@
 import "dotenv/config";
-import express from "express";
-import cors from "cors";
-import router from "./routes";
+import app from "./app";
+import {Db} from "./db";
 
 const PORT = process.env.PORT || 5000;
-const app = express();
 
-app.use(express.json());
-app.use(cors());
+const start = async () => {
+	await Db.init();
+	app.listen(PORT, async () => {
+		console.log(`Server is working on port ${PORT}.`);
+	});
+};
 
-app.use("/api", router);
-
-app.listen(PORT, () => {
-	console.log(`Server has started on port ${PORT}`);
-});
+start();
