@@ -1,12 +1,11 @@
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import request from "supertest";
-import {describe, expect, test} from "vitest";
-import app from "../../../src/app.ts";
-import {RefreshTokenModel, UserModel} from "../../../src/db/models/index.ts";
-import UserDto from "../../../src/dtos/UserDto.ts";
+import app from "#src/app";
+import {RefreshTokenModel, UserModel, UserPayload} from "#src/db/models";
+import {UserDto} from "#src/dtos";
 
-const setup = async user => {
+const setup = async (user: UserPayload) => {
 	const hashedPassword = await bcryptjs.hash(user.password, 10);
 	const userFromDb = await UserModel.create({
 		...user,
@@ -16,7 +15,7 @@ const setup = async user => {
 
 	const refreshToken = jwt.sign(
 		{...userFromDbDto},
-		process.env.JWT_REFRESH_SECRET
+		process.env.JWT_REFRESH_SECRET as string
 	);
 	await RefreshTokenModel.create({
 		user_id: userFromDbDto.id,

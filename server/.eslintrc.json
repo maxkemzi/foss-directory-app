@@ -4,43 +4,30 @@
 		"es2021": true,
 		"node": true
 	},
-	"plugins": ["prettier"],
-	"parserOptions": {
-		"ecmaVersion": "latest"
-	},
-	"overrides": [
-		{
-			"files": ["*.ts"],
-			"extends": [
-				"plugin:prettier/recommended",
-				"eslint:recommended",
-				"airbnb-base",
-				"airbnb-typescript/base",
-				"prettier"
-			],
-			"parserOptions": {
-				"project": "./tsconfig.json"
-			},
-			"rules": {
-				"@typescript-eslint/lines-between-class-members": "off"
-			}
-		},
-		{
-			"files": ["*.js"],
-			"extends": [
-				"plugin:prettier/recommended",
-				"eslint:recommended",
-				"airbnb-base",
-				"prettier"
-			]
-		},
-		{
-			"files": ["*.ts", "*.js"],
-			"rules": {
-				"no-console": "off",
-				"lines-between-class-members": "off",
-				"import/prefer-default-export": "off"
+	"settings": {
+		"import/resolver": {
+			"alias": {
+				"map": [["#src", "./src/"]],
+				"extensions": [".ts"]
 			}
 		}
-	]
+	},
+	"plugins": ["prettier"],
+	"extends": [
+		"plugin:prettier/recommended",
+		"eslint:recommended",
+		"airbnb-base",
+		"airbnb-typescript/base",
+		"prettier"
+	],
+	"parserOptions": {
+		"ecmaVersion": "latest",
+		"project": "./tsconfig.json"
+	},
+	"rules": {
+		"@typescript-eslint/lines-between-class-members": "off",
+		"no-console": "off",
+		"lines-between-class-members": "off",
+		"import/prefer-default-export": "off"
+	}
 }

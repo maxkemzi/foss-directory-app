@@ -1,7 +1,7 @@
 import bcryptjs from "bcryptjs";
-import {RefreshToken, RefreshTokenModel, UserModel} from "../../db/models";
-import {UserDto} from "../../dtos";
-import {ApiError} from "../../lib";
+import {RefreshToken, RefreshTokenModel, UserModel} from "#src/db/models";
+import {UserDto} from "#src/dtos";
+import {ApiError} from "#src/lib";
 import TokenService from "../token/TokenService";
 
 class AuthService {

@@ -1,6 +1,6 @@
 import "dotenv/config";
-import app from "./app";
-import {Db} from "./db";
+import app from "#src/app";
+import {Db} from "#src/db";
 
 const PORT = process.env.PORT || 5000;
 

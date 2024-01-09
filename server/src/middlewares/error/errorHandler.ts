@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import {ApiError} from "../../lib";
+import {ApiError} from "#src/lib";
 
 const errorHandler = (
 	err: unknown,

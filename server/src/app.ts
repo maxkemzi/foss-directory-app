@@ -1,8 +1,8 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
-import {errorHandler} from "./middlewares";
-import router from "./routes";
+import {errorHandler} from "#src/middlewares";
+import router from "#src/routes";
 
 const {
 	POSTGRES_HOST,

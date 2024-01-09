@@ -1,7 +1,6 @@
 import request from "supertest";
-import {describe, expect, test} from "vitest";
-import app from "../../../src/app.ts";
-import {UserModel} from "../../../src/db/models/index.ts";
+import app from "#src/app";
+import {UserModel} from "#src/db/models";
 
 describe("POST /api/auth/signup", () => {
 	test("successful user signup", async () => {

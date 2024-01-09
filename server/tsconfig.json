@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"target": "ES2016",
 		"module": "commonjs",
-		"rootDir": "./src",
+		"rootDir": ".",
 		"outDir": "./dist",
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
@@ -10,7 +10,11 @@
 		"isolatedModules": true,
 		"strict": true,
 		"noImplicitAny": true,
-		"skipLibCheck": true
-	},
-	"include": ["src"]
+		"skipLibCheck": true,
+		"baseUrl": "./",
+		"paths": {
+			"#src/*": ["src/*"]
+		},
+		"types": ["vitest/globals"]
+	}
 }

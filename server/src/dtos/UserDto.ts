@@ -1,4 +1,4 @@
-import {User} from "../db/models";
+import {User} from "#src/db/models";
 
 class UserDto {
 	id: number;

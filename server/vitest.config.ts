@@ -1,13 +1,16 @@
 import {defineConfig} from "vitest/config";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
 	test: {
-		globalSetup: "./__tests__/globalSetup.js",
-		setupFiles: ["./__tests__/setup.js"],
+		globals: true,
+		globalSetup: "./__tests__/globalSetup.ts",
+		setupFiles: ["./__tests__/setup.ts"],
 		poolOptions: {
 			forks: {
 				singleFork: true
 			}
 		}
-	}
+	},
+	plugins: [tsconfigPaths()]
 });

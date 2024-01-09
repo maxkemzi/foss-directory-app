@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
-import {ApiError} from "../../lib";
-import {TokenService} from "../../services";
+import {ApiError} from "#src/lib";
+import {TokenService} from "#src/services";
 
 const authChecker = (req: Request, res: Response, next: NextFunction) => {
 	try {

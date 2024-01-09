@@ -1,6 +1,6 @@
 import {Router} from "express";
-import {AuthController} from "../../controllers";
-import {refreshTokenCookieChecker} from "../../middlewares";
+import {AuthController} from "#src/controllers";
+import {refreshTokenCookieChecker} from "#src/middlewares";
 
 const authRouter = Router();
 
