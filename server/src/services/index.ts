@@ -1,4 +1,5 @@
 import AuthService from "./auth/AuthService";
 import TokenService from "./token/TokenService";
+import ProjectsService from "./projects/ProjectsService";
 
-export {AuthService, TokenService};
+export {AuthService, TokenService, ProjectsService};

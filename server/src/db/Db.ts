@@ -26,9 +26,19 @@ class Db {
 		`
 		CREATE TABLE IF NOT EXISTS users (
 			id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+			github_connection_id INT UNIQUE DEFAULT NULL,
 			username TEXT UNIQUE NOT NULL,
 			email TEXT UNIQUE NOT NULL,
 			password TEXT NOT NULL,
+			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+		);
+		`,
+		`
+		CREATE TABLE IF NOT EXISTS github_connections (
+			id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+			user_id INT UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+			github_token TEXT NOT NULL,
 			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
@@ -38,6 +48,17 @@ class Db {
 			id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 			user_id INT UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 			token TEXT NOT NULL,
+			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+		);
+		`,
+		`
+		CREATE TABLE IF NOT EXISTS projects (
+			id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+			title TEXT UNIQUE NOT NULL,
+			description TEXT NOT NULL,
+			contributors_needed INT NOT NULL,
+			last_updated TIMESTAMP NOT NULL,
 			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
@@ -59,8 +80,20 @@ class Db {
 		EXECUTE FUNCTION update_updated_at();
 		`,
 		`
+		CREATE OR REPLACE TRIGGER github_connections_updated_at
+		BEFORE UPDATE ON github_connections
+		FOR EACH ROW
+		EXECUTE FUNCTION update_updated_at();
+		`,
+		`
 		CREATE OR REPLACE TRIGGER refresh_tokens_updated_at
 		BEFORE UPDATE ON refresh_tokens
+		FOR EACH ROW
+		EXECUTE FUNCTION update_updated_at();
+		`,
+		`
+		CREATE OR REPLACE TRIGGER projects_updated_at
+		BEFORE UPDATE ON projects
 		FOR EACH ROW
 		EXECUTE FUNCTION update_updated_at();
 		`

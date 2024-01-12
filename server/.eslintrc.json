@@ -6,10 +6,7 @@
 	},
 	"settings": {
 		"import/resolver": {
-			"alias": {
-				"map": [["#src", "./src/"]],
-				"extensions": [".ts"]
-			}
+			"typescript": {}
 		}
 	},
 	"plugins": ["prettier"],

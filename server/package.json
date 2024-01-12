@@ -2,11 +2,11 @@
 	"name": "server",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.ts",
+	"main": "src/index.ts",
 	"scripts": {
 		"start": "ts-node -r tsconfig-paths/register ./src/index.ts",
 		"dev": "nodemon --watch 'src/**' --ext 'ts,json' --exec npm start",
-		"lint": "npx eslint src --ext .ts",
+		"lint": "eslint src/ --ext .ts",
 		"test": "vitest --pool=forks"
 	},
 	"keywords": [],
@@ -27,7 +27,7 @@
 		"eslint-config-airbnb-base": "^15.0.0",
 		"eslint-config-airbnb-typescript": "^17.1.0",
 		"eslint-config-prettier": "^9.1.0",
-		"eslint-import-resolver-alias": "^1.1.2",
+		"eslint-import-resolver-typescript": "^3.6.1",
 		"eslint-plugin-import": "^2.29.1",
 		"eslint-plugin-prettier": "^5.1.2",
 		"nodemon": "^3.0.2",

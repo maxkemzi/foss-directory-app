@@ -1,7 +1,7 @@
-import bcryptjs from "bcryptjs";
 import {RefreshToken, RefreshTokenModel, UserModel} from "#src/db/models";
 import {UserDto} from "#src/dtos";
 import {ApiError} from "#src/lib";
+import bcryptjs from "bcryptjs";
 import TokenService from "../token/TokenService";
 
 class AuthService {
@@ -77,6 +77,15 @@ class AuthService {
 		});
 
 		return {user: {...userDto}, tokens};
+	}
+
+	static async check(accessToken: string) {
+		const userPayload = TokenService.verifyAccess<UserDto>(accessToken);
+		if (!userPayload) {
+			return false;
+		}
+
+		return true;
 	}
 
 	static async logout(refreshToken: RefreshToken["token"]) {

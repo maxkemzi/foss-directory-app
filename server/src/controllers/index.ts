@@ -1,3 +1,4 @@
 import AuthController from "./auth/AuthController";
+import ProjectsController from "./projects/ProjectsController";
 
-export {AuthController};
+export {AuthController, ProjectsController};
