@@ -7,12 +7,13 @@ const fetchApi = <T = any>(
 	options?: RequestInit
 ): Promise<CustomResponse<T>> => {
 	return new Promise(async (resolve, reject) => {
+		const {headers = {}, ...restOptions} = options || {};
 		const response = await fetch(`${process.env.API_URL}${url}`, {
 			headers: {
 				"Content-Type": "application/json",
-				...options?.headers
+				...headers
 			},
-			...options
+			...restOptions
 		});
 
 		if (!response.ok) {

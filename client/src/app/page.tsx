@@ -22,6 +22,12 @@ const Home = async () => {
 			<form action={logOut}>
 				<button type="submit">Log out</button>
 			</form>
+			<a
+				href={`https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}`}
+				target="_blank"
+			>
+				Connect GitHub
+			</a>
 		</main>
 	);
 };

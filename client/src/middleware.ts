@@ -14,7 +14,7 @@ const middleware = async (req: NextRequest) => {
 		const headers = new Headers(req.headers);
 
 		try {
-			const tokenIsValid = await requestCheck(accessToken);
+			const {data: tokenIsValid} = await requestCheck(accessToken);
 			if (tokenIsValid) {
 				headers.set("Authorization", `Bearer ${accessToken}`);
 				return NextResponse.next({request: {headers}});
@@ -35,6 +35,7 @@ const middleware = async (req: NextRequest) => {
 
 			return response;
 		} catch (e) {
+			console.log(e);
 			return NextResponse.redirect(new URL(Route.LOGIN, req.url));
 		}
 	}
