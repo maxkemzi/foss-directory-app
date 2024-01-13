@@ -12,10 +12,6 @@ class AuthController {
 				password
 			});
 
-			res.cookie("refreshToken", tokens.refresh, {
-				maxAge: 30 * 24 * 60 * 60 * 1000,
-				httpOnly: true
-			});
 			res.status(201).json({user, tokens});
 		} catch (e) {
 			next(e);
@@ -31,10 +27,6 @@ class AuthController {
 				password
 			});
 
-			res.cookie("refreshToken", tokens.refresh, {
-				maxAge: 30 * 24 * 60 * 60 * 1000,
-				httpOnly: true
-			});
 			res.json({user, tokens});
 		} catch (e) {
 			next(e);
@@ -47,10 +39,6 @@ class AuthController {
 
 			const {user, tokens} = await AuthService.refresh(refreshToken);
 
-			res.cookie("refreshToken", tokens.refresh, {
-				maxAge: 30 * 24 * 60 * 60 * 1000,
-				httpOnly: true
-			});
 			res.json({user, tokens});
 		} catch (e) {
 			next(e);
@@ -75,8 +63,7 @@ class AuthController {
 
 			await AuthService.logout(refreshToken);
 
-			res.clearCookie("refreshToken");
-			res.json({message: "Successfully logged out."});
+			res.json({success: true});
 		} catch (e) {
 			next(e);
 		}

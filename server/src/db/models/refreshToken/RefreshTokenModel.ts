@@ -13,6 +13,17 @@ class RefreshTokenModel {
 		return rows[0];
 	}
 
+	static async upsert({
+		user_id,
+		token
+	}: RefreshTokenPayload): Promise<RefreshToken> {
+		const {rows} = await Db.query<RefreshToken>(
+			"INSERT INTO refresh_tokens(user_id, token) VALUES($1, $2) ON CONFLICT(user_id) DO UPDATE SET user_id=EXCLUDED.user_id, token=EXCLUDED.token RETURNING *;",
+			[user_id, token]
+		);
+		return rows[0];
+	}
+
 	static async updateByUserId(
 		userId: RefreshToken["user_id"],
 		payload: RefreshTokenPayload

@@ -48,7 +48,7 @@ class AuthService {
 		const userDto = new UserDto(user);
 		const tokens = TokenService.generateAccessAndRefresh({...userDto});
 
-		await RefreshTokenModel.updateByUserId(userDto.id, {
+		await RefreshTokenModel.upsert({
 			user_id: userDto.id,
 			token: tokens.refresh
 		});

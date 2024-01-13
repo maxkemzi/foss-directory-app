@@ -16,5 +16,6 @@
 			"#src/*": ["src/*"]
 		},
 		"types": ["vitest/globals"]
-	}
+	},
+	"include": ["src/**/*.ts", "__tests__/**/*.ts"]
 }

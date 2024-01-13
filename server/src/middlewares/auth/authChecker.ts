@@ -1,6 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {ApiError} from "#src/lib";
 import {TokenService} from "#src/services";
+import {UserDto} from "#src/dtos";
 
 const authChecker = (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -14,7 +15,7 @@ const authChecker = (req: Request, res: Response, next: NextFunction) => {
 			throw new Error();
 		}
 
-		const userPayload = TokenService.verifyAccess(accessToken);
+		const userPayload = TokenService.verifyAccess<UserDto>(accessToken);
 		if (!userPayload) {
 			throw new Error();
 		}

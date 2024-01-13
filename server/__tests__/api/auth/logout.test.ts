@@ -42,9 +42,7 @@ describe("POST /api/auth/logout", () => {
 
 		expect(response.type).toEqual("application/json");
 		expect(response.status).toEqual(200);
-		expect(response.body).toEqual({
-			message: "Successfully logged out."
-		});
+		expect(response.body).toEqual({success: true});
 	});
 
 	test("no refresh token cookie", async () => {
