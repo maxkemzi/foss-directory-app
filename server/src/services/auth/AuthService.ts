@@ -57,6 +57,10 @@ class AuthService {
 	}
 
 	static async refresh(refreshToken: RefreshToken["token"]) {
+		if (!refreshToken) {
+			throw new ApiError(401, "Unauthorized.");
+		}
+
 		const userPayload = TokenService.verifyRefresh<UserDto>(refreshToken);
 		const tokenFromDb = await RefreshTokenModel.findByToken(refreshToken);
 		if (!userPayload || !tokenFromDb) {
@@ -89,6 +93,10 @@ class AuthService {
 	}
 
 	static async logout(refreshToken: RefreshToken["token"]) {
+		if (!refreshToken) {
+			throw new ApiError(401, "Unauthorized.");
+		}
+
 		await RefreshTokenModel.deleteByToken(refreshToken);
 	}
 }

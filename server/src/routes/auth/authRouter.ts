@@ -1,13 +1,12 @@
 import {AuthController} from "#src/controllers";
-import {refreshTokenCookieChecker} from "#src/middlewares";
 import {Router} from "express";
 
 const authRouter = Router();
 
 authRouter.post("/signup", AuthController.signup);
 authRouter.post("/login", AuthController.login);
-authRouter.post("/refresh", refreshTokenCookieChecker, AuthController.refresh);
+authRouter.post("/refresh", AuthController.refresh);
 authRouter.post("/check", AuthController.check);
-authRouter.post("/logout", refreshTokenCookieChecker, AuthController.logout);
+authRouter.post("/logout", AuthController.logout);
 
 export default authRouter;
