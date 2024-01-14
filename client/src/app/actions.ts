@@ -9,7 +9,11 @@ const logOut = async () => {
 	try {
 		const cookieStore = cookies();
 
-		const refreshToken = cookieStore.get("refreshToken")?.value!;
+		const refreshToken = cookieStore.get("refreshToken")?.value;
+		if (!refreshToken) {
+			return;
+		}
+
 		await requestLogout(refreshToken);
 
 		cookieStore.delete("user");
@@ -17,9 +21,10 @@ const logOut = async () => {
 		cookieStore.delete("refreshToken");
 	} catch (e) {
 		console.log(e);
-	} finally {
-		redirect(Route.LOGIN);
+		return;
 	}
+
+	redirect(Route.LOGIN);
 };
 
 export {logOut};

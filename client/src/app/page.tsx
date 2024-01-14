@@ -1,6 +1,7 @@
 import {requestProjects} from "#src/api";
 import {headers} from "next/headers";
 import {logOut} from "./actions";
+import Link from "next/link";
 
 const fetchProjects = async () => {
 	const authorization = headers().get("authorization")!;
@@ -22,12 +23,12 @@ const Home = async () => {
 			<form action={logOut}>
 				<button type="submit">Log out</button>
 			</form>
-			<a
+			<Link
 				href={`https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}`}
 				target="_blank"
 			>
 				Connect GitHub
-			</a>
+			</Link>
 		</main>
 	);
 };

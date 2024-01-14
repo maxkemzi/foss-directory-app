@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
 import {requestCheck, requestRefresh} from "./api";
-import {PROTECTED_ROUTES, Route} from "./constants";
+import {COOKIE_OPTIONS, PROTECTED_ROUTES, Route} from "./constants";
 
 const middleware = async (req: NextRequest) => {
 	const accessToken = req.cookies.get("accessToken")?.value;
@@ -28,10 +28,9 @@ const middleware = async (req: NextRequest) => {
 			headers.set("Authorization", `Bearer ${tokens.access}`);
 			const response = NextResponse.next({request: {headers}});
 
-			const cookieOptions = {httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000};
-			response.cookies.set("user", JSON.stringify(user), cookieOptions);
-			response.cookies.set("accessToken", tokens.access, cookieOptions);
-			response.cookies.set("refreshToken", tokens.refresh, cookieOptions);
+			response.cookies.set("user", JSON.stringify(user), COOKIE_OPTIONS);
+			response.cookies.set("accessToken", tokens.access, COOKIE_OPTIONS);
+			response.cookies.set("refreshToken", tokens.refresh, COOKIE_OPTIONS);
 
 			return response;
 		} catch (e) {

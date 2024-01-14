@@ -1,3 +1,5 @@
+import ApiError from "./ApiError";
+
 interface CustomResponse<T = any> extends Response {
 	data: T;
 }
@@ -16,13 +18,17 @@ const fetchApi = <T = any>(
 			...restOptions
 		});
 
+		const data = await response.json();
+
 		if (!response.ok) {
-			reject(new Error());
+			reject(
+				new ApiError(
+					response.status || 404,
+					data?.error || "Something went wrong."
+				)
+			);
 		} else {
-			resolve({
-				...response,
-				data: await response.json()
-			});
+			resolve({...response, data});
 		}
 	});
 };

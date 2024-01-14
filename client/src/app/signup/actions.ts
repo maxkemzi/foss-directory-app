@@ -1,11 +1,11 @@
 "use server";
 
-import {requestSignup} from "#src/api";
-import {Route} from "#src/constants";
+import {ApiError, requestSignup} from "#src/api";
+import {COOKIE_OPTIONS, Route} from "#src/constants";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 
-const signUp = async (formData: FormData) => {
+const signUp = async (prevState: any, formData: FormData) => {
 	try {
 		const cookieStore = cookies();
 
@@ -17,15 +17,20 @@ const signUp = async (formData: FormData) => {
 			password: formData.get("password") as string
 		});
 
-		const cookieOptions = {httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000};
-		cookieStore.set("user", JSON.stringify(user), cookieOptions);
-		cookieStore.set("accessToken", tokens.access, cookieOptions);
-		cookieStore.set("refreshToken", tokens.refresh, cookieOptions);
+		cookieStore.set("user", JSON.stringify(user), COOKIE_OPTIONS);
+		cookieStore.set("accessToken", tokens.access, COOKIE_OPTIONS);
+		cookieStore.set("refreshToken", tokens.refresh, COOKIE_OPTIONS);
 	} catch (e) {
 		console.log(e);
-	} finally {
-		redirect(Route.HOME);
+
+		if (e instanceof ApiError) {
+			return {...prevState, error: e.message};
+		}
+
+		return {...prevState, error: "Something went wrong."};
 	}
+
+	redirect(Route.HOME);
 };
 
 export {signUp};
