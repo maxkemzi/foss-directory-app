@@ -19,6 +19,7 @@ const logIn = async (prevState: any, formData: FormData) => {
 		cookieStore.set("user", JSON.stringify(user), COOKIE_OPTIONS);
 		cookieStore.set("accessToken", tokens.access, COOKIE_OPTIONS);
 		cookieStore.set("refreshToken", tokens.refresh, COOKIE_OPTIONS);
+		cookieStore.set("isAuth", "true", COOKIE_OPTIONS);
 	} catch (e) {
 		console.log(e);
 

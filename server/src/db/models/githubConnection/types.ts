@@ -1,14 +1,11 @@
 interface GithubConnection {
 	id: number;
 	user_id: number;
-	access_token: string;
+	token: string;
 	created_at: string;
 	updated_at: string;
 }
 
-type GithubConnectionPayload = Pick<
-	GithubConnection,
-	"user_id" | "access_token"
->;
+type GithubConnectionPayload = Pick<GithubConnection, "user_id" | "token">;
 
 export type {GithubConnection, GithubConnectionPayload};

@@ -1,5 +1,3 @@
-import Route from "./routes";
-
-const PROTECTED_ROUTES = [Route.HOME, "/api/github"];
+const PROTECTED_ROUTES = ["/api/github"];
 
 export default PROTECTED_ROUTES;

@@ -30,7 +30,7 @@ class GithubService {
 
 		await GithubConnectionModel.create({
 			user_id: userId,
-			access_token: accessToken
+			token: accessToken
 		});
 	}
 

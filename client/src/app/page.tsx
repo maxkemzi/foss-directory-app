@@ -1,35 +1,14 @@
-import {requestProjects} from "#src/api";
-import {headers} from "next/headers";
-import {logOut} from "./actions";
-import Link from "next/link";
-
-const fetchProjects = async () => {
-	const authorization = headers().get("authorization")!;
-	const {data} = await requestProjects(authorization);
-	return data;
-};
+import {Header} from "./(header)";
+import {HeroSection} from "./(hero)";
 
 const Home = async () => {
-	const projects = await fetchProjects();
-
 	return (
-		<main>
-			<div>Hello World!</div>
-			<div>
-				{projects.map(project => (
-					<div key={project.id}>{project.title}</div>
-				))}
-			</div>
-			<form action={logOut}>
-				<button type="submit">Log out</button>
-			</form>
-			<Link
-				href={`https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}`}
-				target="_blank"
-			>
-				Connect GitHub
-			</Link>
-		</main>
+		<>
+			<Header isAbsolute />
+			<main>
+				<HeroSection />
+			</main>
+		</>
 	);
 };
 

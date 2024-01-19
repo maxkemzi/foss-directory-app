@@ -31,6 +31,7 @@ const middleware = async (req: NextRequest) => {
 			response.cookies.set("user", JSON.stringify(user), COOKIE_OPTIONS);
 			response.cookies.set("accessToken", tokens.access, COOKIE_OPTIONS);
 			response.cookies.set("refreshToken", tokens.refresh, COOKIE_OPTIONS);
+			response.cookies.set("isAuth", "true", COOKIE_OPTIONS);
 
 			return response;
 		} catch (e) {

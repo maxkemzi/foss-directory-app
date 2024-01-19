@@ -19,6 +19,7 @@ const logOut = async () => {
 		cookieStore.delete("user");
 		cookieStore.delete("accessToken");
 		cookieStore.delete("refreshToken");
+		cookieStore.delete("isAuth");
 	} catch (e) {
 		console.log(e);
 		return;
