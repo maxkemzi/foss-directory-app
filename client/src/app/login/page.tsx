@@ -1,8 +1,9 @@
 "use client";
 
-import {useFormState, useFormStatus} from "react-dom";
+import {SubmitButton} from "#src/components";
+import {Input} from "@nextui-org/input";
+import {useFormState} from "react-dom";
 import {logIn} from "./actions";
-import SubmitButton from "./SubmitButton";
 
 const initialState = {
 	error: null,
@@ -14,22 +15,20 @@ const Login = () => {
 	const [state, formAction] = useFormState(logIn, initialState);
 
 	return (
-		<main>
-			<h1>Login</h1>
-			<form action={formAction}>
-				{state?.error ? <span>{state.error}</span> : null}
-				<div>
-					<label>
-						Email Address
-						<input name="email" type="email" placeholder="Email Address" />
-					</label>
-					<label>
-						Password
-						<input name="password" type="password" placeholder="Password" />
-					</label>
+		<main className="flex flex-grow">
+			<section className="flex flex-grow items-center justify-center">
+				<div className="max-w-[325px] w-full">
+					<h1 className="text-5xl mb-6">Login</h1>
+					<form action={formAction}>
+						{state?.error ? <span>{state.error}</span> : null}
+						<div className="flex flex-col gap-4 mb-6">
+							<Input name="email" type="email" label="Email" />
+							<Input name="password" type="password" label="Password" />
+						</div>
+						<SubmitButton>Log In</SubmitButton>
+					</form>
 				</div>
-				<SubmitButton />
-			</form>
+			</section>
 		</main>
 	);
 };

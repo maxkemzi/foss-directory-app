@@ -1,9 +1,8 @@
 import type {Metadata} from "next";
 import {Inter} from "next/font/google";
+import {FC, PropsWithChildren} from "react";
 import "./globals.css";
 import Providers from "./providers";
-import {FC, PropsWithChildren} from "react";
-import {Header} from "./(header)";
 
 const inter = Inter({subsets: ["latin"]});
 
@@ -17,7 +16,7 @@ const RootLayout: FC<PropsWithChildren> = ({children}) => {
 		<html lang="en" className="dark">
 			<body className={inter.className}>
 				<Providers>
-					{children}
+					<div className="flex flex-col min-h-screen">{children}</div>
 				</Providers>
 			</body>
 		</html>
