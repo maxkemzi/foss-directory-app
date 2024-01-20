@@ -30,7 +30,7 @@ const logIn = async (prevState: any, formData: FormData) => {
 		return {...prevState, error: "Something went wrong."};
 	}
 
-	redirect(Route.HOME);
+	return redirect(Route.HOME);
 };
 
 export {logIn};

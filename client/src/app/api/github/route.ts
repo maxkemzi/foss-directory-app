@@ -8,7 +8,7 @@ const GET = async (req: NextRequest) => {
 		return NextResponse.json({error: "Unauthorized"}, {status: 401});
 	}
 
-	const searchParams = req.nextUrl.searchParams;
+	const {searchParams} = req.nextUrl;
 	const code = searchParams.get("code");
 	if (!code) {
 		return NextResponse.json(

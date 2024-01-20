@@ -4,11 +4,10 @@ interface Response {
 	message: string;
 }
 
-const requestLogout = (refreshToken: string) => {
-	return fetchApi<Response>("/auth/logout", {
+const requestLogout = (refreshToken: string) =>
+	fetchApi<Response>("/auth/logout", {
 		method: "POST",
 		headers: {Cookie: `refreshToken=${refreshToken}`}
 	});
-};
 
 export default requestLogout;

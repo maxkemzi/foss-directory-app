@@ -1,9 +1,9 @@
 "use client";
 
+import {SubmitButton} from "#src/components";
+import {Input} from "@nextui-org/react";
 import {useFormState} from "react-dom";
 import {signUp} from "./actions";
-import {Input} from "@nextui-org/input";
-import {SubmitButton} from "#src/components";
 
 const initialState = {
 	error: null,

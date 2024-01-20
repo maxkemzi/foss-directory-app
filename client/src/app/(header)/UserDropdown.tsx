@@ -1,22 +1,22 @@
 "use client";
 
-import {Avatar} from "@nextui-org/avatar";
 import {
 	Dropdown,
 	DropdownItem,
 	DropdownMenu,
-	DropdownTrigger
-} from "@nextui-org/dropdown";
+	DropdownTrigger,
+	Avatar
+} from "@nextui-org/react";
 import {Key} from "react";
 import {logOut} from "./actions";
 
-const UserDropdown = ({user}) => {
+const UserDropdown = ({user}: {user: any}) => {
 	const handleAction = (key: Key) => {
 		switch (key) {
 			case "log_out":
 				return logOut();
 			default:
-				return;
+				return undefined;
 		}
 	};
 

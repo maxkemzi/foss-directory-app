@@ -1,13 +1,13 @@
 import {Container} from "#src/components/ui";
 import {Route} from "#src/constants";
-import {Button} from "@nextui-org/button";
-import {Link} from "@nextui-org/link";
 import {
 	Navbar,
 	NavbarBrand,
 	NavbarContent,
-	NavbarItem
-} from "@nextui-org/navbar";
+	NavbarItem,
+	Link,
+	Button
+} from "@nextui-org/react";
 import classNames from "classnames";
 import {cookies} from "next/headers";
 import {FC} from "react";
@@ -27,7 +27,7 @@ const Header: FC<Props> = ({isAbsolute}) => {
 	return (
 		<header
 			className={classNames("border-b border-divider", {
-				["absolute top-0 left-0 right-0"]: isAbsolute
+				"absolute top-0 left-0 right-0": isAbsolute
 			})}
 		>
 			<Container>

@@ -7,30 +7,31 @@ interface CustomResponse<T = any> extends Response {
 const fetchApi = <T = any>(
 	url: string,
 	options?: RequestInit
-): Promise<CustomResponse<T>> => {
-	return new Promise(async (resolve, reject) => {
-		const {headers = {}, ...restOptions} = options || {};
-		const response = await fetch(`${process.env.API_URL}${url}`, {
-			headers: {
-				"Content-Type": "application/json",
-				...headers
-			},
-			...restOptions
-		});
+): Promise<CustomResponse<T>> =>
+	new Promise((resolve, reject) => {
+		(async () => {
+			const {headers = {}, ...restOptions} = options || {};
+			const response = await fetch(`${process.env.API_URL}${url}`, {
+				headers: {
+					"Content-Type": "application/json",
+					...headers
+				},
+				...restOptions
+			});
 
-		const data = await response.json();
+			const data = await response.json();
 
-		if (!response.ok) {
-			reject(
-				new ApiError(
-					response.status || 404,
-					data?.error || "Something went wrong."
-				)
-			);
-		} else {
-			resolve({...response, data});
-		}
+			if (!response.ok) {
+				reject(
+					new ApiError(
+						response.status || 404,
+						data?.error || "Something went wrong."
+					)
+				);
+			} else {
+				resolve({...response, data});
+			}
+		})();
 	});
-};
 
 export default fetchApi;

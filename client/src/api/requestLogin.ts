@@ -11,11 +11,10 @@ interface Response {
 	user: User;
 }
 
-const requestLogin = (body: Body) => {
-	return fetchApi<Response>("/auth/login", {
+const requestLogin = (body: Body) =>
+	fetchApi<Response>("/auth/login", {
 		method: "POST",
 		body: JSON.stringify(body)
 	});
-};
 
 export default requestLogin;

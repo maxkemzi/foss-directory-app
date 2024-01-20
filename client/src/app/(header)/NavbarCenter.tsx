@@ -1,8 +1,7 @@
 "use client";
 
 import {Route} from "#src/constants";
-import {Link} from "@nextui-org/link";
-import {NavbarContent, NavbarItem} from "@nextui-org/navbar";
+import {Link, NavbarContent, NavbarItem} from "@nextui-org/react";
 import {usePathname} from "next/navigation";
 
 const NavbarCenter = () => {

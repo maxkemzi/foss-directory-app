@@ -1,7 +1,7 @@
 "use client";
 
 import {SubmitButton} from "#src/components";
-import {Input} from "@nextui-org/input";
+import {Input} from "@nextui-org/react";
 import {useFormState} from "react-dom";
 import {logIn} from "./actions";
 

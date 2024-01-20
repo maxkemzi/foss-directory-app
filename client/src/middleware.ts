@@ -39,6 +39,8 @@ const middleware = async (req: NextRequest) => {
 			return NextResponse.redirect(new URL(Route.LOGIN, req.url));
 		}
 	}
+
+	return NextResponse.next();
 };
 
 export {middleware};

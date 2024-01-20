@@ -1,6 +1,6 @@
 "use client";
 
-import {Button} from "@nextui-org/button";
+import {Button} from "@nextui-org/react";
 import {FC, PropsWithChildren} from "react";
 import {useFormStatus} from "react-dom";
 
