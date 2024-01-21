@@ -15,7 +15,8 @@ interface Response {
 const requestSignup = (body: Body) =>
 	fetchApi<Response>("/auth/signup", {
 		method: "POST",
-		body: JSON.stringify(body)
+		body: JSON.stringify(body),
+		cache: "no-store"
 	});
 
 export default requestSignup;

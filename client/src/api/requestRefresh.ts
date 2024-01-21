@@ -9,7 +9,8 @@ interface Response {
 const requestRefresh = (refreshToken: string) =>
 	fetchApi<Response>("/auth/refresh", {
 		method: "POST",
-		headers: {Cookie: `refreshToken=${refreshToken}`}
+		headers: {Cookie: `refreshToken=${refreshToken}`},
+		cache: "no-store"
 	});
 
 export default requestRefresh;

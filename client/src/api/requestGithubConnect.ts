@@ -10,7 +10,8 @@ const requestGithubConnect = (body: Body, authorization: string) =>
 	fetchApi<Response>("/github/connect", {
 		method: "POST",
 		body: JSON.stringify(body),
-		headers: {authorization}
+		headers: {authorization},
+		cache: "no-store"
 	});
 
 export default requestGithubConnect;

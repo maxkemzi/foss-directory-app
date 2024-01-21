@@ -7,7 +7,8 @@ interface Response {
 const requestLogout = (refreshToken: string) =>
 	fetchApi<Response>("/auth/logout", {
 		method: "POST",
-		headers: {Cookie: `refreshToken=${refreshToken}`}
+		headers: {Cookie: `refreshToken=${refreshToken}`},
+		cache: "no-store"
 	});
 
 export default requestLogout;

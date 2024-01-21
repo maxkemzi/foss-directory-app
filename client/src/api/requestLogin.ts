@@ -14,7 +14,8 @@ interface Response {
 const requestLogin = (body: Body) =>
 	fetchApi<Response>("/auth/login", {
 		method: "POST",
-		body: JSON.stringify(body)
+		body: JSON.stringify(body),
+		cache: "no-store"
 	});
 
 export default requestLogin;
