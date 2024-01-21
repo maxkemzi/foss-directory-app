@@ -1,3 +1,4 @@
+import {GlobalModal} from "#src/components";
 import type {Metadata} from "next";
 import {Inter} from "next/font/google";
 import {FC, PropsWithChildren} from "react";
@@ -16,6 +17,7 @@ const RootLayout: FC<PropsWithChildren> = ({children}) => (
 		<body className={inter.className}>
 			<Providers>
 				<div className="flex flex-col min-h-screen">{children}</div>
+				<GlobalModal />
 			</Providers>
 		</body>
 	</html>
