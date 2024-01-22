@@ -11,11 +11,15 @@ interface Response {
 	user: User;
 }
 
-const requestLogin = (body: Body) =>
-	fetchApi<Response>("/auth/login", {
+const requestLogin = async (body: Body): Promise<Response> => {
+	const response = await fetchApi("/auth/login", {
 		method: "POST",
+		headers: {"Content-Type": "application/json"},
 		body: JSON.stringify(body),
 		cache: "no-store"
 	});
+
+	return response.json();
+};
 
 export default requestLogin;

@@ -4,7 +4,7 @@ import {Router} from "express";
 
 const githubRouter = Router();
 
-githubRouter.post("/connect", authChecker, GithubController.connect);
-githubRouter.get("/connected", authChecker, GithubController.connected);
+githubRouter.get("/", authChecker, GithubController.authenticate);
+githubRouter.get("/callback", authChecker, GithubController.callback);
 
 export default githubRouter;

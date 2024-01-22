@@ -1,13 +1,32 @@
+import {ApiError} from "#src/lib";
 import {GithubService} from "#src/services";
 import {NextFunction, Request, Response} from "express";
 
 class GithubController {
-	static async connect(req: Request, res: Response, next: NextFunction) {
+	static async authenticate(req: Request, res: Response, next: NextFunction) {
+		try {
+			const url = await GithubService.getAuthUrl();
+
+			res.redirect(url);
+		} catch (e) {
+			next(e);
+		}
+	}
+
+	static async callback(req: Request, res: Response, next: NextFunction) {
 		try {
 			const {id} = res.locals.user!;
-			const {code} = req.body;
+			const {code} = req.query;
 
-			await GithubService.connect(id, code);
+			if (!code) {
+				throw new ApiError(404, 'The "code" query parameter is not provided.');
+			}
+
+			if (typeof code !== "string") {
+				throw new ApiError(404, 'Invalid "code" query parameter type.');
+			}
+
+			await GithubService.createConnection(id, code);
 
 			res.json({success: true});
 		} catch (e) {

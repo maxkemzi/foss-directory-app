@@ -1,17 +1,12 @@
-import fetchApi from "./fetchApi";
+import fetchApiWithAuth from "./fetchApiWithAuth";
 
-interface Body {
-	code: string;
-}
+type Response = string;
 
-type Response = boolean;
-
-const requestGithubConnect = (body: Body, authorization: string) =>
-	fetchApi<Response>("/github/connect", {
-		method: "POST",
-		body: JSON.stringify(body),
-		headers: {authorization},
+const requestGithubConnect = async (): Promise<Response> => {
+	const response = await fetchApiWithAuth("/github", {
 		cache: "no-store"
 	});
+	return response.url;
+};
 
 export default requestGithubConnect;

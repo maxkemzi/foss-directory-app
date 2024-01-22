@@ -1,8 +1,11 @@
+import fetchApiWithAuth from "./fetchApiWithAuth";
 import {Project} from "./types";
-import fetchApi from "./fetchApi";
 
 type Response = Project[];
 
-const requestProjects = () => fetchApi<Response>("/projects");
+const requestProjects = async (): Promise<Response> => {
+	const response = await fetchApiWithAuth("/projects");
+	return response.json();
+};
 
 export default requestProjects;

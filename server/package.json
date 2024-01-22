@@ -5,7 +5,7 @@
 	"main": "src/index.ts",
 	"scripts": {
 		"start": "ts-node -r tsconfig-paths/register ./src/index.ts",
-		"dev": "nodemon --watch 'src/**' --ext 'ts,json' --exec npm start",
+		"dev": "nodemon",
 		"lint": "eslint src/ --ext .ts",
 		"test": "vitest --pool=forks"
 	},

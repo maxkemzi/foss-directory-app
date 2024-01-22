@@ -20,9 +20,7 @@ const logIn = async (prevState: any, formData: FormData) => {
 	}
 
 	try {
-		const {
-			data: {user, tokens}
-		} = await requestLogin(validatedFields.data);
+		const {user, tokens} = await requestLogin(validatedFields.data);
 
 		const cookieStore = cookies();
 		cookieStore.set("user", JSON.stringify(user), COOKIE_OPTIONS);

@@ -12,11 +12,15 @@ interface Response {
 	user: User;
 }
 
-const requestSignup = (body: Body) =>
-	fetchApi<Response>("/auth/signup", {
+const requestSignup = async (body: Body): Promise<Response> => {
+	const response = await fetchApi("/auth/signup", {
 		method: "POST",
+		headers: {"Content-Type": "application/json"},
 		body: JSON.stringify(body),
 		cache: "no-store"
 	});
+
+	return response.json();
+};
 
 export default requestSignup;

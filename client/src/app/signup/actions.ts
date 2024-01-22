@@ -22,9 +22,7 @@ const signUp = async (prevState: any, formData: FormData) => {
 	}
 
 	try {
-		const {
-			data: {user, tokens}
-		} = await requestSignup(validatedFields.data);
+		const {user, tokens} = await requestSignup(validatedFields.data);
 
 		const cookieStore = cookies();
 		cookieStore.set("user", JSON.stringify(user), COOKIE_OPTIONS);

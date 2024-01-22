@@ -1,38 +1,41 @@
+import {cookies} from "next/headers";
 import {NextRequest, NextResponse} from "next/server";
 import {requestCheck, requestRefresh} from "./api";
-import {COOKIE_OPTIONS, PROTECTED_ROUTES, Route} from "./constants";
+import {
+	APP_ROUTES,
+	AUTH_ROUTES,
+	COOKIE_OPTIONS,
+	PROTECTED_ROUTES,
+	Route
+} from "./constants";
 
 const middleware = async (req: NextRequest) => {
-	const accessToken = req.cookies.get("accessToken")?.value;
-	const routeIsProtected = PROTECTED_ROUTES.includes(req.nextUrl.pathname);
+	const routeIsAuth = AUTH_ROUTES.includes(req.nextUrl.pathname);
+	if (routeIsAuth) {
+		return NextResponse.next();
+	}
 
+	const accessToken = cookies().get("accessToken")?.value;
+	const routeIsProtected = PROTECTED_ROUTES.includes(req.nextUrl.pathname);
 	if (!accessToken && routeIsProtected) {
 		return NextResponse.redirect(new URL(Route.LOGIN, req.url));
 	}
 
-	if (accessToken && routeIsProtected) {
-		const headers = new Headers(req.headers);
-
+	const isAppRoute = APP_ROUTES.includes(req.nextUrl.pathname);
+	if (accessToken && isAppRoute) {
 		try {
-			const {data: tokenIsValid} = await requestCheck(accessToken);
+			const tokenIsValid = await requestCheck();
 			if (tokenIsValid) {
-				headers.set("Authorization", `Bearer ${accessToken}`);
-				return NextResponse.next({request: {headers}});
+				return NextResponse.next();
 			}
 
-			const refreshToken = req.cookies.get("refreshToken")?.value!;
-			const {
-				data: {user, tokens}
-			} = await requestRefresh(refreshToken);
+			const {user, tokens} = await requestRefresh();
 
-			headers.set("Authorization", `Bearer ${tokens.access}`);
-			const response = NextResponse.next({request: {headers}});
-
+			const response = NextResponse.next();
 			response.cookies.set("user", JSON.stringify(user), COOKIE_OPTIONS);
 			response.cookies.set("accessToken", tokens.access, COOKIE_OPTIONS);
 			response.cookies.set("refreshToken", tokens.refresh, COOKIE_OPTIONS);
 			response.cookies.set("isAuth", "true", COOKIE_OPTIONS);
-
 			return response;
 		} catch (e) {
 			console.log(e);

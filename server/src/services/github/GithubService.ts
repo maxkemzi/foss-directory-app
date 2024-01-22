@@ -5,7 +5,12 @@ class GithubService {
 	static #CLIENT_ID = process.env.GITHUB_CLIENT_ID as string;
 	static #CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET as string;
 
-	static async connect(userId: number, code: string) {
+	static async getAuthUrl() {
+		const url = `https://github.com/login/oauth/authorize?client_id=${GithubService.#CLIENT_ID}&redirect_uri=http://localhost:5000/api/github/callback`;
+		return url;
+	}
+
+	static async createConnection(userId: number, code: string) {
 		const connection = await GithubConnectionModel.findByUserId(userId);
 		if (connection) {
 			throw new ApiError(400, "Your account had already been connected.");
