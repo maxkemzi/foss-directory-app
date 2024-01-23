@@ -20,7 +20,7 @@ interface Props {
 
 const Header: FC<Props> = ({isAbsolute}) => {
 	const cookieStore = cookies();
-	const isAuth = Boolean(cookieStore.get("isAuth")?.value);
+	const isAuth = cookieStore.get("isAuth")?.value;
 	const user = cookieStore.get("user")?.value;
 	const parsedUser = user ? JSON.parse(user) : null;
 

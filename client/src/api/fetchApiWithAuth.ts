@@ -1,7 +1,10 @@
+"use server";
+
 import {COOKIE_OPTIONS} from "#src/constants";
 import {cookies} from "next/headers";
 import ApiError from "./ApiError";
 import fetchApi from "./fetchApi";
+import requestRefresh from "./requestRefresh";
 
 const fetchApiWithAuth = async (
 	url: string,
@@ -24,23 +27,11 @@ const fetchApiWithAuth = async (
 	});
 
 	if (response.status === 401 && !options.isRetry) {
+		// eslint-disable-next-line no-param-reassign
 		options.isRetry = true;
 
 		try {
-			const refreshResponse = await fetch(
-				`${process.env.API_URL}/auth/refresh`,
-				{
-					method: "POST",
-					headers: {Cookie: `refreshToken=${refreshToken}`},
-					cache: "no-store"
-				}
-			);
-
-			if (!refreshResponse.ok) {
-				throw new Error();
-			}
-
-			const {user, tokens} = await refreshResponse.json();
+			const {user, tokens} = await requestRefresh(refreshToken);
 			cookieStore.set("user", JSON.stringify(user), COOKIE_OPTIONS);
 			cookieStore.set("accessToken", tokens.access, COOKIE_OPTIONS);
 			cookieStore.set("refreshToken", tokens.refresh, COOKIE_OPTIONS);
@@ -49,16 +40,13 @@ const fetchApiWithAuth = async (
 			const retryResponse = await fetchApiWithAuth(url, options);
 			return retryResponse;
 		} catch (e) {
-			throw new ApiError(401, "Not authorized.");
-		}
-	}
+			cookieStore.delete("user");
+			cookieStore.delete("accessToken");
+			cookieStore.delete("refreshToken");
+			cookieStore.delete("isAuth");
 
-	if (!response.ok) {
-		const errorData = await response.json();
-		throw new ApiError(
-			response.status || 404,
-			errorData.error || "Something went wrong."
-		);
+			throw e;
+		}
 	}
 
 	return response;

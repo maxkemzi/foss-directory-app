@@ -1,13 +1,15 @@
 import {GithubConnectionModel} from "#src/db/models";
 import {ApiError} from "#src/lib";
+import TokenService from "../token/TokenService";
 
 class GithubService {
 	static #CLIENT_ID = process.env.GITHUB_CLIENT_ID as string;
 	static #CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET as string;
 
-	static async getAuthUrl() {
-		const url = `https://github.com/login/oauth/authorize?client_id=${GithubService.#CLIENT_ID}&redirect_uri=http://localhost:5000/api/github/callback`;
-		return url;
+	static async getAuthUrl(userId: number) {
+		const CSRFToken = TokenService.generateCSRF({userId});
+		const url = `https://github.com/login/oauth/authorize?client_id=${GithubService.#CLIENT_ID}&redirect_uri=http://localhost:5000/api/github/callback&state=${CSRFToken}`;
+		return {url, CSRFToken};
 	}
 
 	static async createConnection(userId: number, code: string) {
@@ -31,8 +33,11 @@ class GithubService {
 			}
 		);
 
-		const {access_token: accessToken} = await response.json();
+		if (!response.ok) {
+			throw new ApiError(404, "Something went wrong.");
+		}
 
+		const {access_token: accessToken} = await response.json();
 		await GithubConnectionModel.create({
 			user_id: userId,
 			token: accessToken

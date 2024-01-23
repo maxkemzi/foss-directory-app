@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 class TokenService {
 	static #ACCESS_SECRET = process.env.JWT_ACCESS_SECRET as string;
 	static #REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as string;
+	static #CSRF_SECRET = process.env.JWT_CSRF_SECRET as string;
 
 	static generateAccessAndRefresh(payload: string | object) {
 		return {
@@ -23,6 +24,12 @@ class TokenService {
 		});
 	}
 
+	static generateCSRF(payload: string | object) {
+		return jwt.sign(payload, TokenService.#CSRF_SECRET, {
+			expiresIn: "10m"
+		});
+	}
+
 	static verifyAccess<T>(token: string) {
 		try {
 			const payload = jwt.verify(token, TokenService.#ACCESS_SECRET) as T;
@@ -35,6 +42,15 @@ class TokenService {
 	static verifyRefresh<T>(token: string) {
 		try {
 			const payload = jwt.verify(token, TokenService.#REFRESH_SECRET) as T;
+			return payload;
+		} catch (e) {
+			return null;
+		}
+	}
+
+	static verifyCSRF<T>(token: string) {
+		try {
+			const payload = jwt.verify(token, TokenService.#CSRF_SECRET) as T;
 			return payload;
 		} catch (e) {
 			return null;

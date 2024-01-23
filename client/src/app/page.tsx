@@ -2,7 +2,7 @@ import {Link} from "@nextui-org/react";
 import {Header} from "./(header)";
 import {HeroSection} from "./(hero)";
 
-const Home = async () => (
+const Home = () => (
 	<>
 		<Header isAbsolute />
 		<main>

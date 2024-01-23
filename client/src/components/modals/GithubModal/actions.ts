@@ -1,26 +1,17 @@
 "use server";
 
-import {requestGithubConnect} from "#src/api";
+import {requestGithubConnectionUrl} from "#src/api";
+import {COOKIE_OPTIONS} from "#src/constants";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 
-const connectGithub = async () => {
-	let url = null;
+const redirectToGithubConnectionUrl = async () => {
+	const {url, CSRFToken} = await requestGithubConnectionUrl();
 
-	try {
-		const accessToken = cookies().get("accessToken")?.value;
-		if (!accessToken) {
-			throw new Error();
-		}
+	const cookieStore = cookies();
+	cookieStore.set("CSRFToken", CSRFToken, {...COOKIE_OPTIONS, sameSite: "lax"});
 
-		url = await requestGithubConnect();
-	} catch (e) {
-		console.log(e);
-	}
-
-	if (url) {
-		redirect(url);
-	}
+	redirect(url);
 };
 
-export {connectGithub};
+export {redirectToGithubConnectionUrl};

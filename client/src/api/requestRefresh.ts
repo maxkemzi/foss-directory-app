@@ -1,5 +1,3 @@
-import {cookies} from "next/headers";
-import ApiError from "./ApiError";
 import fetchApi from "./fetchApi";
 import {User} from "./types";
 
@@ -8,20 +6,12 @@ interface Response {
 	user: User;
 }
 
-const requestRefresh = async (): Promise<Response> => {
-	const cookieStore = cookies();
-
-	const refreshToken = cookieStore.get("refreshToken")?.value;
-	if (!refreshToken) {
-		throw new ApiError(401, "Not authorized.");
-	}
-
+const requestRefresh = async (refreshToken: string): Promise<Response> => {
 	const response = await fetchApi("/auth/refresh", {
 		method: "POST",
 		headers: {Cookie: `refreshToken=${refreshToken}`},
 		cache: "no-store"
 	});
-
 	return response.json();
 };
 

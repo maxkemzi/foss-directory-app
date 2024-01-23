@@ -18,7 +18,6 @@ const requestLogin = async (body: Body): Promise<Response> => {
 		body: JSON.stringify(body),
 		cache: "no-store"
 	});
-
 	return response.json();
 };
 

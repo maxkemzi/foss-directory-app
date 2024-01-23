@@ -1,13 +1,15 @@
 import {ApiError} from "#src/lib";
-import {GithubService} from "#src/services";
+import {GithubService, TokenService} from "#src/services";
 import {NextFunction, Request, Response} from "express";
 
 class GithubController {
 	static async authenticate(req: Request, res: Response, next: NextFunction) {
 		try {
-			const url = await GithubService.getAuthUrl();
+			const {id} = res.locals.user!;
 
-			res.redirect(url);
+			const {url, CSRFToken} = await GithubService.getAuthUrl(id);
+
+			res.json({url, CSRFToken});
 		} catch (e) {
 			next(e);
 		}
@@ -15,8 +17,20 @@ class GithubController {
 
 	static async callback(req: Request, res: Response, next: NextFunction) {
 		try {
-			const {id} = res.locals.user!;
-			const {code} = req.query;
+			const {code, state} = req.query;
+
+			if (!state) {
+				throw new ApiError(401, "Unauthorized.");
+			}
+
+			if (typeof state !== "string") {
+				throw new ApiError(404, 'Invalid "state" query parameter type.');
+			}
+
+			const payload = TokenService.verifyCSRF<{userId: number}>(state);
+			if (!payload) {
+				throw new ApiError(401, "Unauthorized.");
+			}
 
 			if (!code) {
 				throw new ApiError(404, 'The "code" query parameter is not provided.');
@@ -26,9 +40,9 @@ class GithubController {
 				throw new ApiError(404, 'Invalid "code" query parameter type.');
 			}
 
-			await GithubService.createConnection(id, code);
+			await GithubService.createConnection(payload.userId, code);
 
-			res.json({success: true});
+			res.redirect(`${process.env.CLIENT_URL}/success?token=${state}`);
 		} catch (e) {
 			next(e);
 		}

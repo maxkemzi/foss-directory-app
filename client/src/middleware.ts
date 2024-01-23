@@ -1,6 +1,5 @@
-import {cookies} from "next/headers";
 import {NextRequest, NextResponse} from "next/server";
-import {requestCheck, requestRefresh} from "./api";
+import {ApiError, requestCheck, requestRefresh} from "./api";
 import {
 	APP_ROUTES,
 	AUTH_ROUTES,
@@ -15,21 +14,47 @@ const middleware = async (req: NextRequest) => {
 		return NextResponse.next();
 	}
 
-	const accessToken = cookies().get("accessToken")?.value;
+	const isSuccessRoute = req.nextUrl.pathname === Route.SUCCESS;
+	if (isSuccessRoute) {
+		const {searchParams} = req.nextUrl;
+		const token = searchParams.get("token");
+		const CSRFToken = req.cookies.get("CSRFToken")?.value;
+
+		if (!token || !CSRFToken || token !== CSRFToken) {
+			return NextResponse.json({message: "Access denied."}, {status: 403});
+		}
+
+		const response = NextResponse.next();
+		response.cookies.delete("CSRFToken");
+		return response;
+	}
+
+	const isAuth = req.cookies.get("isAuth")?.value;
+
 	const routeIsProtected = PROTECTED_ROUTES.includes(req.nextUrl.pathname);
-	if (!accessToken && routeIsProtected) {
+	if (!isAuth && routeIsProtected) {
 		return NextResponse.redirect(new URL(Route.LOGIN, req.url));
 	}
 
 	const isAppRoute = APP_ROUTES.includes(req.nextUrl.pathname);
-	if (accessToken && isAppRoute) {
+	if (isAuth && isAppRoute) {
 		try {
-			const tokenIsValid = await requestCheck();
+			const accessToken = req.cookies.get("accessToken")?.value;
+			if (!accessToken) {
+				throw new ApiError(401, "Not authorized.");
+			}
+
+			const tokenIsValid = await requestCheck(accessToken);
 			if (tokenIsValid) {
 				return NextResponse.next();
 			}
 
-			const {user, tokens} = await requestRefresh();
+			const refreshToken = req.cookies.get("refreshToken")?.value;
+			if (!refreshToken) {
+				throw new ApiError(401, "Not authorized.");
+			}
+
+			const {user, tokens} = await requestRefresh(refreshToken);
 
 			const response = NextResponse.next();
 			response.cookies.set("user", JSON.stringify(user), COOKIE_OPTIONS);
@@ -39,7 +64,13 @@ const middleware = async (req: NextRequest) => {
 			return response;
 		} catch (e) {
 			console.log(e);
-			return NextResponse.redirect(new URL(Route.LOGIN, req.url));
+
+			const response = NextResponse.redirect(new URL(Route.LOGIN, req.url));
+			response.cookies.delete("user");
+			response.cookies.delete("accessToken");
+			response.cookies.delete("refreshToken");
+			response.cookies.delete("isAuth");
+			return response;
 		}
 	}
 
