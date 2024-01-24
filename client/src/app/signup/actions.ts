@@ -1,9 +1,8 @@
 "use server";
 
 import {ApiError, requestSignup} from "#src/api";
-import {COOKIE_OPTIONS, Route} from "#src/constants";
+import {COOKIE_OPTIONS} from "#src/constants";
 import {cookies} from "next/headers";
-import {redirect} from "next/navigation";
 import {INITIAL_FORM_STATE, VALIDATION_SCHEMA} from "./constants";
 
 const signUp = async (prevState: any, formData: FormData) => {
@@ -17,7 +16,7 @@ const signUp = async (prevState: any, formData: FormData) => {
 	if (!validatedFields.success) {
 		return {
 			...INITIAL_FORM_STATE,
-			errors: validatedFields.error.flatten().fieldErrors
+			fieldErrors: validatedFields.error.flatten().fieldErrors
 		};
 	}
 
@@ -29,16 +28,16 @@ const signUp = async (prevState: any, formData: FormData) => {
 		cookieStore.set("accessToken", tokens.access, COOKIE_OPTIONS);
 		cookieStore.set("refreshToken", tokens.refresh, COOKIE_OPTIONS);
 		cookieStore.set("isAuth", "true", COOKIE_OPTIONS);
+
+		return {...INITIAL_FORM_STATE, success: true};
 	} catch (e) {
 		console.log(e);
 
 		return {
 			...INITIAL_FORM_STATE,
-			status: e instanceof ApiError ? e.message : "Something went wrong."
+			error: e instanceof ApiError ? e.message : "Something went wrong."
 		};
 	}
-
-	return redirect(Route.HOME);
 };
 
 export {signUp};

@@ -26,7 +26,7 @@
 			"error",
 			{
 				"html": "ignore",
-				"exceptions": ["Input", "Modal"]
+				"exceptions": ["Input", "Modal", "ModalComponent"]
 			}
 		]
 	}

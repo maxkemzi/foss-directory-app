@@ -4,21 +4,30 @@ import {SubmitButton} from "#src/components";
 import {PasswordInput} from "#src/components/ui";
 import {Route} from "#src/constants";
 import {Input, Link} from "@nextui-org/react";
+import {useRouter} from "next/navigation";
+import {useEffect} from "react";
 import {useFormState} from "react-dom";
 import {logIn} from "./actions";
 import {INITIAL_FORM_STATE} from "./constants";
 
 const Login = () => {
+	const router = useRouter();
 	const [state, formAction] = useFormState(logIn, INITIAL_FORM_STATE);
+
+	useEffect(() => {
+		if (state.success) {
+			router.push(Route.HOME);
+		}
+	}, [router, state.success]);
 
 	return (
 		<main className="flex flex-grow">
 			<section className="flex flex-grow items-center justify-center">
 				<div className="max-w-[325px] w-full">
 					<h1 className="text-5xl mb-6">Login</h1>
-					{state?.status ? (
+					{state?.error ? (
 						<div className="mb-4 text-danger">
-							<p>{state.status}</p>
+							<p>{state.error}</p>
 						</div>
 					) : null}
 					<form className="mb-2" action={formAction}>
@@ -27,13 +36,13 @@ const Login = () => {
 								label="Email"
 								placeholder="Enter your email"
 								name="email"
-								isInvalid={Object.hasOwn(state.errors, "email")}
-								errorMessage={state.errors?.email?.[0]}
+								isInvalid={Object.hasOwn(state.fieldErrors, "email")}
+								errorMessage={state.fieldErrors?.email?.[0]}
 							/>
 							<PasswordInput
 								name="password"
-								isInvalid={Object.hasOwn(state.errors, "password")}
-								errorMessage={state.errors?.password?.[0]}
+								isInvalid={Object.hasOwn(state.fieldErrors, "password")}
+								errorMessage={state.fieldErrors?.password?.[0]}
 							/>
 						</div>
 						<SubmitButton>Log In</SubmitButton>

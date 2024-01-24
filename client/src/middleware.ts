@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from "next/server";
-import {ApiError, requestCheck, requestRefresh} from "./api";
+import {requestRefresh} from "./api";
 import {
 	APP_ROUTES,
 	AUTH_ROUTES,
@@ -30,30 +30,15 @@ const middleware = async (req: NextRequest) => {
 	}
 
 	const isAuth = req.cookies.get("isAuth")?.value;
-
 	const routeIsProtected = PROTECTED_ROUTES.includes(req.nextUrl.pathname);
 	if (!isAuth && routeIsProtected) {
 		return NextResponse.redirect(new URL(Route.LOGIN, req.url));
 	}
 
+	const refreshToken = req.cookies.get("refreshToken")?.value;
 	const isAppRoute = APP_ROUTES.includes(req.nextUrl.pathname);
-	if (isAuth && isAppRoute) {
+	if (refreshToken && isAppRoute) {
 		try {
-			const accessToken = req.cookies.get("accessToken")?.value;
-			if (!accessToken) {
-				throw new ApiError(401, "Not authorized.");
-			}
-
-			const tokenIsValid = await requestCheck(accessToken);
-			if (tokenIsValid) {
-				return NextResponse.next();
-			}
-
-			const refreshToken = req.cookies.get("refreshToken")?.value;
-			if (!refreshToken) {
-				throw new ApiError(401, "Not authorized.");
-			}
-
 			const {user, tokens} = await requestRefresh(refreshToken);
 
 			const response = NextResponse.next();

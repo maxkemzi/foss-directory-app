@@ -1,22 +1,30 @@
 "use client";
 
+import {Route} from "#src/constants";
 import {
+	Avatar,
 	Dropdown,
 	DropdownItem,
 	DropdownMenu,
-	DropdownTrigger,
-	Avatar
+	DropdownTrigger
 } from "@nextui-org/react";
+import {useRouter} from "next/navigation";
 import {Key} from "react";
 import {logOut} from "./actions";
 
 const UserDropdown = ({user}: {user: any}) => {
+	const router = useRouter();
+
 	const handleAction = (key: Key) => {
 		switch (key) {
 			case "log_out":
-				return logOut();
+				logOut();
+				break;
+			case "settings":
+				router.push(Route.SETTINGS);
+				break;
 			default:
-				return undefined;
+				break;
 		}
 	};
 
@@ -44,6 +52,7 @@ const UserDropdown = ({user}: {user: any}) => {
 				</DropdownItem>
 				<DropdownItem key="create_project">Create Project</DropdownItem>
 				<DropdownItem key="my_projects">My Projects</DropdownItem>
+				<DropdownItem key="settings">Settings</DropdownItem>
 				<DropdownItem key="log_out" color="danger">
 					Log Out
 				</DropdownItem>

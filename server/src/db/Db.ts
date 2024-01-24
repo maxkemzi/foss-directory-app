@@ -30,6 +30,7 @@ class Db {
 			email TEXT UNIQUE NOT NULL,
 			password TEXT NOT NULL,
 			avatar TEXT,
+			github_connected BOOLEAN DEFAULT FALSE,
 			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
@@ -82,6 +83,43 @@ class Db {
 			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
+		`,
+		// Create triggers for github_connected column
+		`
+		CREATE OR REPLACE FUNCTION update_github_connected()
+		RETURNS TRIGGER AS $$
+		BEGIN
+				UPDATE users
+				SET github_connected = TRUE
+				WHERE id = NEW.user_id;
+		
+				RETURN NEW;
+		END;
+		$$ LANGUAGE plpgsql;
+		`,
+		`
+		CREATE OR REPLACE TRIGGER github_connections_after_insert
+		AFTER INSERT ON github_connections
+		FOR EACH ROW
+		EXECUTE FUNCTION update_github_connected();
+		`,
+		`
+		CREATE OR REPLACE FUNCTION update_github_disconnected()
+		RETURNS TRIGGER AS $$
+		BEGIN
+				UPDATE users
+				SET github_connected = FALSE
+				WHERE id = OLD.user_id;
+		
+				RETURN OLD;
+		END;
+		$$ LANGUAGE plpgsql;
+		`,
+		`
+		CREATE OR REPLACE TRIGGER github_connections_after_delete
+		AFTER DELETE ON github_connections
+		FOR EACH ROW
+		EXECUTE FUNCTION update_github_disconnected();
 		`,
 		// Setting up automatic updated_at timestamp
 		`

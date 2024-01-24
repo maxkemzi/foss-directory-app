@@ -3,7 +3,8 @@ const Route = {
 	SIGNUP: "/signup",
 	LOGIN: "/login",
 	PROJECTS: "/projects",
-	SUCCESS: "/success"
+	SUCCESS: "/success",
+	SETTINGS: "/settings"
 };
 
 export default Route;

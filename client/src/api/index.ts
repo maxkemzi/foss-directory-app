@@ -7,6 +7,7 @@ import requestLogout from "./requestLogout";
 import requestProjects from "./requestProjects";
 import requestRefresh from "./requestRefresh";
 import requestSignup from "./requestSignup";
+import requestAccountDeletion from "./requestAccountDeletion";
 
 export * from "./types";
 export {
@@ -18,5 +19,6 @@ export {
 	requestLogout,
 	requestProjects,
 	requestRefresh,
-	requestSignup
+	requestSignup,
+	requestAccountDeletion
 };

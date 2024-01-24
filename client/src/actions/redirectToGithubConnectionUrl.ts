@@ -14,4 +14,4 @@ const redirectToGithubConnectionUrl = async () => {
 	redirect(url);
 };
 
-export {redirectToGithubConnectionUrl};
+export default redirectToGithubConnectionUrl;

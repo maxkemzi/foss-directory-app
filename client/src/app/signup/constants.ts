@@ -2,8 +2,9 @@ import {ValidationSchema} from "#src/constants";
 import {z} from "zod";
 
 interface FormState {
-	status: string | null;
-	errors: {
+	success: boolean;
+	error: string | null;
+	fieldErrors: {
 		username?: string[];
 		email?: string[];
 		password?: string[];
@@ -12,8 +13,9 @@ interface FormState {
 }
 
 const INITIAL_FORM_STATE: FormState = {
-	status: null,
-	errors: {}
+	success: false,
+	error: null,
+	fieldErrors: {}
 };
 
 const VALIDATION_SCHEMA = z

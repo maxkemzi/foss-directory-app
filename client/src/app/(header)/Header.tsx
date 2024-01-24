@@ -1,12 +1,12 @@
-import {Container} from "#src/components/ui";
+import {User} from "#src/api";
 import {Route} from "#src/constants";
 import {
+	Button,
+	Link,
 	Navbar,
 	NavbarBrand,
 	NavbarContent,
-	NavbarItem,
-	Link,
-	Button
+	NavbarItem
 } from "@nextui-org/react";
 import classNames from "classnames";
 import {cookies} from "next/headers";
@@ -20,46 +20,44 @@ interface Props {
 
 const Header: FC<Props> = ({isAbsolute}) => {
 	const cookieStore = cookies();
-	const isAuth = cookieStore.get("isAuth")?.value;
 	const user = cookieStore.get("user")?.value;
-	const parsedUser = user ? JSON.parse(user) : null;
+	const parsedUser = user ? (JSON.parse(user) as User) : null;
 
 	return (
-		<header
-			className={classNames("border-b border-divider", {
-				"absolute top-0 left-0 right-0": isAbsolute
-			})}
+		<Navbar
+			maxWidth="full"
+			isBordered
+			classNames={{
+				base: classNames({"absolute top-0 left-0": isAbsolute}),
+				wrapper: "max-w-[1440px]"
+			}}
 		>
-			<Container>
-				<Navbar maxWidth="full">
-					<NavbarBrand>
-						<p className="font-bold text-inherit">FOSSFINDER</p>
-					</NavbarBrand>
-					<NavbarCenter />
-					<NavbarContent justify="end">
-						{isAuth ? (
-							<UserDropdown user={parsedUser} />
-						) : (
-							<>
-								<NavbarItem className="hidden lg:flex">
-									<Link href={Route.LOGIN}>Log In</Link>
-								</NavbarItem>
-								<NavbarItem>
-									<Button
-										as={Link}
-										color="primary"
-										href={Route.SIGNUP}
-										variant="flat"
-									>
-										Sign Up
-									</Button>
-								</NavbarItem>
-							</>
-						)}
-					</NavbarContent>
-				</Navbar>
-			</Container>
-		</header>
+			<NavbarBrand>
+				<p className="font-bold text-inherit">FOSSFINDER</p>
+			</NavbarBrand>
+			<NavbarCenter />
+			<NavbarContent justify="end">
+				{parsedUser ? (
+					<UserDropdown user={parsedUser} />
+				) : (
+					<>
+						<NavbarItem className="hidden lg:flex">
+							<Link href={Route.LOGIN}>Log In</Link>
+						</NavbarItem>
+						<NavbarItem>
+							<Button
+								as={Link}
+								color="primary"
+								href={Route.SIGNUP}
+								variant="flat"
+							>
+								Sign Up
+							</Button>
+						</NavbarItem>
+					</>
+				)}
+			</NavbarContent>
+		</Navbar>
 	);
 };
 

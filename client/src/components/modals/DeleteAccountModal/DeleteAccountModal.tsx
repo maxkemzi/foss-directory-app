@@ -1,4 +1,3 @@
-import {redirectToGithubConnectionUrl} from "#src/actions";
 import {
 	Button,
 	Modal,
@@ -9,28 +8,29 @@ import {
 } from "@nextui-org/react";
 import {FC} from "react";
 import {CustomModalProps} from "../types";
+import {deleteAccount} from "./actions";
 
-const GithubModal: FC<CustomModalProps> = ({isOpen, onClose}) => (
+const DeleteAccountModal: FC<CustomModalProps> = ({isOpen, onClose}) => (
 	<Modal isOpen={isOpen} onClose={onClose}>
 		<ModalContent>
 			{handleClose => (
 				<>
 					<ModalHeader className="flex flex-col gap-1">
-						Github Connection
+						Account Deletion
 					</ModalHeader>
 					<ModalBody>
 						<p>
-							You need to connect your Github account in order to create
-							projects. You can do it later in the settings.
+							Are you sure you want to delete your account? All your data will
+							be lost forever.
 						</p>
 					</ModalBody>
 					<ModalFooter>
-						<Button color="danger" variant="light" onPress={handleClose}>
-							Close
+						<Button variant="light" onPress={handleClose}>
+							Cancel
 						</Button>
-						<form action={redirectToGithubConnectionUrl}>
-							<Button type="submit" color="primary">
-								Connect
+						<form action={deleteAccount}>
+							<Button type="submit" color="danger">
+								Delete
 							</Button>
 						</form>
 					</ModalFooter>
@@ -40,4 +40,4 @@ const GithubModal: FC<CustomModalProps> = ({isOpen, onClose}) => (
 	</Modal>
 );
 
-export default GithubModal;
+export default DeleteAccountModal;

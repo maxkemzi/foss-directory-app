@@ -12,6 +12,7 @@ interface User {
 	id: number;
 	username: string;
 	email: string;
+	githubIsConnected: boolean;
 }
 
 export type {Project, User};

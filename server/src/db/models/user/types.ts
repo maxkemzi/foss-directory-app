@@ -3,6 +3,7 @@ interface User {
 	username: string;
 	email: string;
 	password: string;
+	github_connected: boolean;
 	created_at: string;
 	updated_at: string;
 }
