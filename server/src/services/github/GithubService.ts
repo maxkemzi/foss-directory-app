@@ -8,7 +8,14 @@ class GithubService {
 
 	static async getAuthUrl(userId: number) {
 		const CSRFToken = TokenService.generateCSRF({userId});
-		const url = `https://github.com/login/oauth/authorize?client_id=${GithubService.#CLIENT_ID}&redirect_uri=http://localhost:5000/api/github/callback&state=${CSRFToken}`;
+		const redirectUri = `${process.env.SERVER_URL}/api/github/callback`;
+
+		const searchParams = new URLSearchParams();
+		searchParams.set("client_id", GithubService.#CLIENT_ID);
+		searchParams.set("state", CSRFToken);
+		searchParams.set("redirect_uri", redirectUri);
+
+		const url = `https://github.com/login/oauth/authorize?${searchParams.toString()}`;
 		return {url, CSRFToken};
 	}
 

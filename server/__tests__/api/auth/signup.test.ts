@@ -23,7 +23,12 @@ describe("POST /api/auth/signup", () => {
 				access: expect.any(String),
 				refresh: expect.any(String)
 			},
-			user: {id: expect.any(Number), username: user.username, email: user.email}
+			user: {
+				id: expect.any(Number),
+				username: user.username,
+				email: user.email,
+				githubIsConnected: false
+			}
 		});
 	});
 

@@ -1,5 +1,4 @@
 import ApiError from "./ApiError";
-import requestCheck from "./requestCheck";
 import requestGithubConnectionUrl from "./requestGithubConnectionUrl";
 import requestGithubConnection from "./requestGithubConnection";
 import requestLogin from "./requestLogin";
@@ -12,7 +11,6 @@ import requestAccountDeletion from "./requestAccountDeletion";
 export * from "./types";
 export {
 	ApiError,
-	requestCheck,
 	requestGithubConnectionUrl,
 	requestGithubConnection,
 	requestLogin,

@@ -83,15 +83,6 @@ class AuthService {
 		return {user: {...userDto}, tokens};
 	}
 
-	static async check(accessToken: string) {
-		const userPayload = TokenService.verifyAccess<UserDto>(accessToken);
-		if (!userPayload) {
-			return false;
-		}
-
-		return true;
-	}
-
 	static async logout(refreshToken: RefreshToken["token"]) {
 		if (!refreshToken) {
 			throw new ApiError(401, "Unauthorized.");

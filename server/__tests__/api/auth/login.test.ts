@@ -28,7 +28,8 @@ describe("POST /api/auth/login", () => {
 		const user = {
 			username: "username",
 			email: "u@gmail.com",
-			password: "password"
+			password: "password",
+			githubIsConnected: false
 		};
 		await setup(user);
 
@@ -45,7 +46,12 @@ describe("POST /api/auth/login", () => {
 				access: expect.any(String),
 				refresh: expect.any(String)
 			},
-			user: {id: expect.any(Number), username: user.username, email: user.email}
+			user: {
+				id: expect.any(Number),
+				username: user.username,
+				email: user.email,
+				githubIsConnected: user.githubIsConnected
+			}
 		});
 	});
 

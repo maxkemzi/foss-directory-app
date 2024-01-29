@@ -31,26 +31,20 @@ class TokenService {
 	}
 
 	static verifyAccess<T>(token: string) {
-		try {
-			const payload = jwt.verify(token, TokenService.#ACCESS_SECRET) as T;
-			return payload;
-		} catch (e) {
-			return null;
-		}
+		return TokenService.#verify<T>(token, TokenService.#ACCESS_SECRET);
 	}
 
 	static verifyRefresh<T>(token: string) {
-		try {
-			const payload = jwt.verify(token, TokenService.#REFRESH_SECRET) as T;
-			return payload;
-		} catch (e) {
-			return null;
-		}
+		return TokenService.#verify<T>(token, TokenService.#REFRESH_SECRET);
 	}
 
 	static verifyCSRF<T>(token: string) {
+		return TokenService.#verify<T>(token, TokenService.#CSRF_SECRET);
+	}
+
+	static #verify<T>(token: string, secret: string) {
 		try {
-			const payload = jwt.verify(token, TokenService.#CSRF_SECRET) as T;
+			const payload = jwt.verify(token, secret) as T;
 			return payload;
 		} catch (e) {
 			return null;
