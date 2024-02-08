@@ -56,13 +56,10 @@ class Db {
 		`
 		CREATE TABLE IF NOT EXISTS projects (
 			id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-			owner_id INT UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+			owner_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 			name TEXT UNIQUE NOT NULL,
 			description TEXT NOT NULL,
-			url TEXT NOT NULL,
-			language TEXT NOT NULL,
-			stars_count INT NOT NULL,
-			last_updated TIMESTAMP NOT NULL,
+			repo_url TEXT NOT NULL,
 			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
@@ -76,10 +73,19 @@ class Db {
 		);
 		`,
 		`
+		CREATE TABLE IF NOT EXISTS custom_tags (
+			id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+			project_id INT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+			name TEXT UNIQUE NOT NULL,
+			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+		);
+		`,
+		`
 		CREATE TABLE IF NOT EXISTS projects_tags (
 			id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-			project_id INT UNIQUE NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-			tag_id INT UNIQUE NOT NULL REFERENCES tags(id),
+			project_id INT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+			tag_id INT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
 			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
@@ -175,15 +181,15 @@ class Db {
 		"TRUNCATE projects RESTART IDENTITY CASCADE;"
 	];
 
-	static async init() {
-		return Db.#execQueriesInTransaction(Db.#INIT_QUERIES);
+	static init() {
+		return Db.#execTransaction(Db.#INIT_QUERIES);
 	}
 
 	static cleanUp() {
-		return Db.#execQueriesInTransaction(Db.#CLEANUP_QUERIES);
+		return Db.#execTransaction(Db.#CLEANUP_QUERIES);
 	}
 
-	static async #execQueriesInTransaction(queries: string[]) {
+	static async #execTransaction(queries: string[]) {
 		const client = await pool.connect();
 
 		try {
@@ -206,6 +212,10 @@ class Db {
 
 	static query<T extends object>(text: string, params?: any) {
 		return pool.query<T>(text, params);
+	}
+
+	static connect() {
+		return pool.connect();
 	}
 }
 

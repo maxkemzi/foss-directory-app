@@ -1,5 +1,6 @@
-import {NextFunction, Request, Response} from "express";
+import {ApiError} from "#src/lib";
 import {AuthService} from "#src/services";
+import {NextFunction, Request, Response} from "express";
 
 class AuthController {
 	static async signup(req: Request, res: Response, next: NextFunction) {
@@ -36,6 +37,9 @@ class AuthController {
 	static async refresh(req: Request, res: Response, next: NextFunction) {
 		try {
 			const {refreshToken} = req.cookies;
+			if (!refreshToken) {
+				throw new ApiError(401, "Unauthorized.");
+			}
 
 			const {user, tokens} = await AuthService.refresh(refreshToken);
 
@@ -48,6 +52,9 @@ class AuthController {
 	static async logout(req: Request, res: Response, next: NextFunction) {
 		try {
 			const {refreshToken} = req.cookies;
+			if (!refreshToken) {
+				throw new ApiError(401, "Unauthorized.");
+			}
 
 			await AuthService.logout(refreshToken);
 

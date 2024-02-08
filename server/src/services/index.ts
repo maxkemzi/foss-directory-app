@@ -1,13 +1,13 @@
 import AuthService from "./auth/AuthService";
-import TokenService from "./token/TokenService";
+import IntegrationsService from "./integrations/IntegrationsService";
+import JwtTokensService from "./jwtTokens/JwtTokensService";
 import ProjectsService from "./projects/ProjectsService";
-import GithubService from "./github/GithubService";
-import AccountService from "./account/AccountService";
+import UsersService from "./users/UsersService";
 
 export {
 	AuthService,
-	TokenService,
+	IntegrationsService,
 	ProjectsService,
-	GithubService,
-	AccountService
+	JwtTokensService,
+	UsersService
 };

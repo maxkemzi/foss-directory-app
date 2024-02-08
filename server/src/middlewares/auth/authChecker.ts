@@ -1,7 +1,7 @@
-import {NextFunction, Request, Response} from "express";
-import {ApiError} from "#src/lib";
-import {TokenService} from "#src/services";
 import {UserDto} from "#src/dtos";
+import {ApiError} from "#src/lib";
+import {JwtTokensService} from "#src/services";
+import {NextFunction, Request, Response} from "express";
 
 const authChecker = (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -15,7 +15,7 @@ const authChecker = (req: Request, res: Response, next: NextFunction) => {
 			throw new Error();
 		}
 
-		const userPayload = TokenService.verifyAccess<UserDto>(accessToken);
+		const userPayload = JwtTokensService.verifyAccess<UserDto>(accessToken);
 		if (!userPayload) {
 			throw new Error();
 		}

@@ -1,5 +1,5 @@
 import "express";
-import {UserDto} from "./dtos";
+import {UserDto} from "#src/dtos";
 
 declare module "express" {
 	export interface Response {

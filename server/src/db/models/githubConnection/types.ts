@@ -1,4 +1,4 @@
-interface GithubConnection {
+interface GithubConnectionFromDb {
 	id: number;
 	user_id: number;
 	token: string;
@@ -6,6 +6,21 @@ interface GithubConnection {
 	updated_at: string;
 }
 
-type GithubConnectionPayload = Pick<GithubConnection, "user_id" | "token">;
+interface GithubConnectionDocumentData {
+	id: number;
+	userId: number;
+	token: string;
+	createdAt: string;
+	updatedAt: string;
+}
 
-export type {GithubConnection, GithubConnectionPayload};
+interface GithubConnectionPayload {
+	userId: number;
+	token: string;
+}
+
+export type {
+	GithubConnectionFromDb,
+	GithubConnectionDocumentData,
+	GithubConnectionPayload
+};

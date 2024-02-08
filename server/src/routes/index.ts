@@ -1,14 +1,14 @@
 import {Router} from "express";
 import authRouter from "./auth/authRouter";
 import projectsRouter from "./projects/projectsRouter";
-import githubRouter from "./github/githubRouter";
-import accountRouter from "./account/accountRouter";
+import integrationsRouter from "./integrations/integrationsRouter";
+import usersRouter from "./users/usersRouter";
 
 const router = Router();
 
 router.use("/auth", authRouter);
 router.use("/projects", projectsRouter);
-router.use("/github", githubRouter);
-router.use("/account", accountRouter);
+router.use("/integrations", integrationsRouter);
+router.use("/users", usersRouter);
 
 export default router;

@@ -1,4 +1,4 @@
-interface RefreshToken {
+interface RefreshTokenFromDb {
 	id: number;
 	user_id: number;
 	token: string;
@@ -6,6 +6,17 @@ interface RefreshToken {
 	updated_at: string;
 }
 
-type RefreshTokenPayload = Pick<RefreshToken, "user_id" | "token">;
+interface RefreshTokenDocumentData {
+	id: number;
+	userId: number;
+	token: string;
+	createdAt: string;
+	updatedAt: string;
+}
 
-export type {RefreshToken, RefreshTokenPayload};
+interface RefreshTokenPayload {
+	userId: number;
+	token: string;
+}
+
+export type {RefreshTokenFromDb, RefreshTokenDocumentData, RefreshTokenPayload};

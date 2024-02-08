@@ -1,24 +1,34 @@
 import Db from "../../Db";
-import {GithubConnection, GithubConnectionPayload} from "./types";
+import GithubConnectionDocument from "./GithubConnectionDto";
+import {GithubConnectionFromDb, GithubConnectionPayload} from "./types";
 
 class GithubConnectionModel {
 	static async create({
-		user_id,
+		userId,
 		token
-	}: GithubConnectionPayload): Promise<GithubConnection> {
-		const {rows} = await Db.query<GithubConnection>(
+	}: GithubConnectionPayload): Promise<GithubConnectionDocument> {
+		const {rows} = await Db.query<GithubConnectionFromDb>(
 			"INSERT INTO github_connections(user_id, token) VALUES($1, $2) RETURNING *;",
-			[user_id, token]
+			[userId, token]
 		);
-		return rows[0];
+		const connection = rows[0];
+
+		return new GithubConnectionDocument(connection);
 	}
 
-	static async findByUserId(userId: number): Promise<GithubConnection | null> {
-		const {rows} = await Db.query<GithubConnection>(
+	static async getByUserId(
+		userId: number
+	): Promise<GithubConnectionDocument | null> {
+		const {rows} = await Db.query<GithubConnectionFromDb>(
 			"SELECT * FROM github_connections WHERE user_id=$1;",
 			[userId]
 		);
-		return rows[0];
+		const connection = rows[0];
+		if (!connection) {
+			return null;
+		}
+
+		return new GithubConnectionDocument(connection);
 	}
 }
 

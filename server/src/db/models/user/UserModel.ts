@@ -1,39 +1,63 @@
 import Db from "../../Db";
-import {User, UserPayload} from "./types";
+import UserDocument from "./UserDocument";
+import {UserFromDb, UserPayload} from "./types";
 
 class UserModel {
-	static async create({username, email, password}: UserPayload): Promise<User> {
-		const {rows} = await Db.query<User>(
+	static async create({
+		username,
+		email,
+		password
+	}: UserPayload): Promise<UserDocument> {
+		const {rows} = await Db.query<UserFromDb>(
 			"INSERT INTO users(username, email, password) VALUES($1, $2, $3) RETURNING *;",
 			[username, email, password]
 		);
-		return rows[0];
+		const user = rows[0];
+
+		return new UserDocument(user);
 	}
 
-	static async findById(id: User["id"]) {
-		const {rows} = await Db.query<User>("SELECT * FROM users WHERE id=$1;", [
-			id
-		]);
-		return rows[0];
+	static async getById(id: number): Promise<UserDocument | null> {
+		const {rows} = await Db.query<UserFromDb>(
+			"SELECT * FROM users WHERE id=$1;",
+			[id]
+		);
+		const user = rows[0];
+		if (!user) {
+			return null;
+		}
+
+		return new UserDocument(user);
 	}
 
-	static async findByUsername(username: User["username"]) {
-		const {rows} = await Db.query<User>(
+	static async getByUsername(username: string): Promise<UserDocument | null> {
+		const {rows} = await Db.query<UserFromDb>(
 			"SELECT * FROM users WHERE username=$1;",
 			[username]
 		);
-		return rows[0];
+		const user = rows[0];
+		if (!user) {
+			return null;
+		}
+
+		return new UserDocument(user);
 	}
 
-	static async findByEmail(email: User["email"]) {
-		const {rows} = await Db.query<User>("SELECT * FROM users WHERE email=$1;", [
-			email
-		]);
-		return rows[0];
+	static async getByEmail(email: string): Promise<UserDocument | null> {
+		const {rows} = await Db.query<UserFromDb>(
+			"SELECT * FROM users WHERE email=$1;",
+			[email]
+		);
+		const user = rows[0];
+		if (!user) {
+			return null;
+		}
+
+		return new UserDocument(user);
 	}
 
-	static async deleteById(id: User["id"]) {
-		await Db.query<User>("DELETE FROM users WHERE id=$1;", [id]);
+	static async deleteById(id: number) {
+		await Db.query<UserFromDb>("DELETE FROM users WHERE id=$1;", [id]);
 	}
 }
 

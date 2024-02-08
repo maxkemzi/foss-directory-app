@@ -1,4 +1,4 @@
-import {User} from "#src/db/models";
+import {UserDocumentData} from "#src/db/models";
 
 class UserDto {
 	id: number;
@@ -6,11 +6,11 @@ class UserDto {
 	email: string;
 	githubIsConnected: boolean;
 
-	constructor(model: User) {
-		this.id = model.id;
-		this.username = model.username;
-		this.email = model.email;
-		this.githubIsConnected = model.github_connected;
+	constructor(doc: UserDocumentData) {
+		this.id = doc.id;
+		this.username = doc.username;
+		this.email = doc.email;
+		this.githubIsConnected = doc.githubIsConnected;
 	}
 }
 

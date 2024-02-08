@@ -1,17 +1,17 @@
 import {GithubConnectionModel} from "#src/db/models";
 import {ApiError} from "#src/lib";
-import TokenService from "../token/TokenService";
+import TokenService from "../jwtTokens/JwtTokensService";
 
-class GithubService {
-	static #CLIENT_ID = process.env.GITHUB_CLIENT_ID as string;
-	static #CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET as string;
+class IntegrationsService {
+	static #GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID as string;
+	static #GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET as string;
 
-	static async getAuthUrl(userId: number) {
+	static async getGithubAuthUrl(userId: number) {
 		const CSRFToken = TokenService.generateCSRF({userId});
-		const redirectUri = `${process.env.SERVER_URL}/api/github/callback`;
+		const redirectUri = `${process.env.SERVER_URL}/api/integrations/github`;
 
 		const searchParams = new URLSearchParams();
-		searchParams.set("client_id", GithubService.#CLIENT_ID);
+		searchParams.set("client_id", IntegrationsService.#GITHUB_CLIENT_ID);
 		searchParams.set("state", CSRFToken);
 		searchParams.set("redirect_uri", redirectUri);
 
@@ -19,15 +19,18 @@ class GithubService {
 		return {url, CSRFToken};
 	}
 
-	static async createConnection(userId: number, code: string) {
-		const connection = await GithubConnectionModel.findByUserId(userId);
+	static async createGithubConnection(userId: number, code: string) {
+		const connection = await GithubConnectionModel.getByUserId(userId);
 		if (connection) {
 			throw new ApiError(400, "Your account had already been connected.");
 		}
 
 		const searchParams = new URLSearchParams();
-		searchParams.set("client_id", GithubService.#CLIENT_ID);
-		searchParams.set("client_secret", GithubService.#CLIENT_SECRET);
+		searchParams.set("client_id", IntegrationsService.#GITHUB_CLIENT_ID);
+		searchParams.set(
+			"client_secret",
+			IntegrationsService.#GITHUB_CLIENT_SECRET
+		);
 		searchParams.set("code", code);
 
 		const response = await fetch(
@@ -46,15 +49,10 @@ class GithubService {
 
 		const {access_token: accessToken} = await response.json();
 		await GithubConnectionModel.create({
-			user_id: userId,
+			userId,
 			token: accessToken
 		});
 	}
-
-	static async isConnected(userId: number) {
-		const connection = await GithubConnectionModel.findByUserId(userId);
-		return connection != null;
-	}
 }
 
-export default GithubService;
+export default IntegrationsService;

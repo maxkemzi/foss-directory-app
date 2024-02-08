@@ -1,4 +1,4 @@
-interface User {
+interface UserFromDb {
 	id: number;
 	username: string;
 	email: string;
@@ -8,6 +8,22 @@ interface User {
 	updated_at: string;
 }
 
-type UserPayload = Pick<User, "username" | "email" | "password">;
+interface UserDocumentData {
+	id: UserFromDb["id"];
+	username: UserFromDb["username"];
+	email: UserFromDb["email"];
+	password: UserFromDb["password"];
+	githubIsConnected: UserFromDb["github_connected"];
+	createdAt: UserFromDb["created_at"];
+	updatedAt: UserFromDb["updated_at"];
+}
 
-export type {User, UserPayload};
+interface UserDocumentImpl extends UserDocumentData {}
+
+interface UserPayload {
+	username: string;
+	email: string;
+	password: string;
+}
+
+export type {UserFromDb, UserDocumentData, UserDocumentImpl, UserPayload};

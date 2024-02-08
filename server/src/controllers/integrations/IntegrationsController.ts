@@ -1,13 +1,14 @@
 import {ApiError} from "#src/lib";
-import {GithubService, TokenService} from "#src/services";
+import {IntegrationsService, JwtTokensService} from "#src/services";
 import {NextFunction, Request, Response} from "express";
 
-class GithubController {
-	static async authenticate(req: Request, res: Response, next: NextFunction) {
+class IntegrationsController {
+	static async githubAuth(req: Request, res: Response, next: NextFunction) {
 		try {
-			const {id} = res.locals.user!;
+			const userId = res.locals.user?.id!;
 
-			const {url, CSRFToken} = await GithubService.getAuthUrl(id);
+			const {url, CSRFToken} =
+				await IntegrationsService.getGithubAuthUrl(userId);
 
 			res.json({url, CSRFToken});
 		} catch (e) {
@@ -15,7 +16,7 @@ class GithubController {
 		}
 	}
 
-	static async callback(req: Request, res: Response, next: NextFunction) {
+	static async githubCallback(req: Request, res: Response, next: NextFunction) {
 		try {
 			const {code, state} = req.query;
 
@@ -27,7 +28,7 @@ class GithubController {
 				throw new ApiError(404, 'Invalid "state" query parameter type.');
 			}
 
-			const payload = TokenService.verifyCSRF<{userId: number}>(state);
+			const payload = JwtTokensService.verifyCSRF<{userId: number}>(state);
 			if (!payload) {
 				throw new ApiError(401, "Unauthorized.");
 			}
@@ -40,25 +41,13 @@ class GithubController {
 				throw new ApiError(404, 'Invalid "code" query parameter type.');
 			}
 
-			await GithubService.createConnection(payload.userId, code);
+			await IntegrationsService.createGithubConnection(payload.userId, code);
 
 			res.redirect(`${process.env.CLIENT_URL}/success?token=${state}`);
 		} catch (e) {
 			next(e);
 		}
 	}
-
-	static async connected(req: Request, res: Response, next: NextFunction) {
-		try {
-			const {id} = res.locals.user!;
-
-			const connected = await GithubService.isConnected(id);
-
-			res.json({connected});
-		} catch (e) {
-			next(e);
-		}
-	}
 }
 
-export default GithubController;
+export default IntegrationsController;

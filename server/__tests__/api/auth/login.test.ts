@@ -1,9 +1,9 @@
+import app from "#src/app";
+import {UserDto} from "#src/dtos";
+import {RefreshTokenModel, UserModel, UserPayload} from "#src/db/models";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import request from "supertest";
-import app from "#src/app";
-import {RefreshTokenModel, UserModel, UserPayload} from "#src/db/models";
-import {UserDto} from "#src/dtos";
 
 const setup = async (user: UserPayload) => {
 	const hashedPassword = await bcryptjs.hash(user.password, 10);
@@ -17,8 +17,8 @@ const setup = async (user: UserPayload) => {
 		{...userFromDbDto},
 		process.env.JWT_REFRESH_SECRET as string
 	);
-	await RefreshTokenModel.create({
-		user_id: userFromDbDto.id,
+	await RefreshTokenModel.upsert({
+		userId: userFromDbDto.id,
 		token: refreshToken
 	});
 };
