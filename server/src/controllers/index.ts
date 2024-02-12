@@ -1,11 +1,13 @@
 import AuthController from "./auth/AuthController";
+import GithubController from "./integrations/github/GithubController";
 import ProjectsController from "./projects/ProjectsController";
-import IntegrationsController from "./integrations/IntegrationsController";
 import UsersController from "./users/UsersController";
+import TagsController from "./projects/tags/TagsController";
 
 export {
 	AuthController,
+	GithubController,
 	ProjectsController,
-	IntegrationsController,
-	UsersController
+	UsersController,
+	TagsController
 };

@@ -1,5 +1,3 @@
-import DeleteAccountModal from "./DeleteAccountModal/DeleteAccountModal";
-import GithubModal from "./GithubModal/GithubModal";
+import GlobalModal from "./GlobalModal";
 
-export * from "./types";
-export {DeleteAccountModal, GithubModal};
+export {GlobalModal};

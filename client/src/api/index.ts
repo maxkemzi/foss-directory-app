@@ -6,6 +6,8 @@ import requestProjects from "./requestProjects";
 import requestRefresh from "./requestRefresh";
 import requestSignup from "./requestSignup";
 import requestAccountDeletion from "./requestAccountDeletion";
+import requestTags from "./requestTags";
+import requestProjectCreation from "./requestProjectCreation";
 
 export * from "./types";
 export {
@@ -16,5 +18,7 @@ export {
 	requestProjects,
 	requestRefresh,
 	requestSignup,
-	requestAccountDeletion
+	requestAccountDeletion,
+	requestTags,
+	requestProjectCreation
 };

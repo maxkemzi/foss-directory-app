@@ -3,7 +3,10 @@
 import {ModalVariant} from "#src/constants";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {FC} from "react";
-import {CustomModalProps, DeleteAccountModal, GithubModal} from "../modals";
+import CreateProjectModal from "./CreateProjectModal/CreateProjectModal";
+import DeleteAccountModal from "./DeleteAccountModal/DeleteAccountModal";
+import GithubModal from "./GithubModal/GithubModal";
+import {CustomModalProps} from "./types";
 
 const GlobalModal: FC = () => {
 	const router = useRouter();
@@ -26,6 +29,8 @@ const GlobalModal: FC = () => {
 		ModalComponent = GithubModal;
 	} else if (modal === ModalVariant.DELETE_ACCOUNT) {
 		ModalComponent = DeleteAccountModal;
+	} else if (modal === ModalVariant.CREATE_PROJECT) {
+		ModalComponent = CreateProjectModal;
 	}
 
 	return ModalComponent ? <ModalComponent {...modalProps} /> : null;

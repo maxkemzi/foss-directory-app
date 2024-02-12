@@ -1,4 +1,4 @@
-import {GlobalModal} from "#src/components";
+import {GlobalModal} from "#src/components/modals";
 import type {Metadata} from "next";
 import {Inter} from "next/font/google";
 import {FC, PropsWithChildren, Suspense} from "react";

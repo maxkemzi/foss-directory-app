@@ -1,11 +1,13 @@
 interface Project {
 	id: number;
-	title: string;
+	name: string;
 	description: string;
-	contributors_needed: number;
-	last_updated: string;
-	created_at: string;
-	updated_at: string;
+	repoUrl: string;
+}
+
+interface Tag {
+	id: number;
+	name: string;
 }
 
 interface User {
@@ -15,4 +17,4 @@ interface User {
 	githubIsConnected: boolean;
 }
 
-export type {Project, User};
+export type {Project, Tag, User};

@@ -1,14 +1,13 @@
 import {ApiError} from "#src/lib";
-import {IntegrationsService, JwtTokensService} from "#src/services";
+import {GithubService, JwtTokensService} from "#src/services";
 import {NextFunction, Request, Response} from "express";
 
-class IntegrationsController {
-	static async githubAuth(req: Request, res: Response, next: NextFunction) {
+class GithubController {
+	static async authenticate(req: Request, res: Response, next: NextFunction) {
 		try {
 			const userId = res.locals.user?.id!;
 
-			const {url, CSRFToken} =
-				await IntegrationsService.getGithubAuthUrl(userId);
+			const {url, CSRFToken} = await GithubService.getAuthUrl(userId);
 
 			res.json({url, CSRFToken});
 		} catch (e) {
@@ -16,7 +15,7 @@ class IntegrationsController {
 		}
 	}
 
-	static async githubCallback(req: Request, res: Response, next: NextFunction) {
+	static async callback(req: Request, res: Response, next: NextFunction) {
 		try {
 			const {code, state} = req.query;
 
@@ -41,7 +40,7 @@ class IntegrationsController {
 				throw new ApiError(404, 'Invalid "code" query parameter type.');
 			}
 
-			await IntegrationsService.createGithubConnection(payload.userId, code);
+			await GithubService.createConnection(payload.userId, code);
 
 			res.redirect(`${process.env.CLIENT_URL}/success?token=${state}`);
 		} catch (e) {
@@ -50,4 +49,4 @@ class IntegrationsController {
 	}
 }
 
-export default IntegrationsController;
+export default GithubController;

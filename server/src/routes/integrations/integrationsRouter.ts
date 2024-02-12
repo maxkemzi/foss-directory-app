@@ -1,14 +1,8 @@
-import {IntegrationsController} from "#src/controllers";
-import {authChecker} from "#src/middlewares";
 import {Router} from "express";
+import githubRouter from "./github/githubRouter";
 
 const integrationsRouter = Router();
 
-integrationsRouter.post(
-	"/github",
-	authChecker,
-	IntegrationsController.githubAuth
-);
-integrationsRouter.get("/github", IntegrationsController.githubCallback);
+integrationsRouter.use("/github", githubRouter);
 
 export default integrationsRouter;
