@@ -1,6 +1,6 @@
 import Db from "../../Db";
-import TagDocument from "./TagDocument";
-import {TagFromDb} from "./types";
+import {TagDocument} from "../../documents";
+import {TagFromDb} from "../../types";
 
 class TagModel {
 	static async getAll(): Promise<TagDocument[]> {

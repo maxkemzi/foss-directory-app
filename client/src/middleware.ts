@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from "next/server";
-import {requestRefresh} from "./api";
+import {AuthApi} from "./api";
 import {
 	APP_ROUTES,
 	AUTH_ROUTES,
@@ -39,7 +39,7 @@ const middleware = async (req: NextRequest) => {
 	const isAppRoute = APP_ROUTES.includes(req.nextUrl.pathname);
 	if (refreshToken && isAppRoute) {
 		try {
-			const {user, tokens} = await requestRefresh(refreshToken);
+			const {user, tokens} = await AuthApi.refresh(refreshToken);
 
 			const response = NextResponse.next();
 			response.cookies.set("user", JSON.stringify(user), COOKIE_OPTIONS);

@@ -1,4 +1,3 @@
-import {redirectToGithubConnectionUrl} from "#src/actions";
 import {
 	Button,
 	Modal,
@@ -9,6 +8,7 @@ import {
 } from "@nextui-org/react";
 import {FC} from "react";
 import {CustomModalProps} from "../types";
+import {redirectToGithubConnectionUrl} from "./actions";
 
 const GithubModal: FC<CustomModalProps> = ({isOpen, onClose}) => (
 	<Modal isOpen={isOpen} onClose={onClose}>

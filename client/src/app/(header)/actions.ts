@@ -1,6 +1,6 @@
 "use server";
 
-import {ApiError, requestLogout} from "#src/api";
+import {ApiError, AuthApi} from "#src/api";
 import {Route} from "#src/constants";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
@@ -13,7 +13,7 @@ const logOut = async () => {
 		throw new ApiError(401, "Not authorized.");
 	}
 
-	await requestLogout(refreshToken);
+	await AuthApi.logOut(refreshToken);
 
 	cookieStore.delete("user");
 	cookieStore.delete("accessToken");

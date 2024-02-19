@@ -1,5 +1,4 @@
-import {redirectToGithubConnectionUrl} from "#src/actions";
-import {User} from "#src/api";
+import {UserFromApi} from "#src/api";
 import {SubmitButton} from "#src/components";
 import {Container} from "#src/components/ui";
 import {Route} from "#src/constants";
@@ -8,6 +7,7 @@ import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 import {Header} from "../(header)";
 import DeleteAccountButton from "./DeleteAccountButton";
+import {redirectToGithubConnectionUrl} from "./actions";
 
 const Settings = () => {
 	const cookieStore = cookies();
@@ -16,7 +16,7 @@ const Settings = () => {
 		redirect(Route.LOGIN);
 	}
 
-	const parsedUser = JSON.parse(user) as User;
+	const parsedUser = JSON.parse(user) as UserFromApi;
 
 	return (
 		<>

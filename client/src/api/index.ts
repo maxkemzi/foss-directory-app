@@ -1,24 +1,9 @@
 import ApiError from "./ApiError";
-import requestGithubConnectionUrl from "./requestGithubConnectionUrl";
-import requestLogin from "./requestLogin";
-import requestLogout from "./requestLogout";
-import requestProjects from "./requestProjects";
-import requestRefresh from "./requestRefresh";
-import requestSignup from "./requestSignup";
-import requestAccountDeletion from "./requestAccountDeletion";
-import requestTags from "./requestTags";
-import requestProjectCreation from "./requestProjectCreation";
+import AuthApi from "./auth/AuthApi";
+import GithubApi from "./integrations/github/GithubApi";
+import ProjectsApi from "./projects/ProjectsApi";
+import TagsApi from "./projects/tags/TagsApi";
+import AccountsApi from "./users/accounts/AccountsApi";
 
-export * from "./types";
-export {
-	ApiError,
-	requestGithubConnectionUrl,
-	requestLogin,
-	requestLogout,
-	requestProjects,
-	requestRefresh,
-	requestSignup,
-	requestAccountDeletion,
-	requestTags,
-	requestProjectCreation
-};
+export {ApiError, AuthApi, GithubApi, ProjectsApi, TagsApi, AccountsApi};
+export * from "./types/types";

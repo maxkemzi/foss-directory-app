@@ -1,6 +1,6 @@
+import {GithubConnectionDocument} from "../../documents";
+import {GithubConnectionFromDb, GithubConnectionPayload} from "../../types";
 import Db from "../../Db";
-import GithubConnectionDocument from "./GithubConnectionDto";
-import {GithubConnectionFromDb, GithubConnectionPayload} from "./types";
 
 class GithubConnectionModel {
 	static async create({

@@ -1,8 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import Db from "../../Db";
-import {TagFromDb} from "../tag/types";
-import ProjectDocument from "./ProjectDocument";
-import {ProjectFromDb, ProjectPayload} from "./types";
+import {ProjectDocument} from "../../documents";
+import {ProjectFromDb, ProjectPayload, TagFromDb} from "../../types";
 
 class ProjectModel {
 	static async create({

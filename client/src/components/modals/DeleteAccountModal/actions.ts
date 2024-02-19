@@ -1,12 +1,12 @@
 "use server";
 
-import {requestAccountDeletion} from "#src/api";
+import {AccountsApi} from "#src/api";
 import {Route} from "#src/constants";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 
 const deleteAccount = async () => {
-	await requestAccountDeletion();
+	await AccountsApi.delete();
 
 	const cookieStore = cookies();
 	cookieStore.delete("user");

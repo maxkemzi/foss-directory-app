@@ -1,6 +1,6 @@
 import Db from "../../Db";
-import RefreshTokenDocument from "./RefreshTokenDocument";
-import {RefreshTokenFromDb, RefreshTokenPayload} from "./types";
+import {RefreshTokenDocument} from "../../documents";
+import {RefreshTokenFromDb, RefreshTokenPayload} from "../../types";
 
 class RefreshTokenModel {
 	static async upsert({

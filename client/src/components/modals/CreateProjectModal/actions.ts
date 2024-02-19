@@ -1,6 +1,6 @@
 "use server";
 
-import {ApiError, requestProjectCreation, requestTags} from "#src/api";
+import {ApiError, ProjectsApi, TagsApi} from "#src/api";
 import {INITIAL_FORM_STATE, VALIDATION_SCHEMA} from "./constants";
 
 const createProject = async (prevState: any, formData: FormData) => {
@@ -20,7 +20,7 @@ const createProject = async (prevState: any, formData: FormData) => {
 	}
 
 	try {
-		await requestProjectCreation(validatedFields.data);
+		await ProjectsApi.create(validatedFields.data);
 
 		return {...INITIAL_FORM_STATE, success: true};
 	} catch (e) {
@@ -34,7 +34,7 @@ const createProject = async (prevState: any, formData: FormData) => {
 };
 
 const getTags = async () => {
-	const tags = await requestTags();
+	const tags = await TagsApi.fetchAll();
 	return tags;
 };
 

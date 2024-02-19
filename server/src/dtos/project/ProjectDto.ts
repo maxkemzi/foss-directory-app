@@ -1,4 +1,4 @@
-import {ProjectDocumentData} from "#src/db/models";
+import {Project} from "#src/db/types";
 
 class ProjectDto {
 	id: number;
@@ -6,7 +6,7 @@ class ProjectDto {
 	description: string;
 	repoUrl: string;
 
-	constructor(doc: ProjectDocumentData) {
+	constructor(doc: Project) {
 		this.id = doc.id;
 		this.name = doc.name;
 		this.description = doc.description;

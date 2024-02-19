@@ -1,5 +1,6 @@
 /* eslint-disable no-await-in-loop */
-import {ProjectModel, ProjectPayload} from "#src/db/models";
+import {ProjectModel} from "#src/db/models";
+import {ProjectPayload} from "#src/db/types";
 import {PopulatedProjectDto} from "#src/dtos";
 
 class ProjectsService {

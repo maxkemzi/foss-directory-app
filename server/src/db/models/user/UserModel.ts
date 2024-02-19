@@ -1,6 +1,6 @@
 import Db from "../../Db";
-import UserDocument from "./UserDocument";
-import {UserFromDb, UserPayload} from "./types";
+import {UserDocument} from "../../documents";
+import {UserFromDb, UserPayload} from "../../types";
 
 class UserModel {
 	static async create({

@@ -1,6 +1,6 @@
 "use server";
 
-import {ApiError, requestLogin} from "#src/api";
+import {ApiError, AuthApi} from "#src/api";
 import {COOKIE_OPTIONS} from "#src/constants";
 import {cookies} from "next/headers";
 import {INITIAL_FORM_STATE, VALIDATION_SCHEMA} from "./constants";
@@ -19,7 +19,7 @@ const logIn = async (prevState: any, formData: FormData) => {
 	}
 
 	try {
-		const {user, tokens} = await requestLogin(validatedFields.data);
+		const {user, tokens} = await AuthApi.logIn(validatedFields.data);
 
 		const cookieStore = cookies();
 		cookieStore.set("user", JSON.stringify(user), COOKIE_OPTIONS);

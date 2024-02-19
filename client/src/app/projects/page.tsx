@@ -1,8 +1,8 @@
-import {requestProjects} from "#src/api";
+import {ProjectsApi} from "#src/api";
 import {Header} from "../(header)";
 
 const Projects = async () => {
-	const projects = await requestProjects();
+	const projects = await ProjectsApi.fetchAll();
 
 	return (
 		<>
@@ -10,7 +10,7 @@ const Projects = async () => {
 			<main>
 				<div>
 					{projects.map(project => (
-						<div key={project.id}>{project.title}</div>
+						<div key={project.id}>{project.name}</div>
 					))}
 				</div>
 			</main>

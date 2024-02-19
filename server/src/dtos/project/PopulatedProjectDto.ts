@@ -1,4 +1,4 @@
-import {PopulatedProjectDocumentData} from "#src/db/models";
+import {PopulatedProject} from "#src/db/types";
 import ProjectDto from "./ProjectDto";
 
 class PopulatedProjectDto extends ProjectDto {
@@ -6,9 +6,8 @@ class PopulatedProjectDto extends ProjectDto {
 	Tags: {id: number; name: string}[];
 	CustomTags: {id: number; name: string}[];
 
-	constructor(doc: PopulatedProjectDocumentData) {
+	constructor(doc: PopulatedProject) {
 		super(doc);
-
 		this.Owner = doc.Owner
 			? {id: doc.Owner.id, username: doc.Owner.username}
 			: null;
