@@ -9,13 +9,11 @@
 			"typescript": {}
 		}
 	},
-	"plugins": ["prettier"],
 	"extends": [
-		"plugin:prettier/recommended",
 		"eslint:recommended",
 		"airbnb-base",
 		"airbnb-typescript/base",
-		"prettier"
+		"plugin:prettier/recommended"
 	],
 	"parserOptions": {
 		"ecmaVersion": "latest",

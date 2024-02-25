@@ -70,21 +70,30 @@ const CreateProjectModal: FC<CustomModalProps> = ({isOpen, onClose}) => {
 										label="Name"
 										placeholder="Enter name"
 										name="name"
-										isInvalid={Object.hasOwn(state.fieldErrors, "name")}
+										isInvalid={Object.hasOwn(
+											state.fieldErrors,
+											"name"
+										)}
 										errorMessage={state.fieldErrors?.name?.[0]}
 									/>
 									<Input
 										label="Description"
 										placeholder="Enter description"
 										name="description"
-										isInvalid={Object.hasOwn(state.fieldErrors, "description")}
+										isInvalid={Object.hasOwn(
+											state.fieldErrors,
+											"description"
+										)}
 										errorMessage={state.fieldErrors?.description?.[0]}
 									/>
 									<Input
 										label="Url"
 										placeholder="Enter url"
 										name="repoUrl"
-										isInvalid={Object.hasOwn(state.fieldErrors, "repoUrl")}
+										isInvalid={Object.hasOwn(
+											state.fieldErrors,
+											"repoUrl"
+										)}
 										errorMessage={state.fieldErrors?.repoUrl?.[0]}
 									/>
 									<div>
@@ -99,7 +108,10 @@ const CreateProjectModal: FC<CustomModalProps> = ({isOpen, onClose}) => {
 												onOpenChange={setAutocompleteIsOpen}
 												inputValue={tagValue}
 												onInputChange={setTagValue}
-												isInvalid={Object.hasOwn(state.fieldErrors, "tags")}
+												isInvalid={Object.hasOwn(
+													state.fieldErrors,
+													"tags"
+												)}
 												errorMessage={state.fieldErrors?.tags?.[0]}
 											>
 												{item => (
@@ -112,7 +124,8 @@ const CreateProjectModal: FC<CustomModalProps> = ({isOpen, onClose}) => {
 												className="h-auto"
 												onClick={addTagValue}
 												isDisabled={
-													tagValue.length === 0 || tagValues.includes(tagValue)
+													tagValue.length === 0 ||
+													tagValues.includes(tagValue)
 												}
 												color="primary"
 											>

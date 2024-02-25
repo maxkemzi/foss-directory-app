@@ -1,11 +1,10 @@
 {
 	"extends": [
-		"plugin:prettier/recommended",
 		"airbnb",
 		"airbnb-typescript",
 		"airbnb/hooks",
 		"next/core-web-vitals",
-		"prettier"
+		"plugin:prettier/recommended"
 	],
 	"parserOptions": {
 		"project": "./tsconfig.json"

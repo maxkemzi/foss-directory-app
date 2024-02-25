@@ -6,7 +6,11 @@ import {usePathname} from "next/navigation";
 const DeleteAccountButton = () => {
 	const pathname = usePathname();
 	return (
-		<Button as={Link} color="danger" href={`${pathname}?modal=delete-account`}>
+		<Button
+			as={Link}
+			color="danger"
+			href={`${pathname}?modal=delete-account`}
+		>
 			Delete Account
 		</Button>
 	);

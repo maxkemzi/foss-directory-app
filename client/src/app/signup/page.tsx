@@ -56,7 +56,10 @@ const Signup = () => {
 								label="Confirm Password"
 								placeholder="Confirm your password"
 								name="confirmPassword"
-								isInvalid={Object.hasOwn(state.fieldErrors, "confirmPassword")}
+								isInvalid={Object.hasOwn(
+									state.fieldErrors,
+									"confirmPassword"
+								)}
 								errorMessage={state.fieldErrors?.confirmPassword?.[0]}
 							/>
 						</div>

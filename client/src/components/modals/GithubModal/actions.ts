@@ -9,7 +9,10 @@ const redirectToGithubConnectionUrl = async () => {
 	const {url, CSRFToken} = await GithubApi.fetchConnectionUrl();
 
 	const cookieStore = cookies();
-	cookieStore.set("CSRFToken", CSRFToken, {...COOKIE_OPTIONS, sameSite: "lax"});
+	cookieStore.set("CSRFToken", CSRFToken, {
+		...COOKIE_OPTIONS,
+		sameSite: "lax"
+	});
 
 	redirect(url);
 };

@@ -33,7 +33,10 @@ class GithubController {
 			}
 
 			if (!code) {
-				throw new ApiError(404, 'The "code" query parameter is not provided.');
+				throw new ApiError(
+					404,
+					'The "code" query parameter is not provided.'
+				);
 			}
 
 			if (typeof code !== "string") {

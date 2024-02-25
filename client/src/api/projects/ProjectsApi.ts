@@ -13,7 +13,9 @@ class ProjectsApi {
 		return response.json();
 	}
 
-	static async create(body: CreateProjectBody): Promise<CreateProjectResponse> {
+	static async create(
+		body: CreateProjectBody
+	): Promise<CreateProjectResponse> {
 		const response = await this.fetcher.fetchWithAuth("/", {
 			method: "POST",
 			headers: {"Content-Type": "application/json"},
