@@ -1,6 +1,8 @@
 "use server";
 
 import {ApiError, ProjectsApi, TagsApi} from "#src/api";
+import {Pathname} from "#src/constants";
+import {revalidatePath} from "next/cache";
 import {INITIAL_FORM_STATE, VALIDATION_SCHEMA} from "./constants";
 
 const createProject = async (prevState: any, formData: FormData) => {
@@ -21,6 +23,7 @@ const createProject = async (prevState: any, formData: FormData) => {
 
 	try {
 		await ProjectsApi.create(validatedFields.data);
+		revalidatePath(Pathname.PROJECTS);
 
 		return {...INITIAL_FORM_STATE, success: true};
 	} catch (e) {

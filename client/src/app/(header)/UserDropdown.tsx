@@ -1,6 +1,6 @@
 "use client";
 
-import {Route} from "#src/constants";
+import {Pathname} from "#src/constants";
 import {
 	Avatar,
 	Dropdown,
@@ -21,7 +21,7 @@ const UserDropdown = ({user}: {user: any}) => {
 				logOut();
 				break;
 			case "settings":
-				router.push(Route.SETTINGS);
+				router.push(Pathname.SETTINGS);
 				break;
 			case "create-project":
 				router.push("?modal=create-project");

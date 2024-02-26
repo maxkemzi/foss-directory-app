@@ -1,7 +1,7 @@
 "use server";
 
 import {ApiError, AuthApi} from "#src/api";
-import {Route} from "#src/constants";
+import {Pathname} from "#src/constants";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 
@@ -20,7 +20,7 @@ const logOut = async () => {
 	cookieStore.delete("refreshToken");
 	cookieStore.delete("isAuth");
 
-	redirect(Route.LOGIN);
+	redirect(Pathname.LOGIN);
 };
 
 export {logOut};

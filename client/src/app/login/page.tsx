@@ -2,7 +2,7 @@
 
 import {SubmitButton} from "#src/components";
 import {PasswordInput} from "#src/components/ui";
-import {Route} from "#src/constants";
+import {Pathname} from "#src/constants";
 import {Input, Link} from "@nextui-org/react";
 import {useRouter} from "next/navigation";
 import {useEffect} from "react";
@@ -16,7 +16,7 @@ const Login = () => {
 
 	useEffect(() => {
 		if (state.success) {
-			router.push(Route.HOME);
+			router.push(Pathname.HOME);
 		}
 	}, [router, state.success]);
 
@@ -49,7 +49,7 @@ const Login = () => {
 					</form>
 					<p className="text-small">
 						Don&apos;t have an account?{" "}
-						<Link href={Route.SIGNUP} size="sm">
+						<Link href={Pathname.SIGNUP} size="sm">
 							Signup
 						</Link>
 					</p>

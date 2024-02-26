@@ -31,8 +31,8 @@ class ProjectDocument extends Document implements DocumentImpl<Project> {
 	}
 
 	async populate(): Promise<PopulatedProject> {
-		const [{rows: users}, {rows: tags}, {rows: customTags}] =
-			await Promise.all([
+		const [{rows: users}, {rows: tags}, {rows: customTags}] = await Promise.all(
+			[
 				Db.query<UserFromDb>("SELECT * FROM users WHERE id=$1;", [
 					this.ownerId
 				]),
@@ -48,7 +48,8 @@ class ProjectDocument extends Document implements DocumentImpl<Project> {
 					"SELECT * FROM custom_tags WHERE project_id=$1;",
 					[this.id]
 				)
-			]);
+			]
+		);
 		const user = users[0];
 
 		return {

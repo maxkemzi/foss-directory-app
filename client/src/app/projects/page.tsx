@@ -1,4 +1,6 @@
 import {ProjectsApi} from "#src/api";
+import {ProjectCard} from "#src/components";
+import {Container} from "#src/components/ui";
 import {Header} from "../(header)";
 
 const Projects = async () => {
@@ -8,11 +10,15 @@ const Projects = async () => {
 		<>
 			<Header />
 			<main>
-				<div>
-					{projects.map(project => (
-						<div key={project.id}>{project.name}</div>
-					))}
-				</div>
+				<section>
+					<Container>
+						<div className="grid grid-cols-3 gap-4">
+							{projects.map(project => (
+								<ProjectCard key={project.id} project={project} />
+							))}
+						</div>
+					</Container>
+				</section>
 			</main>
 		</>
 	);

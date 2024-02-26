@@ -1,7 +1,7 @@
 import {UserFromApi} from "#src/api";
 import {SubmitButton} from "#src/components";
 import {Container} from "#src/components/ui";
-import {Route} from "#src/constants";
+import {Pathname} from "#src/constants";
 import {Button} from "@nextui-org/react";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
@@ -13,7 +13,7 @@ const Settings = () => {
 	const cookieStore = cookies();
 	const user = cookieStore.get("user")?.value;
 	if (!user) {
-		redirect(Route.LOGIN);
+		redirect(Pathname.LOGIN);
 	}
 
 	const parsedUser = JSON.parse(user) as UserFromApi;

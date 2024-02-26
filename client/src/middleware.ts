@@ -1,21 +1,19 @@
 import {NextRequest, NextResponse} from "next/server";
 import {AuthApi} from "./api";
-import {
-	APP_ROUTES,
-	AUTH_ROUTES,
-	COOKIE_OPTIONS,
-	PROTECTED_ROUTES,
-	Route
-} from "./constants";
+import {COOKIE_OPTIONS, Pathname} from "./constants";
+
+const AUTH_PATHNAMES = [Pathname.LOGIN, Pathname.SIGNUP];
+const PROTECTED_PATHNAMES = [Pathname.SETTINGS];
+const VALID_PATHNAMES = Object.values(Pathname);
 
 const middleware = async (req: NextRequest) => {
-	const routeIsAuth = AUTH_ROUTES.includes(req.nextUrl.pathname);
-	if (routeIsAuth) {
+	const pathIsAuth = AUTH_PATHNAMES.includes(req.nextUrl.pathname);
+	if (pathIsAuth) {
 		return NextResponse.next();
 	}
 
-	const isSuccessRoute = req.nextUrl.pathname === Route.SUCCESS;
-	if (isSuccessRoute) {
+	const isSuccessPath = req.nextUrl.pathname === Pathname.SUCCESS;
+	if (isSuccessPath) {
 		const {searchParams} = req.nextUrl;
 		const token = searchParams.get("token");
 		const CSRFToken = req.cookies.get("CSRFToken")?.value;
@@ -30,14 +28,14 @@ const middleware = async (req: NextRequest) => {
 	}
 
 	const isAuth = req.cookies.get("isAuth")?.value;
-	const routeIsProtected = PROTECTED_ROUTES.includes(req.nextUrl.pathname);
-	if (!isAuth && routeIsProtected) {
-		return NextResponse.redirect(new URL(Route.LOGIN, req.url));
+	const pathIsProtected = PROTECTED_PATHNAMES.includes(req.nextUrl.pathname);
+	if (!isAuth && pathIsProtected) {
+		return NextResponse.redirect(new URL(Pathname.LOGIN, req.url));
 	}
 
 	const refreshToken = req.cookies.get("refreshToken")?.value;
-	const isAppRoute = APP_ROUTES.includes(req.nextUrl.pathname);
-	if (refreshToken && isAppRoute) {
+	const pathIsValid = VALID_PATHNAMES.includes(req.nextUrl.pathname);
+	if (refreshToken && pathIsValid) {
 		try {
 			const {user, tokens} = await AuthApi.refresh(refreshToken);
 
@@ -50,7 +48,7 @@ const middleware = async (req: NextRequest) => {
 		} catch (e) {
 			console.log(e);
 
-			const response = NextResponse.redirect(new URL(Route.LOGIN, req.url));
+			const response = NextResponse.redirect(new URL(Pathname.LOGIN, req.url));
 			response.cookies.delete("user");
 			response.cookies.delete("accessToken");
 			response.cookies.delete("refreshToken");

@@ -1,7 +1,7 @@
 "use server";
 
 import {AccountsApi} from "#src/api";
-import {Route} from "#src/constants";
+import {Pathname} from "#src/constants";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 
@@ -14,7 +14,7 @@ const deleteAccount = async () => {
 	cookieStore.delete("refreshToken");
 	cookieStore.delete("isAuth");
 
-	redirect(Route.SIGNUP);
+	redirect(Pathname.SIGNUP);
 };
 
 export {deleteAccount};

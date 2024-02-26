@@ -2,7 +2,7 @@
 
 import {SubmitButton} from "#src/components";
 import {PasswordInput} from "#src/components/ui";
-import {Route} from "#src/constants";
+import {Pathname} from "#src/constants";
 import {Input, Link} from "@nextui-org/react";
 import {useRouter} from "next/navigation";
 import {useEffect} from "react";
@@ -16,7 +16,7 @@ const Signup = () => {
 
 	useEffect(() => {
 		if (state.success) {
-			router.push(`${Route.HOME}?modal=github`);
+			router.push(`${Pathname.HOME}?modal=github`);
 		}
 	}, [router, state.success]);
 
@@ -56,10 +56,7 @@ const Signup = () => {
 								label="Confirm Password"
 								placeholder="Confirm your password"
 								name="confirmPassword"
-								isInvalid={Object.hasOwn(
-									state.fieldErrors,
-									"confirmPassword"
-								)}
+								isInvalid={Object.hasOwn(state.fieldErrors, "confirmPassword")}
 								errorMessage={state.fieldErrors?.confirmPassword?.[0]}
 							/>
 						</div>
@@ -67,7 +64,7 @@ const Signup = () => {
 					</form>
 					<p className="text-small">
 						Already have an account?{" "}
-						<Link href={Route.LOGIN} size="sm">
+						<Link href={Pathname.LOGIN} size="sm">
 							Login
 						</Link>
 					</p>

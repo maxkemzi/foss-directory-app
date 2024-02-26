@@ -1,5 +1,5 @@
-import {User} from "#src/api";
-import {Route} from "#src/constants";
+import {UserFromApi} from "#src/api";
+import {Pathname} from "#src/constants";
 import {
 	Button,
 	Link,
@@ -21,7 +21,7 @@ interface Props {
 const Header: FC<Props> = ({isAbsolute}) => {
 	const cookieStore = cookies();
 	const user = cookieStore.get("user")?.value;
-	const parsedUser = user ? (JSON.parse(user) as User) : null;
+	const parsedUser = user ? (JSON.parse(user) as UserFromApi) : null;
 
 	return (
 		<Navbar
@@ -42,13 +42,13 @@ const Header: FC<Props> = ({isAbsolute}) => {
 				) : (
 					<>
 						<NavbarItem className="hidden lg:flex">
-							<Link href={Route.LOGIN}>Log In</Link>
+							<Link href={Pathname.LOGIN}>Log In</Link>
 						</NavbarItem>
 						<NavbarItem>
 							<Button
 								as={Link}
 								color="primary"
-								href={Route.SIGNUP}
+								href={Pathname.SIGNUP}
 								variant="flat"
 							>
 								Sign Up

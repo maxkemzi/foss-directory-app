@@ -1,4 +1,4 @@
-const Route = {
+const Pathname = {
 	HOME: "/",
 	SIGNUP: "/signup",
 	LOGIN: "/login",
@@ -7,4 +7,4 @@ const Route = {
 	SETTINGS: "/settings"
 };
 
-export default Route;
+export default Pathname;

@@ -31,17 +31,11 @@ class JwtTokensService {
 	}
 
 	static verifyAccess<T>(token: string) {
-		return JwtTokensService.#verify<T>(
-			token,
-			JwtTokensService.#ACCESS_SECRET
-		);
+		return JwtTokensService.#verify<T>(token, JwtTokensService.#ACCESS_SECRET);
 	}
 
 	static verifyRefresh<T>(token: string) {
-		return JwtTokensService.#verify<T>(
-			token,
-			JwtTokensService.#REFRESH_SECRET
-		);
+		return JwtTokensService.#verify<T>(token, JwtTokensService.#REFRESH_SECRET);
 	}
 
 	static verifyCSRF<T>(token: string) {
