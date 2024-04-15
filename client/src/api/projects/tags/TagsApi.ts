@@ -1,5 +1,5 @@
+import {FetchTagsResponse} from "#src/types/api";
 import ApiFetcher from "../../ApiFetcher";
-import {FetchTagsResponse} from "../../types";
 
 class TagsApi {
 	private static fetcher = new ApiFetcher("/projects/tags");

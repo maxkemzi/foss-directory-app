@@ -1,4 +1,3 @@
-import ApiFetcher from "../ApiFetcher";
 import {
 	LoginBody,
 	LoginResponse,
@@ -6,7 +5,8 @@ import {
 	RefreshResponse,
 	SignupBody,
 	SignupResponse
-} from "../types";
+} from "#src/types/api";
+import ApiFetcher from "../ApiFetcher";
 
 class AuthApi {
 	private static fetcher = new ApiFetcher("/auth");

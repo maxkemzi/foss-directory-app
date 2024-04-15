@@ -2,6 +2,7 @@
 
 import {ApiError, AuthApi} from "#src/api";
 import {Pathname} from "#src/constants";
+import {deleteAuthCookiesFromStore} from "#src/helpers";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 
@@ -15,10 +16,7 @@ const logOut = async () => {
 
 	await AuthApi.logOut(refreshToken);
 
-	cookieStore.delete("user");
-	cookieStore.delete("accessToken");
-	cookieStore.delete("refreshToken");
-	cookieStore.delete("isAuth");
+	deleteAuthCookiesFromStore(cookieStore);
 
 	redirect(Pathname.LOGIN);
 };

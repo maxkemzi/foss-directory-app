@@ -59,6 +59,14 @@ class ProjectModel {
 		return rows.map(p => new ProjectDocument(p));
 	}
 
+	static async getAllByUserId(id: number): Promise<ProjectDocument[]> {
+		const {rows} = await Db.query<ProjectFromDb>(
+			"SELECT * FROM projects WHERE owner_id=$1;",
+			[id]
+		);
+		return rows.map(p => new ProjectDocument(p));
+	}
+
 	static async getById(id: number): Promise<ProjectDocument | null> {
 		const {rows} = await Db.query<ProjectFromDb>(
 			"SELECT * FROM projects WHERE id=$1;",

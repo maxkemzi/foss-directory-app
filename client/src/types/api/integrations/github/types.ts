@@ -1,6 +1,6 @@
 interface FetchUrlResponse {
 	url: string;
-	CSRFToken: string;
+	CsrfToken: string;
 }
 
 export type {FetchUrlResponse};

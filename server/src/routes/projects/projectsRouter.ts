@@ -7,6 +7,7 @@ const projectsRouter = Router();
 
 projectsRouter.post("/", authChecker, ProjectsController.create);
 projectsRouter.get("/", ProjectsController.getAll);
+projectsRouter.get("/auth", authChecker, ProjectsController.getAllAuth);
 projectsRouter.delete("/:id", authChecker, ProjectsController.delete);
 
 projectsRouter.use("/tags", tagsRouter);

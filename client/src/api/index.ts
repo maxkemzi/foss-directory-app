@@ -6,4 +6,3 @@ import TagsApi from "./projects/tags/TagsApi";
 import AccountsApi from "./users/accounts/AccountsApi";
 
 export {ApiError, AuthApi, GithubApi, ProjectsApi, TagsApi, AccountsApi};
-export * from "./types/types";

@@ -6,10 +6,10 @@ import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 
 const redirectToGithubConnectionUrl = async () => {
-	const {url, CSRFToken} = await GithubApi.fetchConnectionUrl();
+	const {url, CsrfToken} = await GithubApi.fetchConnectionUrl();
 
 	const cookieStore = cookies();
-	cookieStore.set("CSRFToken", CSRFToken, {
+	cookieStore.set("CsrfToken", CsrfToken, {
 		...COOKIE_OPTIONS,
 		sameSite: "lax"
 	});

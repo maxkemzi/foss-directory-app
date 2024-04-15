@@ -1,9 +1,9 @@
-import ApiFetcher from "../ApiFetcher";
 import {
 	CreateProjectBody,
 	CreateProjectResponse,
 	FetchProjectsResponse
-} from "../types";
+} from "#src/types/api";
+import ApiFetcher from "../ApiFetcher";
 
 class ProjectsApi {
 	private static fetcher = new ApiFetcher("/projects");
@@ -13,9 +13,12 @@ class ProjectsApi {
 		return response.json();
 	}
 
-	static async create(
-		body: CreateProjectBody
-	): Promise<CreateProjectResponse> {
+	static async fetchAllAuth(): Promise<FetchProjectsResponse> {
+		const response = await this.fetcher.fetchWithAuth("/auth");
+		return response.json();
+	}
+
+	static async create(body: CreateProjectBody): Promise<CreateProjectResponse> {
 		const response = await this.fetcher.fetchWithAuth("/", {
 			method: "POST",
 			headers: {"Content-Type": "application/json"},

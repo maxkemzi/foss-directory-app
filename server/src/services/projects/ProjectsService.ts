@@ -20,6 +20,15 @@ class ProjectsService {
 		return populatedProjects.map(pp => new PopulatedProjectDto(pp));
 	}
 
+	static async getAllByUserId(id: number): Promise<PopulatedProjectDto[]> {
+		const projects = await ProjectModel.getAllByUserId(id);
+		const populatedProjects = await Promise.all(
+			projects.map(p => p.populate())
+		);
+
+		return populatedProjects.map(pp => new PopulatedProjectDto(pp));
+	}
+
 	static async deleteById(id: number) {
 		await ProjectModel.deleteById(id);
 	}

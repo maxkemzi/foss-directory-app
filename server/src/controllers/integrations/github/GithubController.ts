@@ -7,9 +7,9 @@ class GithubController {
 		try {
 			const userId = res.locals.user?.id!;
 
-			const {url, CSRFToken} = await GithubService.getAuthUrl(userId);
+			const {url, CsrfToken} = await GithubService.getAuthUrl(userId);
 
-			res.json({url, CSRFToken});
+			res.json({url, CsrfToken});
 		} catch (e) {
 			next(e);
 		}
@@ -27,17 +27,17 @@ class GithubController {
 				throw new ApiError(404, 'Invalid "state" query parameter type.');
 			}
 
-			const payload = JwtTokensService.verifyCSRF<{userId: number}>(state);
-			if (!payload) {
-				throw new ApiError(401, "Unauthorized.");
-			}
-
 			if (!code) {
 				throw new ApiError(404, 'The "code" query parameter is not provided.');
 			}
 
 			if (typeof code !== "string") {
 				throw new ApiError(404, 'Invalid "code" query parameter type.');
+			}
+
+			const payload = JwtTokensService.verifyCsrf<{userId: number}>(state);
+			if (!payload) {
+				throw new ApiError(401, "Unauthorized.");
 			}
 
 			await GithubService.createConnection(payload.userId, code);

@@ -7,16 +7,16 @@ class GithubService {
 	static #GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET as string;
 
 	static async getAuthUrl(userId: number) {
-		const CSRFToken = TokenService.generateCSRF({userId});
+		const CsrfToken = TokenService.generateCsrf({userId});
 		const redirectUri = `${process.env.SERVER_URL}/api/integrations/github/callback`;
 
 		const searchParams = new URLSearchParams();
 		searchParams.set("client_id", GithubService.#GITHUB_CLIENT_ID);
-		searchParams.set("state", CSRFToken);
+		searchParams.set("state", CsrfToken);
 		searchParams.set("redirect_uri", redirectUri);
 
 		const url = `https://github.com/login/oauth/authorize?${searchParams.toString()}`;
-		return {url, CSRFToken};
+		return {url, CsrfToken};
 	}
 
 	static async createConnection(userId: number, code: string) {

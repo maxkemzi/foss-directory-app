@@ -32,6 +32,17 @@ class ProjectsController {
 		}
 	}
 
+	static async getAllAuth(req: Request, res: Response, next: NextFunction) {
+		try {
+			const userId = res.locals.user?.id!;
+			const projects = await ProjectsService.getAllByUserId(userId);
+
+			res.json(projects);
+		} catch (e) {
+			next(e);
+		}
+	}
+
 	static async delete(req: Request, res: Response, next: NextFunction) {
 		try {
 			const {id} = req.params;

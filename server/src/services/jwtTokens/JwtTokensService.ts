@@ -24,7 +24,7 @@ class JwtTokensService {
 		});
 	}
 
-	static generateCSRF(payload: string | object) {
+	static generateCsrf(payload: string | object) {
 		return jwt.sign(payload, JwtTokensService.#CSRF_SECRET, {
 			expiresIn: "10m"
 		});
@@ -38,7 +38,7 @@ class JwtTokensService {
 		return JwtTokensService.#verify<T>(token, JwtTokensService.#REFRESH_SECRET);
 	}
 
-	static verifyCSRF<T>(token: string) {
+	static verifyCsrf<T>(token: string) {
 		return JwtTokensService.#verify<T>(token, JwtTokensService.#CSRF_SECRET);
 	}
 

@@ -20,8 +20,8 @@ const DeleteAccountModal: FC<CustomModalProps> = ({isOpen, onClose}) => (
 					</ModalHeader>
 					<ModalBody>
 						<p>
-							Are you sure you want to delete your account? All your data
-							will be lost forever.
+							Are you sure you want to delete your account? All your data will
+							be lost forever.
 						</p>
 					</ModalBody>
 					<ModalFooter>

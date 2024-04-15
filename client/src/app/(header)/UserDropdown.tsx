@@ -26,6 +26,9 @@ const UserDropdown = ({user}: {user: any}) => {
 			case "create-project":
 				router.push("?modal=create-project");
 				break;
+			case "my-projects":
+				router.push(Pathname.MY_PROJECTS);
+				break;
 			default:
 				break;
 		}
@@ -51,7 +54,7 @@ const UserDropdown = ({user}: {user: any}) => {
 			>
 				<DropdownItem key="profile" className="h-14 gap-2">
 					<p className="font-semibold">Signed in as</p>
-					<p className="font-semibold">{user.email}</p>
+					<p className="font-semibold">{user.username}</p>
 				</DropdownItem>
 				<DropdownItem key="create-project">Create Project</DropdownItem>
 				<DropdownItem key="my-projects">My Projects</DropdownItem>

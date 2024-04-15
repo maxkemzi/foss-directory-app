@@ -1,5 +1,5 @@
-import {UserFromApi} from "#src/api";
-import {Pathname} from "#src/constants";
+import {AuthCookie, Pathname} from "#src/constants";
+import {parseUserCookieToJson} from "#src/helpers";
 import {
 	Button,
 	Link,
@@ -20,8 +20,8 @@ interface Props {
 
 const Header: FC<Props> = ({isAbsolute}) => {
 	const cookieStore = cookies();
-	const user = cookieStore.get("user")?.value;
-	const parsedUser = user ? (JSON.parse(user) as UserFromApi) : null;
+	const userCookie = cookieStore.get(AuthCookie.USER)?.value;
+	const user = userCookie ? parseUserCookieToJson(userCookie) : null;
 
 	return (
 		<Navbar
@@ -37,8 +37,8 @@ const Header: FC<Props> = ({isAbsolute}) => {
 			</NavbarBrand>
 			<NavbarCenter />
 			<NavbarContent justify="end">
-				{parsedUser ? (
-					<UserDropdown user={parsedUser} />
+				{user ? (
+					<UserDropdown user={user} />
 				) : (
 					<>
 						<NavbarItem className="hidden lg:flex">

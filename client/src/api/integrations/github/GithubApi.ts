@@ -1,4 +1,4 @@
-import {FetchUrlResponse} from "../../types";
+import {FetchUrlResponse} from "#src/types/api";
 import ApiFetcher from "../../ApiFetcher";
 
 class GithubApi {

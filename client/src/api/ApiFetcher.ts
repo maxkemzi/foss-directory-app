@@ -1,4 +1,5 @@
-import {COOKIE_OPTIONS} from "#src/constants";
+import {AuthCookie, COOKIE_OPTIONS} from "#src/constants";
+import {deleteAuthCookiesFromStore} from "#src/helpers";
 import {cookies} from "next/headers";
 import ApiError from "./ApiError";
 
@@ -25,7 +26,7 @@ class ApiFetcher {
 
 	async fetchWithAuth(
 		url: string,
-		options: RequestInit & {isRetry?: boolean}
+		options: RequestInit & {isRetry?: boolean} = {}
 	): Promise<Response> {
 		const cookieStore = cookies();
 
@@ -44,9 +45,6 @@ class ApiFetcher {
 		});
 
 		if (response.status === 401 && !options.isRetry) {
-			// eslint-disable-next-line no-param-reassign
-			options.isRetry = true;
-
 			try {
 				const refreshResponse = await this.fetch("/auth/refresh", {
 					method: "POST",
@@ -55,18 +53,21 @@ class ApiFetcher {
 				});
 				const {user, tokens} = await refreshResponse.json();
 
-				cookieStore.set("user", JSON.stringify(user), COOKIE_OPTIONS);
-				cookieStore.set("accessToken", tokens.access, COOKIE_OPTIONS);
-				cookieStore.set("refreshToken", tokens.refresh, COOKIE_OPTIONS);
-				cookieStore.set("isAuth", "true", COOKIE_OPTIONS);
+				cookieStore.set(AuthCookie.USER, JSON.stringify(user), COOKIE_OPTIONS);
+				cookieStore.set(AuthCookie.ACCESS_TOKEN, tokens.access, COOKIE_OPTIONS);
+				cookieStore.set(
+					AuthCookie.REFRESH_TOKEN,
+					tokens.refresh,
+					COOKIE_OPTIONS
+				);
 
-				const retryResponse = await this.fetchWithAuth(url, options);
+				const retryResponse = await this.fetchWithAuth(url, {
+					...options,
+					isRetry: true
+				});
 				return retryResponse;
 			} catch (e) {
-				cookieStore.delete("user");
-				cookieStore.delete("accessToken");
-				cookieStore.delete("refreshToken");
-				cookieStore.delete("isAuth");
+				deleteAuthCookiesFromStore(cookieStore);
 
 				throw e;
 			}
