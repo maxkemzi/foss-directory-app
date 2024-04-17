@@ -1,4 +1,4 @@
-import {ProjectFromApi} from "#src/api";
+import {ProjectFromApi} from "#src/types/api";
 import {
 	Card,
 	CardBody,
@@ -26,7 +26,7 @@ const ProjectCard: FC<Props> = ({project}) => {
 			<Divider />
 			<CardFooter>
 				<Link isExternal showAnchorIcon href={project.repoUrl}>
-					Visit source code on GitHub.
+					Visit source code.
 				</Link>
 			</CardFooter>
 		</Card>

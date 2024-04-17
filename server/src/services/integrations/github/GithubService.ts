@@ -1,4 +1,5 @@
 import {GithubConnectionModel} from "#src/db/models";
+import {RepoDto} from "#src/dtos";
 import {ApiError} from "#src/lib";
 import TokenService from "../../jwtTokens/JwtTokensService";
 
@@ -49,6 +50,35 @@ class GithubService {
 			userId,
 			token: accessToken
 		});
+	}
+
+	static async getConnectionByUserId(id: number) {
+		const connection = await GithubConnectionModel.getByUserId(id);
+		if (!connection) {
+			throw new ApiError(404, "Your account is not connected to github.");
+		}
+
+		return connection;
+	}
+
+	static async getReposByToken(token: string) {
+		const response = await fetch(
+			"https://api.github.com/user/repos?visibility=public&affiliation=owner&sort=pushed",
+			{
+				headers: {
+					Accept: "application/vnd.github+json",
+					Authorization: `Bearer ${token}`
+				}
+			}
+		);
+
+		if (!response.ok) {
+			throw new ApiError(404, "Something went wrong.");
+		}
+
+		const repos = await response.json();
+
+		return repos.map((repo: any) => new RepoDto(repo));
 	}
 }
 

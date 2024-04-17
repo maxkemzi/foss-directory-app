@@ -1,8 +1,8 @@
 "use server";
 
-import {ApiError, ProjectsApi, TagsApi} from "#src/api";
-import {Pathname} from "#src/constants";
-import {revalidatePath} from "next/cache";
+import {ApiError, GithubApi, ProjectsApi, TagsApi} from "#src/api";
+import {CacheTag} from "#src/constants";
+import {revalidateTag} from "next/cache";
 import {INITIAL_FORM_STATE, VALIDATION_SCHEMA} from "./constants";
 
 const createProject = async (prevState: any, formData: FormData) => {
@@ -23,7 +23,7 @@ const createProject = async (prevState: any, formData: FormData) => {
 
 	try {
 		await ProjectsApi.create(validatedFields.data);
-		revalidatePath(Pathname.PROJECTS);
+		revalidateTag(CacheTag.PROJECTS);
 
 		return {...INITIAL_FORM_STATE, success: true};
 	} catch (e) {
@@ -41,4 +41,9 @@ const getTags = async () => {
 	return tags;
 };
 
-export {createProject, getTags};
+const getRepos = async () => {
+	const repos = await GithubApi.fetchRepos();
+	return repos;
+};
+
+export {createProject, getTags, getRepos};

@@ -1,23 +1,31 @@
-import {TagFromApi} from "#src/api";
+import {TagFromApi} from "#src/types/api";
 import {Autocomplete, AutocompleteItem, Button, Chip} from "@nextui-org/react";
 import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
 import {FC, useEffect, useState} from "react";
-import {getTags} from "../Form/actions";
+import {getTags} from "../actions";
 
 interface Props {
 	isInvalid: boolean;
 	errorMessage?: string;
+	isDisabled?: boolean;
+	defaultValue?: string[];
 }
 
-const FormTagsField: FC<Props> = ({isInvalid, errorMessage}) => {
+const TagsField: FC<Props> = ({
+	isInvalid,
+	errorMessage,
+	isDisabled,
+	defaultValue
+}) => {
 	const [autocompleteIsOpen, setAutocompleteIsOpen] = useState(false);
 
 	const [tags, setTags] = useState<TagFromApi[]>([]);
 	const [tagsAreFetching, setTagsAreFetching] = useState(false);
 
-	const [addedTags, setAddedTags] = useState<string[]>([]);
+	const [addedTags, setAddedTags] = useState<string[]>(defaultValue || []);
 	const [inputValue, setInputValue] = useState<string>("");
 
+	// todo: implement infinite scroll
 	const [, scrollRef] = useInfiniteScroll({
 		hasMore: false,
 		isEnabled: autocompleteIsOpen,
@@ -55,6 +63,7 @@ const FormTagsField: FC<Props> = ({isInvalid, errorMessage}) => {
 					onInputChange={setInputValue}
 					isInvalid={isInvalid}
 					errorMessage={errorMessage}
+					isDisabled={isDisabled}
 				>
 					{item => (
 						<AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
@@ -70,7 +79,7 @@ const FormTagsField: FC<Props> = ({isInvalid, errorMessage}) => {
 				</Button>
 			</div>
 			{addedTags.length !== 0 ? (
-				<div className="flex gap-4 mt-4">
+				<div className="flex gap-4 mt-4 overflow-x-auto">
 					{addedTags.map(tag => (
 						<Chip key={tag} onClose={() => removeTag(tag)} variant="flat">
 							{tag}
@@ -83,4 +92,4 @@ const FormTagsField: FC<Props> = ({isInvalid, errorMessage}) => {
 	);
 };
 
-export default FormTagsField;
+export default TagsField;

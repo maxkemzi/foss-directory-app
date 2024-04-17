@@ -17,4 +17,12 @@ interface UserFromApi {
 	githubIsConnected: boolean;
 }
 
-export type {ProjectFromApi, TagFromApi, UserFromApi};
+interface RepoFromApi {
+	id: number;
+	name: string;
+	description: string;
+	url: string;
+	topics: string[];
+}
+
+export type {ProjectFromApi, TagFromApi, UserFromApi, RepoFromApi};

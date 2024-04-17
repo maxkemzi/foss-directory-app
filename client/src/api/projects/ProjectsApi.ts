@@ -1,3 +1,4 @@
+import {CacheTag} from "#src/constants";
 import {
 	CreateProjectBody,
 	CreateProjectResponse,
@@ -9,12 +10,16 @@ class ProjectsApi {
 	private static fetcher = new ApiFetcher("/projects");
 
 	static async fetchAll(): Promise<FetchProjectsResponse> {
-		const response = await this.fetcher.fetch("/");
+		const response = await this.fetcher.fetch("/", {
+			next: {tags: [CacheTag.PROJECTS]}
+		});
 		return response.json();
 	}
 
 	static async fetchAllAuth(): Promise<FetchProjectsResponse> {
-		const response = await this.fetcher.fetchWithAuth("/auth");
+		const response = await this.fetcher.fetchWithAuth("/auth", {
+			next: {tags: [CacheTag.PROJECTS]}
+		});
 		return response.json();
 	}
 

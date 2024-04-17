@@ -47,6 +47,19 @@ class GithubController {
 			next(e);
 		}
 	}
+
+	static async getRepos(req: Request, res: Response, next: NextFunction) {
+		try {
+			const userId = res.locals.user?.id!;
+
+			const {token} = await GithubService.getConnectionByUserId(userId);
+			const repos = await GithubService.getReposByToken(token);
+
+			res.json(repos);
+		} catch (e) {
+			next(e);
+		}
+	}
 }
 
 export default GithubController;

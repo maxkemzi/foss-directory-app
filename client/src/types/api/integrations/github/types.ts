@@ -1,6 +1,10 @@
+import {RepoFromApi} from "../../types";
+
 interface FetchUrlResponse {
 	url: string;
 	CsrfToken: string;
 }
 
-export type {FetchUrlResponse};
+type FetchReposResponse = RepoFromApi[];
+
+export type {FetchUrlResponse, FetchReposResponse};
