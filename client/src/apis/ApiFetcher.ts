@@ -1,4 +1,4 @@
-import {AuthCookie, COOKIE_OPTIONS} from "#src/constants";
+import {Cookie, COOKIE_OPTIONS} from "#src/constants";
 import {deleteAuthCookiesFromStore} from "#src/helpers";
 import {cookies} from "next/headers";
 import ApiError from "./ApiError";
@@ -53,13 +53,12 @@ class ApiFetcher {
 				});
 				const {user, tokens} = await refreshResponse.json();
 
-				cookieStore.set(AuthCookie.USER, JSON.stringify(user), COOKIE_OPTIONS);
-				cookieStore.set(AuthCookie.ACCESS_TOKEN, tokens.access, COOKIE_OPTIONS);
-				cookieStore.set(
-					AuthCookie.REFRESH_TOKEN,
-					tokens.refresh,
-					COOKIE_OPTIONS
-				);
+				cookieStore.set(Cookie.USER, JSON.stringify(user), {
+					...COOKIE_OPTIONS,
+					httpOnly: false
+				});
+				cookieStore.set(Cookie.ACCESS_TOKEN, tokens.access, COOKIE_OPTIONS);
+				cookieStore.set(Cookie.REFRESH_TOKEN, tokens.refresh, COOKIE_OPTIONS);
 
 				const retryResponse = await this.fetchWithAuth(url, {
 					...options,

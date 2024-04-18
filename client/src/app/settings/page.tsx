@@ -1,7 +1,7 @@
 import {SubmitButton} from "#src/components";
 import {Container} from "#src/components/ui";
-import {AuthCookie} from "#src/constants";
-import {parseUserCookieToJson} from "#src/helpers";
+import {Cookie} from "#src/constants";
+import {UserFromApi} from "#src/types";
 import {Button} from "@nextui-org/react";
 import {cookies} from "next/headers";
 import {Header} from "../(header)";
@@ -12,8 +12,8 @@ const Settings = () => {
 	const cookieStore = cookies();
 	// This page is protected by the middleware
 	// This means that the "user" cookie has been set
-	const userCookie = cookieStore.get(AuthCookie.USER)?.value!;
-	const user = parseUserCookieToJson(userCookie);
+	const userCookie = cookieStore.get(Cookie.USER)?.value!;
+	const user = JSON.parse(userCookie) as UserFromApi;
 
 	return (
 		<>

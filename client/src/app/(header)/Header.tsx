@@ -1,5 +1,5 @@
-import {AuthCookie, Pathname} from "#src/constants";
-import {parseUserCookieToJson} from "#src/helpers";
+import {Cookie, Pathname} from "#src/constants";
+import {UserFromApi} from "#src/types";
 import {
 	Button,
 	Link,
@@ -20,8 +20,8 @@ interface Props {
 
 const Header: FC<Props> = ({isAbsolute}) => {
 	const cookieStore = cookies();
-	const userCookie = cookieStore.get(AuthCookie.USER)?.value;
-	const user = userCookie ? parseUserCookieToJson(userCookie) : null;
+	const userCookie = cookieStore.get(Cookie.USER)?.value;
+	const user = userCookie ? (JSON.parse(userCookie) as UserFromApi) : null;
 
 	return (
 		<Navbar

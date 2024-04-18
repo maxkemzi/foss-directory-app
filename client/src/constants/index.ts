@@ -2,7 +2,7 @@ import COOKIE_OPTIONS from "./cookieOptions";
 import ModalVariant from "./modalVariants";
 import Pathname from "./pathnames";
 import ValidationSchema from "./validationSchemas";
-import AuthCookie from "./authCookies";
+import Cookie from "./cookies";
 import CacheTag from "./cacheTags";
 
 export {
@@ -10,6 +10,6 @@ export {
 	ModalVariant,
 	Pathname,
 	ValidationSchema,
-	AuthCookie,
+	Cookie,
 	CacheTag
 };

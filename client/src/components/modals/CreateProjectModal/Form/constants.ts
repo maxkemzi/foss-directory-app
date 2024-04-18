@@ -33,4 +33,11 @@ const VALIDATION_SCHEMA = z.object({
 	tags: z.string().array()
 });
 
-export {INITIAL_FORM_STATE, VALIDATION_SCHEMA};
+const INITIAL_FIELD_VALUES = {
+	name: "",
+	description: "",
+	repoUrl: "",
+	tags: []
+};
+
+export {INITIAL_FORM_STATE, VALIDATION_SCHEMA, INITIAL_FIELD_VALUES};

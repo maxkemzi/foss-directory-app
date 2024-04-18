@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
 import {AuthApi} from "./apis";
-import {AuthCookie, COOKIE_OPTIONS, Pathname} from "./constants";
+import {Cookie, COOKIE_OPTIONS, Pathname} from "./constants";
 
 const AUTH_PATHNAMES = [Pathname.LOGIN, Pathname.SIGNUP];
 const PROTECTED_PATHNAMES = [Pathname.SETTINGS, Pathname.MY_PROJECTS];
@@ -27,7 +27,7 @@ const middleware = async (req: NextRequest) => {
 		return response;
 	}
 
-	const isAuth = Boolean(req.cookies.get(AuthCookie.USER)?.value);
+	const isAuth = Boolean(req.cookies.get(Cookie.USER)?.value);
 	const pathIsProtected = PROTECTED_PATHNAMES.includes(req.nextUrl.pathname);
 	if (!isAuth && pathIsProtected) {
 		return NextResponse.redirect(new URL(Pathname.LOGIN, req.url));
@@ -40,18 +40,13 @@ const middleware = async (req: NextRequest) => {
 			const {user, tokens} = await AuthApi.refresh(refreshToken);
 
 			const response = NextResponse.next();
+			response.cookies.set(Cookie.USER, JSON.stringify(user), {
+				...COOKIE_OPTIONS,
+				httpOnly: false
+			});
+			response.cookies.set(Cookie.ACCESS_TOKEN, tokens.access, COOKIE_OPTIONS);
 			response.cookies.set(
-				AuthCookie.USER,
-				JSON.stringify(user),
-				COOKIE_OPTIONS
-			);
-			response.cookies.set(
-				AuthCookie.ACCESS_TOKEN,
-				tokens.access,
-				COOKIE_OPTIONS
-			);
-			response.cookies.set(
-				AuthCookie.REFRESH_TOKEN,
+				Cookie.REFRESH_TOKEN,
 				tokens.refresh,
 				COOKIE_OPTIONS
 			);
@@ -60,9 +55,9 @@ const middleware = async (req: NextRequest) => {
 			console.log(e);
 
 			const response = NextResponse.redirect(new URL(Pathname.LOGIN, req.url));
-			response.cookies.delete(AuthCookie.USER);
-			response.cookies.delete(AuthCookie.ACCESS_TOKEN);
-			response.cookies.delete(AuthCookie.REFRESH_TOKEN);
+			response.cookies.delete(Cookie.USER);
+			response.cookies.delete(Cookie.ACCESS_TOKEN);
+			response.cookies.delete(Cookie.REFRESH_TOKEN);
 			return response;
 		}
 	}

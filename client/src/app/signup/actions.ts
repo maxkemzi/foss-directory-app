@@ -1,7 +1,7 @@
 "use server";
 
 import {ApiError, AuthApi} from "#src/apis";
-import {AuthCookie, COOKIE_OPTIONS} from "#src/constants";
+import {Cookie, COOKIE_OPTIONS} from "#src/constants";
 import {cookies} from "next/headers";
 import {INITIAL_FORM_STATE, VALIDATION_SCHEMA} from "./constants";
 
@@ -24,9 +24,12 @@ const signUp = async (prevState: any, formData: FormData) => {
 		const {user, tokens} = await AuthApi.signUp(validatedFields.data);
 
 		const cookieStore = cookies();
-		cookieStore.set(AuthCookie.USER, JSON.stringify(user), COOKIE_OPTIONS);
-		cookieStore.set(AuthCookie.ACCESS_TOKEN, tokens.access, COOKIE_OPTIONS);
-		cookieStore.set(AuthCookie.REFRESH_TOKEN, tokens.refresh, COOKIE_OPTIONS);
+		cookieStore.set(Cookie.USER, JSON.stringify(user), {
+			...COOKIE_OPTIONS,
+			httpOnly: false
+		});
+		cookieStore.set(Cookie.ACCESS_TOKEN, tokens.access, COOKIE_OPTIONS);
+		cookieStore.set(Cookie.REFRESH_TOKEN, tokens.refresh, COOKIE_OPTIONS);
 
 		return {...INITIAL_FORM_STATE, success: true};
 	} catch (e) {

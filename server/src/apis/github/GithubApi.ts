@@ -59,7 +59,7 @@ class GithubApi {
 		searchParams.set("sort", "pushed");
 
 		const response = await fetch(
-			`${GithubApi.#BASE_URL}/user/repos?${searchParams.toString}`,
+			`${GithubApi.#BASE_URL}/user/repos?${searchParams.toString()}`,
 			{
 				headers: {
 					Accept: "application/vnd.github+json",

@@ -1,4 +1,4 @@
-import parseUserCookieToJson from "./parseUserCookieToJson";
 import deleteAuthCookiesFromStore from "./deleteAuthCookiesFromStore";
+import parseClientCookie from "./parseClientCookie";
 
-export {parseUserCookieToJson, deleteAuthCookiesFromStore};
+export {deleteAuthCookiesFromStore, parseClientCookie};

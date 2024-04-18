@@ -9,7 +9,7 @@ class ProjectModel {
 		description,
 		ownerId,
 		repoUrl,
-		tags: tagNames
+		tags
 	}: ProjectPayload): Promise<ProjectDocument> {
 		const client = await Db.connect();
 
@@ -23,22 +23,22 @@ class ProjectModel {
 			const project = projects[0];
 
 			// eslint-disable-next-line no-restricted-syntax
-			for (const tagName of tagNames) {
+			for (const tag of tags) {
 				const {rows} = await client.query<Pick<TagFromDb, "id">>(
 					"SELECT id FROM tags WHERE name=$1;",
-					[tagName]
+					[tag]
 				);
-				const tag = rows[0];
+				const tagRow = rows[0];
 
-				if (!tag) {
+				if (!tagRow) {
 					await client.query(
-						"INSERT INTO custom_tags(project_id, name) VALUES($1, $2);",
-						[project.id, tagName]
+						"INSERT INTO projects_custom_tags(project_id, name) VALUES($1, $2);",
+						[project.id, tag]
 					);
 				} else {
 					await client.query(
 						"INSERT INTO projects_tags(project_id, tag_id) VALUES($1, $2);",
-						[project.id, tag.id]
+						[project.id, tagRow.id]
 					);
 				}
 			}

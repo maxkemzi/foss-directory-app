@@ -45,7 +45,7 @@ class ProjectDocument extends Document implements DocumentImpl<Project> {
 					[this.id]
 				),
 				Db.query<CustomTagFromDb>(
-					"SELECT * FROM custom_tags WHERE project_id=$1;",
+					"SELECT * FROM projects_custom_tags WHERE project_id=$1;",
 					[this.id]
 				)
 			]
