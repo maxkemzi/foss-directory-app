@@ -1,4 +1,4 @@
-import {UserFromApi} from "../types";
+import {UserFromApi} from "#src/types";
 
 interface LoginBody {
 	email: string;
@@ -33,8 +33,8 @@ interface LogoutResponse {
 export type {
 	LoginBody,
 	LoginResponse,
-	SignupBody,
-	SignupResponse,
+	LogoutResponse,
 	RefreshResponse,
-	LogoutResponse
+	SignupBody,
+	SignupResponse
 };

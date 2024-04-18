@@ -1,5 +1,5 @@
 import {SubmitButton} from "#src/components";
-import {RepoFromApi} from "#src/types/api";
+import {RepoFromApi} from "#src/types";
 import {Button, Input} from "@nextui-org/react";
 import {FC, useEffect, useState} from "react";
 import {useFormState} from "react-dom";

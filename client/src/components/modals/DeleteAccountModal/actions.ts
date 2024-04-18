@@ -1,6 +1,6 @@
 "use server";
 
-import {AccountsApi} from "#src/api";
+import {AccountsApi} from "#src/apis";
 import {Pathname} from "#src/constants";
 import {deleteAuthCookiesFromStore} from "#src/helpers";
 import {cookies} from "next/headers";

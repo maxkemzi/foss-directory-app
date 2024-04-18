@@ -1,4 +1,4 @@
-import {FetchTagsResponse} from "#src/types/api";
+import {FetchTagsResponse} from "./types";
 import ApiFetcher from "../../ApiFetcher";
 
 class TagsApi {

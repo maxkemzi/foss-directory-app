@@ -1,11 +1,13 @@
-class RepoDto {
+import {GithubRepo} from "#src/types";
+
+class GithubRepoDto {
 	id: number;
 	name: string;
-	description: string;
+	description: string | null;
 	url: string;
 	topics: string[];
 
-	constructor(doc: any) {
+	constructor(doc: GithubRepo) {
 		this.id = doc.id;
 		this.name = doc.name;
 		this.description = doc.description;
@@ -14,4 +16,4 @@ class RepoDto {
 	}
 }
 
-export default RepoDto;
+export default GithubRepoDto;

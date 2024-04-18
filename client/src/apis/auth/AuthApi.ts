@@ -5,7 +5,7 @@ import {
 	RefreshResponse,
 	SignupBody,
 	SignupResponse
-} from "#src/types/api";
+} from "./types";
 import ApiFetcher from "../ApiFetcher";
 
 class AuthApi {

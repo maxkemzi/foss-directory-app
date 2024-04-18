@@ -1,4 +1,4 @@
-import {RepoFromApi} from "#src/types/api";
+import {RepoFromApi} from "#src/types";
 import {Autocomplete, AutocompleteItem} from "@nextui-org/react";
 import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
 import {FC, Key, useEffect, useState} from "react";

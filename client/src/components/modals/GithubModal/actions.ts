@@ -1,15 +1,15 @@
 "use server";
 
-import {GithubApi} from "#src/api";
+import {GithubApi} from "#src/apis";
 import {COOKIE_OPTIONS} from "#src/constants";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 
 const redirectToGithubConnectionUrl = async () => {
-	const {url, CsrfToken} = await GithubApi.fetchConnectionUrl();
+	const {url, csrfToken} = await GithubApi.fetchConnectionUrl();
 
 	const cookieStore = cookies();
-	cookieStore.set("CsrfToken", CsrfToken, {
+	cookieStore.set("csrfToken", csrfToken, {
 		...COOKIE_OPTIONS,
 		sameSite: "lax"
 	});

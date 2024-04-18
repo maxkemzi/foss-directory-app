@@ -1,4 +1,4 @@
-import {TagFromApi} from "../types";
+import {TagFromApi} from "#src/types";
 
 type FetchTagsResponse = TagFromApi[];
 

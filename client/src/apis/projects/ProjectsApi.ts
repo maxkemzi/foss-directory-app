@@ -3,7 +3,7 @@ import {
 	CreateProjectBody,
 	CreateProjectResponse,
 	FetchProjectsResponse
-} from "#src/types/api";
+} from "./types";
 import ApiFetcher from "../ApiFetcher";
 
 class ProjectsApi {

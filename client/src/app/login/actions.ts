@@ -1,6 +1,6 @@
 "use server";
 
-import {ApiError, AuthApi} from "#src/api";
+import {ApiError, AuthApi} from "#src/apis";
 import {AuthCookie, COOKIE_OPTIONS} from "#src/constants";
 import {cookies} from "next/headers";
 import {INITIAL_FORM_STATE, VALIDATION_SCHEMA} from "./constants";

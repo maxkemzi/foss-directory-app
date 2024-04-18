@@ -4,6 +4,6 @@ import {Router} from "express";
 
 const usersRouter = Router();
 
-usersRouter.delete("/accounts", authChecker, UsersController.delete);
+usersRouter.delete("/accounts", authChecker, UsersController.deleteAccount);
 
 export default usersRouter;

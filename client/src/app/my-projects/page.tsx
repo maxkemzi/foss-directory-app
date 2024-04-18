@@ -1,4 +1,4 @@
-import {ProjectsApi} from "#src/api";
+import {ProjectsApi} from "#src/apis";
 import {ProjectCard} from "#src/components";
 import {Container} from "#src/components/ui";
 import {Header} from "../(header)";

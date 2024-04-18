@@ -1,6 +1,6 @@
 "use server";
 
-import {ApiError, GithubApi, ProjectsApi, TagsApi} from "#src/api";
+import {ApiError, GithubApi, ProjectsApi, TagsApi} from "#src/apis";
 import {CacheTag} from "#src/constants";
 import {revalidateTag} from "next/cache";
 import {INITIAL_FORM_STATE, VALIDATION_SCHEMA} from "./constants";
@@ -46,4 +46,4 @@ const getRepos = async () => {
 	return repos;
 };
 
-export {createProject, getTags, getRepos};
+export {createProject, getRepos, getTags};

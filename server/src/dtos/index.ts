@@ -2,6 +2,6 @@ import ProjectDto from "./project/ProjectDto";
 import PopulatedProjectDto from "./project/PopulatedProjectDto";
 import UserDto from "./UserDto";
 import TagDto from "./TagDto";
-import RepoDto from "./RepoDto";
+import GithubRepoDto from "./GithubRepoDto";
 
-export {ProjectDto, PopulatedProjectDto, UserDto, TagDto, RepoDto};
+export {ProjectDto, PopulatedProjectDto, UserDto, TagDto, GithubRepoDto};

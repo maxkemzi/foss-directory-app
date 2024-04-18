@@ -1,4 +1,4 @@
-import {ProjectFromApi} from "#src/types/api";
+import {ProjectFromApi} from "#src/types";
 import {
 	Card,
 	CardBody,

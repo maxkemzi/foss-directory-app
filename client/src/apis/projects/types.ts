@@ -1,4 +1,4 @@
-import {ProjectFromApi} from "../types";
+import {ProjectFromApi} from "#src/types";
 
 type FetchProjectsResponse = ProjectFromApi[];
 
@@ -11,4 +11,4 @@ interface CreateProjectBody {
 
 type CreateProjectResponse = ProjectFromApi;
 
-export type {FetchProjectsResponse, CreateProjectBody, CreateProjectResponse};
+export type {CreateProjectBody, CreateProjectResponse, FetchProjectsResponse};

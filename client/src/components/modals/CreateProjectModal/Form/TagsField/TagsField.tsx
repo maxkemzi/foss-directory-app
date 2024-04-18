@@ -1,4 +1,4 @@
-import {TagFromApi} from "#src/types/api";
+import {TagFromApi} from "#src/types";
 import {Autocomplete, AutocompleteItem, Button, Chip} from "@nextui-org/react";
 import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
 import {FC, useEffect, useState} from "react";

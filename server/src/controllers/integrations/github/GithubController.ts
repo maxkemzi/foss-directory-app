@@ -7,9 +7,9 @@ class GithubController {
 		try {
 			const userId = res.locals.user?.id!;
 
-			const {url, CsrfToken} = await GithubService.getAuthUrl(userId);
+			const {url, csrfToken} = await GithubService.getOAuthUrl(userId);
 
-			res.json({url, CsrfToken});
+			res.json({url, csrfToken});
 		} catch (e) {
 			next(e);
 		}
@@ -53,7 +53,7 @@ class GithubController {
 			const userId = res.locals.user?.id!;
 
 			const {token} = await GithubService.getConnectionByUserId(userId);
-			const repos = await GithubService.getReposByToken(token);
+			const repos = await GithubService.getAuthRepos(token);
 
 			res.json(repos);
 		} catch (e) {

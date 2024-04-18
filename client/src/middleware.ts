@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from "next/server";
-import {AuthApi} from "./api";
+import {AuthApi} from "./apis";
 import {AuthCookie, COOKIE_OPTIONS, Pathname} from "./constants";
 
 const AUTH_PATHNAMES = [Pathname.LOGIN, Pathname.SIGNUP];
@@ -16,14 +16,14 @@ const middleware = async (req: NextRequest) => {
 	if (isSuccessPath) {
 		const {searchParams} = req.nextUrl;
 		const token = searchParams.get("token");
-		const CsrfToken = req.cookies.get("CsrfToken")?.value;
+		const csrfToken = req.cookies.get("csrfToken")?.value;
 
-		if (!token || !CsrfToken || token !== CsrfToken) {
+		if (!token || !csrfToken || token !== csrfToken) {
 			return NextResponse.json({message: "Access denied."}, {status: 403});
 		}
 
 		const response = NextResponse.next();
-		response.cookies.delete("CsrfToken");
+		response.cookies.delete("csrfToken");
 		return response;
 	}
 

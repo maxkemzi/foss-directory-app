@@ -1,4 +1,4 @@
-import {DeleteAccountResponse} from "#src/types/api";
+import {DeleteAccountResponse} from "./types";
 import ApiFetcher from "../../ApiFetcher";
 
 class AccountsApi {
