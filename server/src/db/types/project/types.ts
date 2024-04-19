@@ -1,4 +1,3 @@
-import {CustomTag} from "../customTag/types";
 import {Tag} from "../tag/types";
 import {DocumentObject, ObjectFromDb} from "../types";
 import {User} from "../user/types";
@@ -20,7 +19,6 @@ interface Project extends DocumentObject {
 interface PopulatedProject extends Project {
 	Owner: User | null;
 	Tags: Tag[];
-	CustomTags: CustomTag[];
 }
 
 interface ProjectPayload {
@@ -31,4 +29,16 @@ interface ProjectPayload {
 	tags: string[];
 }
 
-export type {PopulatedProject, Project, ProjectFromDb, ProjectPayload};
+interface GetAllQueryParams {
+	search?: string;
+	limit: number;
+	offset: number;
+}
+
+export type {
+	PopulatedProject,
+	Project,
+	ProjectFromDb,
+	ProjectPayload,
+	GetAllQueryParams
+};

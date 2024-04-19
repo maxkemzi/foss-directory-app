@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import {ProjectModel} from "#src/db/models";
-import {ProjectPayload} from "#src/db/types";
+import {GetAllQueryParams, ProjectPayload} from "#src/db/types";
 import {PopulatedProjectDto} from "#src/dtos";
 
 class ProjectsService {
@@ -11,13 +11,18 @@ class ProjectsService {
 		return new PopulatedProjectDto(populatedProject);
 	}
 
-	static async getAll(): Promise<PopulatedProjectDto[]> {
-		const projects = await ProjectModel.getAll();
+	static async getAll(
+		params: GetAllQueryParams
+	): Promise<{projects: PopulatedProjectDto[]; totalCount: number}> {
+		const {projects, totalCount} = await ProjectModel.getAll(params);
 		const populatedProjects = await Promise.all(
 			projects.map(p => p.populate())
 		);
 
-		return populatedProjects.map(pp => new PopulatedProjectDto(pp));
+		return {
+			projects: populatedProjects.map(pp => new PopulatedProjectDto(pp)),
+			totalCount
+		};
 	}
 
 	static async getAllByUserId(id: number): Promise<PopulatedProjectDto[]> {

@@ -3,6 +3,8 @@ interface ProjectFromApi {
 	name: string;
 	description: string;
 	repoUrl: string;
+	Owner: {id: number; username: string};
+	Tags: {id: number; name: string}[];
 }
 
 interface TagFromApi {

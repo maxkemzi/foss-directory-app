@@ -1,3 +1,4 @@
+import {Header} from "#src/constants";
 import {ApiError} from "#src/lib";
 import {ProjectsService} from "#src/services";
 import {Request, Response, NextFunction} from "express";
@@ -22,10 +23,26 @@ class ProjectsController {
 		}
 	}
 
-	static async getAll(req: Request, res: Response, next: NextFunction) {
+	static async getAll(
+		req: Request<{}, {}, {}, {search?: string; limit?: string; page?: string}>,
+		res: Response,
+		next: NextFunction
+	) {
 		try {
-			const projects = await ProjectsService.getAll();
+			const {search, limit, page} = req.query;
 
+			const parsedLimit = limit ? parseInt(limit, 10) : 10;
+			const parsedPage = page ? parseInt(page, 10) : 1;
+
+			const offset = (parsedPage - 1) * parsedLimit;
+
+			const {projects, totalCount} = await ProjectsService.getAll({
+				search,
+				limit: parsedLimit,
+				offset
+			});
+
+			res.set({[Header.TOTAL_COUNT]: totalCount});
 			res.json(projects);
 		} catch (e) {
 			next(e);

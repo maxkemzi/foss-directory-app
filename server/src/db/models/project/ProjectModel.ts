@@ -1,7 +1,12 @@
 /* eslint-disable no-await-in-loop */
 import Db from "../../Db";
 import {ProjectDocument} from "../../documents";
-import {ProjectFromDb, ProjectPayload, TagFromDb} from "../../types";
+import {
+	GetAllQueryParams,
+	ProjectFromDb,
+	ProjectPayload,
+	TagFromDb
+} from "../../types";
 
 class ProjectModel {
 	static async create({
@@ -16,31 +21,37 @@ class ProjectModel {
 		try {
 			await client.query("BEGIN");
 
-			const {rows: projects} = await client.query<ProjectFromDb>(
+			const {
+				rows: [project]
+			} = await client.query<ProjectFromDb>(
 				"INSERT INTO projects(owner_id, name, description, repo_url) VALUES($1, $2, $3, $4) RETURNING *;",
 				[ownerId, name, description, repoUrl]
 			);
-			const project = projects[0];
 
 			// eslint-disable-next-line no-restricted-syntax
 			for (const tag of tags) {
-				const {rows} = await client.query<Pick<TagFromDb, "id">>(
+				const {
+					rows: [tagFromDb]
+				} = await client.query<Pick<TagFromDb, "id">>(
 					"SELECT id FROM tags WHERE name=$1;",
 					[tag]
 				);
-				const tagRow = rows[0];
+				let tagId = tagFromDb?.id;
 
-				if (!tagRow) {
-					await client.query(
-						"INSERT INTO projects_custom_tags(project_id, name) VALUES($1, $2);",
-						[project.id, tag]
+				if (!tagId) {
+					const {
+						rows: [newTag]
+					} = await client.query(
+						"INSERT INTO tags(name) VALUES($1) RETURNING id;",
+						[tag]
 					);
-				} else {
-					await client.query(
-						"INSERT INTO projects_tags(project_id, tag_id) VALUES($1, $2);",
-						[project.id, tagRow.id]
-					);
+					tagId = newTag.id;
 				}
+
+				await client.query(
+					"INSERT INTO projects_tags(project_id, tag_id) VALUES($1, $2);",
+					[project.id, tagId]
+				);
 			}
 
 			await client.query("COMMIT");
@@ -54,9 +65,34 @@ class ProjectModel {
 		}
 	}
 
-	static async getAll(): Promise<ProjectDocument[]> {
-		const {rows} = await Db.query<ProjectFromDb>("SELECT * FROM projects;");
-		return rows.map(p => new ProjectDocument(p));
+	static async getAll({search, limit, offset}: GetAllQueryParams): Promise<{
+		projects: ProjectDocument[];
+		totalCount: number;
+	}> {
+		let query = `SELECT DISTINCT p.* FROM projects p LEFT JOIN projects_tags pt ON p.id = pt.project_id`;
+
+		if (search) {
+			const sanitizedSearch = search.replace(/'/g, "''");
+			query += ` WHERE p.name ILIKE '%${sanitizedSearch}%' OR p.description ILIKE '%${sanitizedSearch}%' OR pt.tag_id IN (SELECT id FROM tags WHERE name ILIKE '%${sanitizedSearch}%')`;
+		}
+
+		if (offset) {
+			query += ` OFFSET ${offset}`;
+		}
+
+		if (limit) {
+			query += ` LIMIT ${limit}`;
+		}
+
+		const [selectResult, countResult] = await Promise.all([
+			Db.query<ProjectFromDb>(`${query};`),
+			Db.query<{count: number}>("SELECT COUNT(*) FROM projects;")
+		]);
+
+		const projects = selectResult.rows.map(p => new ProjectDocument(p));
+		const totalCount = countResult.rows[0].count;
+
+		return {projects, totalCount};
 	}
 
 	static async getAllByUserId(id: number): Promise<ProjectDocument[]> {
@@ -68,11 +104,12 @@ class ProjectModel {
 	}
 
 	static async getById(id: number): Promise<ProjectDocument | null> {
-		const {rows} = await Db.query<ProjectFromDb>(
-			"SELECT * FROM projects WHERE id=$1;",
-			[id]
-		);
-		const project = rows[0];
+		const {
+			rows: [project]
+		} = await Db.query<ProjectFromDb>("SELECT * FROM projects WHERE id=$1;", [
+			id
+		]);
+
 		if (!project) {
 			return null;
 		}

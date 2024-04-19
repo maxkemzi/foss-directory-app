@@ -1,5 +1,4 @@
 import {Db} from "#src/db";
-import {CustomTagFromDb} from "../../types/customTag/types";
 import {PopulatedProject, Project, ProjectFromDb} from "../../types";
 import {TagFromDb} from "../../types/tag/types";
 import {UserFromDb} from "../../types/user/types";
@@ -31,26 +30,22 @@ class ProjectDocument extends Document implements DocumentImpl<Project> {
 	}
 
 	async populate(): Promise<PopulatedProject> {
-		const [{rows: users}, {rows: tags}, {rows: customTags}] = await Promise.all(
-			[
-				Db.query<UserFromDb>("SELECT * FROM users WHERE id=$1;", [
-					this.ownerId
-				]),
-				Db.query<TagFromDb>(
-					`
+		const [
+			{
+				rows: [user]
+			},
+			{rows: tags}
+		] = await Promise.all([
+			Db.query<UserFromDb>("SELECT * FROM users WHERE id=$1;", [this.ownerId]),
+			Db.query<TagFromDb>(
+				`
 					SELECT * FROM tags
 					JOIN projects_tags ON tags.id = projects_tags.tag_id
 					WHERE projects_tags.project_id = $1;
 				`,
-					[this.id]
-				),
-				Db.query<CustomTagFromDb>(
-					"SELECT * FROM projects_custom_tags WHERE project_id=$1;",
-					[this.id]
-				)
-			]
-		);
-		const user = users[0];
+				[this.id]
+			)
+		]);
 
 		return {
 			...this.toObject(),
@@ -68,13 +63,6 @@ class ProjectDocument extends Document implements DocumentImpl<Project> {
 				name: t.name,
 				createdAt: t.created_at,
 				updatedAt: t.updated_at
-			})),
-			CustomTags: customTags.map(ct => ({
-				id: ct.id,
-				projectId: ct.project_id,
-				name: ct.name,
-				createdAt: ct.created_at,
-				updatedAt: ct.updated_at
 			}))
 		};
 	}

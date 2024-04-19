@@ -10,9 +10,9 @@ const Projects = async () => {
 		<>
 			<Header />
 			<main>
-				<section>
+				<section className="py-6">
 					<Container>
-						<div className="grid grid-cols-3 gap-4">
+						<div className="grid grid-cols-3 items-start gap-4">
 							{projects.map(project => (
 								<ProjectCard key={project.id} project={project} />
 							))}
