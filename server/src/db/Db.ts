@@ -5,18 +5,14 @@ const {
 	POSTGRES_USER,
 	POSTGRES_PASSWORD,
 	POSTGRES_DATABASE,
-	POSTGRES_TEST_DATABASE,
 	POSTGRES_PORT
 } = process.env;
-
-const DATABASE =
-	process.env.NODE_ENV === "test" ? POSTGRES_TEST_DATABASE : POSTGRES_DATABASE;
 
 const pool = new Pool({
 	host: POSTGRES_HOST as string,
 	user: POSTGRES_USER as string,
 	password: POSTGRES_PASSWORD as string,
-	database: DATABASE as string,
+	database: POSTGRES_DATABASE as string,
 	port: Number(POSTGRES_PORT as string)
 });
 
