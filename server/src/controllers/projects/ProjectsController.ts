@@ -1,18 +1,20 @@
 import {Header} from "#src/constants";
 import {ApiError} from "#src/lib";
 import {ProjectsService} from "#src/services";
+import {PaginationQueryParams} from "#src/types/controllers";
 import {Request, Response, NextFunction} from "express";
 
 class ProjectsController {
 	static async create(req: Request, res: Response, next: NextFunction) {
 		try {
 			const userId = res.locals.user?.id!;
-			const {name, description, tags, repoUrl} = req.body;
+			const {name, description, tags, roles, repoUrl} = req.body;
 
 			const project = await ProjectsService.create({
 				name,
 				description,
 				tags,
+				roles,
 				repoUrl,
 				ownerId: userId
 			});
@@ -24,7 +26,7 @@ class ProjectsController {
 	}
 
 	static async getAll(
-		req: Request<{}, {}, {}, {search?: string; limit?: string; page?: string}>,
+		req: Request<{}, {}, {}, PaginationQueryParams>,
 		res: Response,
 		next: NextFunction
 	) {

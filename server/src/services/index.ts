@@ -1,15 +1,19 @@
-import AuthService from "./auth/AuthService";
+import AuthService from "./AuthService";
 import GithubService from "./integrations/github/GithubService";
-import JwtTokensService from "./jwtTokens/JwtTokensService";
+import JwtTokensService from "./JwtTokensService";
 import ProjectsService from "./projects/ProjectsService";
-import UsersService from "./users/UsersService";
-import TagsService from "./projects/tags/TagsService";
+import ProjectRequestsService from "./projects/requests/ProjectRequestsService";
+import RolesService from "./RolesService";
+import TagsService from "./TagsService";
+import UsersService from "./UsersService";
 
 export {
 	AuthService,
 	GithubService,
 	JwtTokensService,
+	ProjectRequestsService,
 	ProjectsService,
-	UsersService,
-	TagsService
+	RolesService,
+	TagsService,
+	UsersService
 };

@@ -2,7 +2,7 @@
 
 import {SubmitButton} from "#src/components";
 import {PasswordInput} from "#src/components/ui";
-import {Pathname} from "#src/constants";
+import {ModalVariant, Pathname} from "#src/constants";
 import {Input, Link} from "@nextui-org/react";
 import {useRouter} from "next/navigation";
 import {useEffect} from "react";
@@ -16,7 +16,7 @@ const Signup = () => {
 
 	useEffect(() => {
 		if (state.success) {
-			router.push(`${Pathname.HOME}?modal=github`);
+			router.push(`${Pathname.HOME}?modal=${ModalVariant.GITHUB}`);
 		}
 	}, [router, state.success]);
 

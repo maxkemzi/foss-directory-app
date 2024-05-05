@@ -3,8 +3,8 @@ import {
 	CreateProjectBody,
 	CreateProjectResponse,
 	FetchProjectsResponse
-} from "./types";
-import ApiFetcher from "../ApiFetcher";
+} from "#src/types/apis/projects";
+import ApiFetcher from "../lib/ApiFetcher";
 
 class ProjectsApi {
 	private static fetcher = new ApiFetcher("/projects");

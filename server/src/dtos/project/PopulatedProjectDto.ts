@@ -1,16 +1,34 @@
-import {PopulatedProject} from "#src/db/types";
+import {PopulatedProjectDocument} from "#src/types/db/documents";
 import ProjectDto from "./ProjectDto";
 
-class PopulatedProjectDto extends ProjectDto {
-	Owner: {id: number; username: string} | null;
-	Tags: {id: number; name: string}[];
+type Owner = PopulatedProjectDocument["Owner"];
+type ProjectTag = PopulatedProjectDocument["ProjectTags"][number];
+type ProjectRole = PopulatedProjectDocument["ProjectRoles"][number];
 
-	constructor(doc: PopulatedProject) {
+class PopulatedProjectDto extends ProjectDto {
+	Owner: {id: Owner["id"]; username: Owner["username"]};
+	ProjectTags: {
+		id: ProjectTag["id"];
+		Tag: {id: ProjectTag["Tag"]["id"]; name: ProjectTag["Tag"]["name"]};
+	}[];
+	ProjectRoles: {
+		id: ProjectRole["id"];
+		Role: {name: ProjectRole["Role"]["name"]};
+		count: ProjectRole["count"];
+	}[];
+
+	constructor(doc: PopulatedProjectDocument) {
 		super(doc);
-		this.Owner = doc.Owner
-			? {id: doc.Owner.id, username: doc.Owner.username}
-			: null;
-		this.Tags = doc.Tags.map(t => ({id: t.id, name: t.name}));
+		this.Owner = {id: doc.Owner.id, username: doc.Owner.username};
+		this.ProjectTags = doc.ProjectTags.map(pt => ({
+			id: pt.id,
+			Tag: {id: pt.Tag.id, name: pt.Tag.name}
+		}));
+		this.ProjectRoles = doc.ProjectRoles.map(pr => ({
+			id: pr.id,
+			count: pr.count,
+			Role: {name: pr.Role.name}
+		}));
 	}
 }
 

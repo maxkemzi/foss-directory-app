@@ -7,6 +7,7 @@ import CreateProjectModal from "./CreateProjectModal/CreateProjectModal";
 import DeleteAccountModal from "./DeleteAccountModal/DeleteAccountModal";
 import GithubModal from "./GithubModal/GithubModal";
 import {CustomModalProps} from "./types";
+import ProjectRequestModal from "./ProjectRequestModal/ProjectRequestModal";
 
 const GlobalModal: FC = () => {
 	const router = useRouter();
@@ -31,6 +32,8 @@ const GlobalModal: FC = () => {
 		ModalComponent = DeleteAccountModal;
 	} else if (modal === ModalVariant.CREATE_PROJECT) {
 		ModalComponent = CreateProjectModal;
+	} else if (modal === ModalVariant.PROJECT_REQUEST) {
+		ModalComponent = ProjectRequestModal;
 	}
 
 	return ModalComponent ? <ModalComponent {...modalProps} /> : null;

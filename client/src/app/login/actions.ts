@@ -1,7 +1,7 @@
 "use server";
 
-import {ApiError, AuthApi} from "#src/apis";
-import {Cookie, COOKIE_OPTIONS} from "#src/constants";
+import {AuthApi, isApiError} from "#src/apis";
+import {COOKIE_OPTIONS, Cookie} from "#src/constants";
 import {cookies} from "next/headers";
 import {INITIAL_FORM_STATE, VALIDATION_SCHEMA} from "./constants";
 
@@ -35,7 +35,7 @@ const logIn = async (prevState: any, formData: FormData) => {
 
 		return {
 			...INITIAL_FORM_STATE,
-			error: e instanceof ApiError ? e.message : "Something went wrong."
+			error: isApiError(e) ? e.message : "Something went wrong."
 		};
 	}
 };

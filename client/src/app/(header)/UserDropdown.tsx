@@ -1,6 +1,6 @@
 "use client";
 
-import {Pathname} from "#src/constants";
+import {ModalVariant, Pathname} from "#src/constants";
 import {
 	Avatar,
 	Dropdown,
@@ -20,14 +20,17 @@ const UserDropdown = ({user}: {user: any}) => {
 			case "log-out":
 				logOut();
 				break;
-			case "settings":
-				router.push(Pathname.SETTINGS);
-				break;
 			case "create-project":
-				router.push("?modal=create-project");
+				router.push(`?modal=${ModalVariant.CREATE_PROJECT}`);
+				break;
+			case "requests":
+				router.push(Pathname.REQUESTS);
 				break;
 			case "my-projects":
 				router.push(Pathname.MY_PROJECTS);
+				break;
+			case "settings":
+				router.push(Pathname.SETTINGS);
 				break;
 			default:
 				break;
@@ -57,6 +60,7 @@ const UserDropdown = ({user}: {user: any}) => {
 					<p className="font-semibold">{user.username}</p>
 				</DropdownItem>
 				<DropdownItem key="create-project">Create Project</DropdownItem>
+				<DropdownItem key="requests">Requests</DropdownItem>
 				<DropdownItem key="my-projects">My Projects</DropdownItem>
 				<DropdownItem key="settings">Settings</DropdownItem>
 				<DropdownItem key="log-out" color="danger">

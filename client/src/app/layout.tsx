@@ -17,7 +17,7 @@ const RootLayout: FC<PropsWithChildren> = ({children}) => (
 		<body className={inter.className}>
 			<Providers>
 				<div className="flex flex-col min-h-screen">{children}</div>
-				<Suspense fallback={<>Loading...</>}>
+				<Suspense>
 					<GlobalModal />
 				</Suspense>
 			</Providers>

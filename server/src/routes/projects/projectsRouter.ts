@@ -1,7 +1,7 @@
 import {ProjectsController} from "#src/controllers";
 import {authChecker} from "#src/middlewares";
 import {Router} from "express";
-import tagsRouter from "./tags/tagsRouter";
+import requestsRouter from "./requests/requestsRouter";
 
 const projectsRouter = Router();
 
@@ -10,6 +10,6 @@ projectsRouter.get("/", ProjectsController.getAll);
 projectsRouter.get("/auth", authChecker, ProjectsController.getAllAuth);
 projectsRouter.delete("/:id", authChecker, ProjectsController.delete);
 
-projectsRouter.use("/tags", tagsRouter);
+projectsRouter.use("/requests", requestsRouter);
 
 export default projectsRouter;

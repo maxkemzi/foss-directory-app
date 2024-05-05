@@ -14,7 +14,12 @@ const MyProjects = async () => {
 					<Container>
 						<div className="grid grid-cols-3 items-start gap-4">
 							{projects.map(project => (
-								<ProjectCard key={project.id} project={project} />
+								<ProjectCard
+									key={project.id}
+									project={project}
+									requestable={false}
+									isAuth
+								/>
 							))}
 						</div>
 					</Container>

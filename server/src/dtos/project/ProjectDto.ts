@@ -1,12 +1,12 @@
-import {Project} from "#src/db/types";
+import {ProjectDocument} from "#src/types/db/documents";
 
 class ProjectDto {
-	id: number;
-	name: string;
-	description: string;
-	repoUrl: string;
+	id: ProjectDocument["id"];
+	name: ProjectDocument["name"];
+	description: ProjectDocument["description"];
+	repoUrl: ProjectDocument["repoUrl"];
 
-	constructor(doc: Project) {
+	constructor(doc: ProjectDocument) {
 		this.id = doc.id;
 		this.name = doc.name;
 		this.description = doc.description;

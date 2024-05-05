@@ -1,8 +1,21 @@
-import ApiError from "./ApiError";
-import AuthApi from "./auth/AuthApi";
+import AuthApi from "./AuthApi";
 import GithubApi from "./integrations/github/GithubApi";
 import ProjectsApi from "./projects/ProjectsApi";
-import TagsApi from "./projects/tags/TagsApi";
+import ProjectRequestsApi from "./projects/requests/ProjectRequestsApi";
+import RolesApi from "./RolesApi";
+import TagsApi from "./TagsApi";
 import AccountsApi from "./users/accounts/AccountsApi";
+import ApiError from "./lib/ApiError";
+import isApiError from "./lib/isApiError";
 
-export {ApiError, AuthApi, GithubApi, ProjectsApi, TagsApi, AccountsApi};
+export {
+	AccountsApi,
+	AuthApi,
+	GithubApi,
+	ProjectsApi,
+	ProjectRequestsApi,
+	RolesApi,
+	TagsApi,
+	ApiError,
+	isApiError
+};

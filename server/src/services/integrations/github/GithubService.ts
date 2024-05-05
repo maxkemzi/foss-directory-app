@@ -1,7 +1,7 @@
 import {GithubApi} from "#src/apis";
 import {GithubConnectionModel} from "#src/db/models";
 import {ApiError} from "#src/lib";
-import JwtTokensService from "../../jwtTokens/JwtTokensService";
+import JwtTokensService from "../../JwtTokensService";
 
 class GithubService {
 	static async getOAuthUrl(userId: number) {

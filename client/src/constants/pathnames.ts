@@ -5,7 +5,8 @@ const Pathname = {
 	PROJECTS: "/projects",
 	MY_PROJECTS: "/my-projects",
 	SUCCESS: "/success",
-	SETTINGS: "/settings"
+	SETTINGS: "/settings",
+	REQUESTS: "/requests"
 };
 
 export default Pathname;

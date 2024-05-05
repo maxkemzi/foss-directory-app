@@ -74,7 +74,47 @@ class Db {
 			project_id INT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
 			tag_id INT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
 			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			UNIQUE(project_id, tag_id)
+		);
+		`,
+		`
+		CREATE TABLE IF NOT EXISTS roles (
+			id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+			name TEXT UNIQUE NOT NULL,
+			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+		);
+		`,
+		`
+		CREATE TABLE IF NOT EXISTS projects_roles (
+			id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+			project_id INT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+			role_id INT NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+			count INT NOT NULL DEFAULT 0,
+			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			UNIQUE(project_id, role_id)
+		);
+		`,
+		`
+		CREATE TABLE IF NOT EXISTS projects_contributors (
+			id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+			contributor_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+			project_role_id INT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			UNIQUE(contributor_id, project_role_id)
+		);
+		`,
+		`
+		CREATE TABLE IF NOT EXISTS projects_requests (
+			id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+			requestor_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+			project_role_id INT NOT NULL REFERENCES projects_roles(id) ON DELETE CASCADE,
+			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			UNIQUE(requestor_id, project_role_id)
 		);
 		`,
 		// Create triggers for github_connected column
@@ -159,6 +199,18 @@ class Db {
 		BEFORE UPDATE ON projects_tags
 		FOR EACH ROW
 		EXECUTE FUNCTION update_updated_at();
+		`,
+		`
+		CREATE OR REPLACE TRIGGER roles_updated_at
+		BEFORE UPDATE ON roles
+		FOR EACH ROW
+		EXECUTE FUNCTION update_updated_at();
+		`,
+		`
+		CREATE OR REPLACE TRIGGER projects_roles_updated_at
+		BEFORE UPDATE ON projects_roles
+		FOR EACH ROW
+		EXECUTE FUNCTION update_updated_at();
 		`
 	];
 	static #CLEANUP_QUERIES = [
@@ -166,7 +218,8 @@ class Db {
 		"TRUNCATE github_connections RESTART IDENTITY CASCADE;",
 		"TRUNCATE users RESTART IDENTITY CASCADE;",
 		"TRUNCATE projects RESTART IDENTITY CASCADE;",
-		"TRUNCATE tags RESTART IDENTITY CASCADE;"
+		"TRUNCATE tags RESTART IDENTITY CASCADE;",
+		"TRUNCATE roles RESTART IDENTITY CASCADE;"
 	];
 
 	static init() {

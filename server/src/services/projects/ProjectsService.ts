@@ -1,22 +1,23 @@
 /* eslint-disable no-await-in-loop */
+import {PopulateUtils} from "#src/db/documents";
 import {ProjectModel} from "#src/db/models";
-import {GetAllQueryParams, ProjectPayload} from "#src/db/types";
 import {PopulatedProjectDto} from "#src/dtos";
+import {ProjectPayload, PaginationArgs} from "#src/types/db/models";
 
 class ProjectsService {
 	static async create(payload: ProjectPayload): Promise<PopulatedProjectDto> {
 		const project = await ProjectModel.create(payload);
-		const populatedProject = await project.populate();
+		const populatedProject = await PopulateUtils.populateProject(project);
 
 		return new PopulatedProjectDto(populatedProject);
 	}
 
 	static async getAll(
-		params: GetAllQueryParams
+		args: PaginationArgs
 	): Promise<{projects: PopulatedProjectDto[]; totalCount: number}> {
-		const {projects, totalCount} = await ProjectModel.getAll(params);
+		const {projects, totalCount} = await ProjectModel.getAll(args);
 		const populatedProjects = await Promise.all(
-			projects.map(p => p.populate())
+			projects.map(p => PopulateUtils.populateProject(p))
 		);
 
 		return {
@@ -28,7 +29,7 @@ class ProjectsService {
 	static async getAllByUserId(id: number): Promise<PopulatedProjectDto[]> {
 		const projects = await ProjectModel.getAllByUserId(id);
 		const populatedProjects = await Promise.all(
-			projects.map(p => p.populate())
+			projects.map(p => PopulateUtils.populateProject(p))
 		);
 
 		return populatedProjects.map(pp => new PopulatedProjectDto(pp));

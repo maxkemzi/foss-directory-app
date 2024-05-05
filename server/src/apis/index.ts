@@ -1,3 +1,3 @@
-import GithubApi from "./github/GithubApi";
+import GithubApi from "./GithubApi";
 
 export {GithubApi};

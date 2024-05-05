@@ -1,11 +1,11 @@
 import {GithubRepo} from "#src/types";
 
 class GithubRepoDto {
-	id: number;
-	name: string;
-	description: string | null;
-	url: string;
-	topics: string[];
+	id: GithubRepo["id"];
+	name: GithubRepo["name"];
+	description: GithubRepo["description"];
+	url: GithubRepo["html_url"];
+	topics: GithubRepo["topics"];
 
 	constructor(doc: GithubRepo) {
 		this.id = doc.id;

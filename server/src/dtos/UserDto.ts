@@ -1,12 +1,12 @@
-import {User} from "#src/db/types";
+import {UserDocument} from "#src/types/db/documents";
 
 class UserDto {
-	id: number;
-	username: string;
-	email: string;
-	githubIsConnected: boolean;
+	id: UserDocument["id"];
+	username: UserDocument["username"];
+	email: UserDocument["email"];
+	githubIsConnected: UserDocument["githubIsConnected"];
 
-	constructor(doc: User) {
+	constructor(doc: UserDocument) {
 		this.id = doc.id;
 		this.username = doc.username;
 		this.email = doc.email;

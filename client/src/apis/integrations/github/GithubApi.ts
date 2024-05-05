@@ -1,5 +1,8 @@
-import {FetchReposResponse, FetchUrlResponse} from "./types";
-import ApiFetcher from "../../ApiFetcher";
+import {
+	FetchReposResponse,
+	FetchUrlResponse
+} from "#src/types/apis/integrations/github";
+import ApiFetcher from "../../lib/ApiFetcher";
 
 class GithubApi {
 	private static fetcher = new ApiFetcher("/integrations/github");

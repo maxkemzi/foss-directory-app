@@ -1,10 +1,10 @@
-import {Tag} from "#src/db/types";
+import {TagDocument} from "#src/types/db/documents";
 
 class TagDto {
-	id: number;
-	name: string;
+	id: TagDocument["id"];
+	name: TagDocument["name"];
 
-	constructor(doc: Tag) {
+	constructor(doc: TagDocument) {
 		this.id = doc.id;
 		this.name = doc.name;
 	}

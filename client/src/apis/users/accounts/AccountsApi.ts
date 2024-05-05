@@ -1,5 +1,5 @@
-import {DeleteAccountResponse} from "./types";
-import ApiFetcher from "../../ApiFetcher";
+import {DeleteAccountResponse} from "#src/types/apis/users/accounts";
+import ApiFetcher from "../../lib/ApiFetcher";
 
 class AccountsApi {
 	private static fetcher = new ApiFetcher("/users/accounts");

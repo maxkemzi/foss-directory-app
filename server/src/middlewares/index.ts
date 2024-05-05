@@ -1,2 +1,4 @@
-export * from "./auth";
-export * from "./error";
+import authChecker from "./authChecker";
+import errorHandler from "./errorHandler";
+
+export {authChecker, errorHandler};

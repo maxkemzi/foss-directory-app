@@ -1,44 +1,23 @@
-import {ProjectFromApi} from "#src/types";
+import {ProjectFromApi} from "#src/types/apis";
 import {
 	Card,
 	CardBody,
 	CardFooter,
 	CardHeader,
-	Chip,
 	Divider,
 	Link
 } from "@nextui-org/react";
 import {FC} from "react";
+import Roles from "./Roles/Roles";
+import Tags from "./Tags/Tags";
 
 interface Props {
 	project: ProjectFromApi;
+	requestable: boolean;
+	isAuth: boolean;
 }
 
-const ProjectCard: FC<Props> = ({project}) => {
-	const renderTags = () => {
-		const tagsPerRow = Math.ceil(project.Tags.length / 2);
-
-		const firstRowTags = project.Tags.slice(0, tagsPerRow);
-		const secondRowTags = project.Tags.slice(tagsPerRow);
-
-		const renderTagRow = (tags: ProjectFromApi["Tags"]) => (
-			<ul className="flex gap-x-2">
-				{tags.map(tag => (
-					<li key={tag.id}>
-						<Chip color="primary">{tag.name}</Chip>
-					</li>
-				))}
-			</ul>
-		);
-
-		return (
-			<div className="mt-4 flex flex-col gap-y-3 overflow-x-auto">
-				{renderTagRow(firstRowTags)}
-				{secondRowTags.length !== 0 ? renderTagRow(secondRowTags) : null}
-			</div>
-		);
-	};
-
+const ProjectCard: FC<Props> = ({project, requestable, isAuth}) => {
 	return (
 		<Card className="max-w-[400px]">
 			<CardHeader>
@@ -46,8 +25,21 @@ const ProjectCard: FC<Props> = ({project}) => {
 			</CardHeader>
 			<Divider />
 			<CardBody>
+				{project.ProjectRoles.length !== 0 ? (
+					<div className="mb-2">
+						<Roles
+							projectRoles={project.ProjectRoles}
+							requestable={requestable}
+							isAuth={isAuth}
+						/>
+					</div>
+				) : null}
 				<p>{project.description}</p>
-				{project.Tags.length !== 0 ? renderTags() : null}
+				{project.ProjectTags.length !== 0 ? (
+					<div className="mt-4">
+						<Tags tags={project.ProjectTags} />
+					</div>
+				) : null}
 			</CardBody>
 			<Divider />
 			<CardFooter>

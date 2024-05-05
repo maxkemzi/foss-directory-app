@@ -1,5 +1,6 @@
 const CacheTag = {
-	PROJECTS: "projects"
+	PROJECTS: "projects",
+	REQUESTS: "requests"
 };
 
 export default CacheTag;

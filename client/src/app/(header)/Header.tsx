@@ -1,5 +1,5 @@
 import {Cookie, Pathname} from "#src/constants";
-import {UserFromApi} from "#src/types";
+import {UserFromApi} from "#src/types/apis";
 import {
 	Button,
 	Link,
