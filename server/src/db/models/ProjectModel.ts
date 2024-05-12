@@ -1,5 +1,10 @@
 /* eslint-disable no-await-in-loop */
-import {ProjectFromDb, RoleFromDb, TagFromDb} from "#src/types/db";
+import {
+	ProjectFromDb,
+	ProjectRoleFromDb,
+	RoleFromDb,
+	TagFromDb
+} from "#src/types/db";
 import {PaginationArgs, ProjectPayload} from "#src/types/db/models";
 import Db from "../Db";
 import {ProjectDocument} from "../documents";
@@ -11,7 +16,8 @@ class ProjectModel {
 		ownerId,
 		repoUrl,
 		tags,
-		roles
+		roles,
+		role
 	}: ProjectPayload): Promise<ProjectDocument> {
 		const client = await Db.connect();
 
@@ -25,56 +31,78 @@ class ProjectModel {
 				[ownerId, name, description, repoUrl]
 			);
 
+			// Owner
+			const {
+				rows: [ownerRoleFromDb]
+			} = await client.query<Pick<TagFromDb, "id">>(
+				"SELECT id FROM roles WHERE name=$1;",
+				[role]
+			);
+
+			let ownerProjectRoleId;
+			if (!ownerRoleFromDb) {
+				const {rows} = await client.query<Pick<ProjectRoleFromDb, "id">>(
+					"INSERT INTO projects_roles(project_id, name, is_custom) VALUES($1, $2, $3) RETURNING id;",
+					[project.id, role, true]
+				);
+				ownerProjectRoleId = rows[0].id;
+			} else {
+				const {rows} = await client.query<Pick<ProjectRoleFromDb, "id">>(
+					"INSERT INTO projects_roles(project_id, role_id, is_custom) VALUES($1, $2, $3) RETURNING id;",
+					[project.id, ownerRoleFromDb.id, false]
+				);
+				ownerProjectRoleId = rows[0].id;
+			}
+
+			await client.query(
+				"INSERT INTO projects_contributors(user_id, project_id, project_role_id, is_owner) VALUES($1, $2, $3, $4);",
+				[ownerId, project.id, ownerProjectRoleId, true]
+			);
+
+			// Tags
 			// eslint-disable-next-line no-restricted-syntax
-			for (const tag of tags) {
+			for (const tagName of tags) {
 				const {
 					rows: [tagFromDb]
 				} = await client.query<Pick<TagFromDb, "id">>(
 					"SELECT id FROM tags WHERE name=$1;",
-					[tag]
+					[tagName]
 				);
-				let tagId = tagFromDb?.id;
 
-				if (!tagId) {
-					const {
-						rows: [newTag]
-					} = await client.query(
-						"INSERT INTO tags(name) VALUES($1) RETURNING id;",
-						[tag]
+				if (!tagFromDb) {
+					await client.query(
+						"INSERT INTO projects_tags(project_id, name, is_custom) VALUES($1, $2, $3);",
+						[project.id, tagName, true]
 					);
-					tagId = newTag.id;
+				} else {
+					await client.query(
+						"INSERT INTO projects_tags(project_id, tag_id, is_custom) VALUES($1, $2, $3);",
+						[project.id, tagFromDb.id, false]
+					);
 				}
-
-				await client.query(
-					"INSERT INTO projects_tags(project_id, tag_id) VALUES($1, $2);",
-					[project.id, tagId]
-				);
 			}
 
+			// Roles
 			// eslint-disable-next-line no-restricted-syntax
-			for (const [role, count] of Object.entries(roles)) {
+			for (const [roleName, quantity] of Object.entries(roles)) {
 				const {
 					rows: [roleFromDb]
 				} = await client.query<Pick<RoleFromDb, "id">>(
 					"SELECT id FROM roles WHERE name=$1;",
-					[role]
+					[roleName]
 				);
-				let roleId = roleFromDb?.id;
 
-				if (!roleId) {
-					const {
-						rows: [newRole]
-					} = await client.query(
-						"INSERT INTO roles(name) VALUES($1) RETURNING id;",
-						[role]
+				if (!roleFromDb) {
+					await client.query(
+						"INSERT INTO projects_roles(project_id, name, places_available, is_custom) VALUES($1, $2, $3, $4);",
+						[project.id, roleName, quantity, true]
 					);
-					roleId = newRole.id;
+				} else {
+					await client.query(
+						"INSERT INTO projects_roles(project_id, role_id, places_available, is_custom) VALUES($1, $2, $3, $4);",
+						[project.id, roleFromDb.id, quantity, false]
+					);
 				}
-
-				await client.query(
-					"INSERT INTO projects_roles(project_id, role_id, count) VALUES($1, $2, $3);",
-					[project.id, roleId, count]
-				);
 			}
 
 			await client.query("COMMIT");
@@ -118,7 +146,7 @@ class ProjectModel {
 		return {projects, totalCount};
 	}
 
-	static async getAllByUserId(id: number): Promise<ProjectDocument[]> {
+	static async getAllByUserId(id: string): Promise<ProjectDocument[]> {
 		const {rows} = await Db.query<ProjectFromDb>(
 			"SELECT * FROM projects WHERE owner_id=$1 ORDER BY created_at DESC;",
 			[id]
@@ -126,7 +154,20 @@ class ProjectModel {
 		return rows.map(p => new ProjectDocument(p));
 	}
 
-	static async getById(id: number): Promise<ProjectDocument | null> {
+	static async getContributed(userId: string): Promise<ProjectDocument[]> {
+		const {rows} = await Db.query<ProjectFromDb>(
+			`
+			SELECT p.* FROM projects p
+			JOIN projects_contributors pc ON p.id = pc.project_id
+			WHERE pc.user_id = $1
+			ORDER BY created_at DESC;
+			`,
+			[userId]
+		);
+		return rows.map(p => new ProjectDocument(p));
+	}
+
+	static async getById(id: string): Promise<ProjectDocument | null> {
 		const {
 			rows: [project]
 		} = await Db.query<ProjectFromDb>("SELECT * FROM projects WHERE id=$1;", [
@@ -140,7 +181,7 @@ class ProjectModel {
 		return new ProjectDocument(project);
 	}
 
-	static async deleteById(id: number) {
+	static async deleteById(id: string) {
 		await Db.query<ProjectFromDb>("DELETE FROM projects WHERE id=$1;", [id]);
 	}
 }

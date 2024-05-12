@@ -6,10 +6,10 @@ import {FC} from "react";
 import CreateProjectModal from "./CreateProjectModal/CreateProjectModal";
 import DeleteAccountModal from "./DeleteAccountModal/DeleteAccountModal";
 import GithubModal from "./GithubModal/GithubModal";
-import {CustomModalProps} from "./types";
 import ProjectRequestModal from "./ProjectRequestModal/ProjectRequestModal";
+import {CustomModalProps} from "./types";
 
-const GlobalModal: FC = () => {
+const GlobalModal = () => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const pathname = usePathname();

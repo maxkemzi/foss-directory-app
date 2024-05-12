@@ -1,49 +1,37 @@
+import {ModalVariant} from "#src/constants";
 import {ProjectFromApi} from "#src/types/apis";
 import {Chip} from "@nextui-org/react";
-import React, {FC} from "react";
 import Link from "next/link";
-import {ModalVariant, Pathname} from "#src/constants";
+import {FC} from "react";
 
 interface Props {
-	projectRoles: ProjectFromApi["ProjectRoles"];
+	roles: ProjectFromApi["roles"];
+	projectId: string;
 	requestable: boolean;
-	isAuth: boolean;
 }
 
-const Roles: FC<Props> = ({projectRoles, requestable, isAuth}) => {
-	if (projectRoles.every(pr => pr.count <= 0)) {
-		return null;
-	}
-
+const Roles: FC<Props> = ({roles, projectId, requestable}) => {
 	return (
 		<div className="flex gap-x-2 overflow-x-auto">
-			{projectRoles.map(pr => {
-				if (pr.count <= 0) {
-					return null;
-				}
-
+			{roles.map(r => {
 				const renderChip = () => (
 					<Chip variant="faded" color="success">
-						{pr.Role.name} +{pr.count}
+						{r.name} +{r.placesAvailable}
 					</Chip>
 				);
 
 				if (requestable) {
 					return (
 						<Link
-							key={pr.id}
-							href={
-								isAuth
-									? `?modal=${ModalVariant.PROJECT_REQUEST}&project-role-id=${pr.id}`
-									: Pathname.LOGIN
-							}
+							key={r.id}
+							href={`?modal=${ModalVariant.PROJECT_REQUEST}&project-id=${projectId}&project-role-id=${r.id}`}
 						>
 							{renderChip()}
 						</Link>
 					);
 				}
 
-				return <div key={pr.id}>{renderChip()}</div>;
+				return <div key={r.id}>{renderChip()}</div>;
 			})}
 		</div>
 	);

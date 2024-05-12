@@ -5,14 +5,15 @@ import {ProjectContributorDocument} from "../documents";
 
 class ProjectContributorModel {
 	static async create({
+		userId,
 		projectId,
-		contributorId
+		projectRoleId
 	}: ProjectContributorPayload): Promise<ProjectContributorDocument> {
 		const {
 			rows: [contributor]
 		} = await Db.query<ProjectContributorFromDb>(
-			"INSERT INTO projects_contributors (project_id, contributor_id) VALUES ($1, $2) RETURNING *;",
-			[projectId, contributorId]
+			"INSERT INTO projects_contributors(user_id, project_id, project_role_id) VALUES($1, $2, $3) RETURNING *;",
+			[userId, projectId, projectRoleId]
 		);
 		return new ProjectContributorDocument(contributor);
 	}

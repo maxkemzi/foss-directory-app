@@ -1,18 +1,11 @@
 "use server";
 
-import {AccountsApi} from "#src/apis";
-import {Pathname} from "#src/constants";
-import {deleteAuthCookiesFromStore} from "#src/helpers";
-import {cookies} from "next/headers";
-import {redirect} from "next/navigation";
+import {signOut} from "#src/actions/auth";
+import {deleteMyUserAccount} from "#src/apis/users/accounts";
 
 const deleteAccount = async () => {
-	await AccountsApi.delete();
-
-	const cookieStore = cookies();
-	deleteAuthCookiesFromStore(cookieStore);
-
-	redirect(Pathname.SIGNUP);
+	await deleteMyUserAccount();
+	return signOut();
 };
 
 export {deleteAccount};

@@ -9,6 +9,7 @@ class UserDocument extends Document implements DocumentImpl<UserDocumentType> {
 	username: UserDocumentType["username"];
 	email: UserDocumentType["email"];
 	password: UserDocumentType["password"];
+	avatar: UserDocumentType["avatar"];
 	githubIsConnected: UserDocumentType["githubIsConnected"];
 
 	constructor(user: UserFromDb) {
@@ -16,6 +17,7 @@ class UserDocument extends Document implements DocumentImpl<UserDocumentType> {
 		this.username = user.username;
 		this.email = user.email;
 		this.password = user.password;
+		this.avatar = user.avatar;
 		this.githubIsConnected = user.github_connected;
 	}
 
@@ -25,6 +27,7 @@ class UserDocument extends Document implements DocumentImpl<UserDocumentType> {
 			username: this.username,
 			email: this.email,
 			password: this.password,
+			avatar: this.avatar,
 			githubIsConnected: this.githubIsConnected
 		};
 	}

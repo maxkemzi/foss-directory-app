@@ -10,22 +10,27 @@ import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {FC, useCallback, useEffect} from "react";
 import {useFormState} from "react-dom";
 import {CustomModalProps} from "../types";
-import {requestRole} from "./actions";
+import {sendProjectRequestAction} from "./actions";
 import {FormState} from "./types";
 
 const ProjectRequestModal: FC<CustomModalProps> = ({isOpen}) => {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
+	const projectId = searchParams.get("project-id");
 	const projectRoleId = searchParams.get("project-role-id");
-	const [state, formAction] = useFormState<FormState>(requestRole, {
-		success: false,
-		data: {projectRoleId: projectRoleId ? Number(projectRoleId) : null}
-	});
+	const [state, formAction] = useFormState<FormState>(
+		sendProjectRequestAction,
+		{
+			success: false,
+			data: {projectId, projectRoleId}
+		}
+	);
 
 	const onClose = useCallback(() => {
 		const params = new URLSearchParams(searchParams.toString());
 		params.delete("modal");
+		params.delete("project-id");
 		params.delete("project-role-id");
 
 		router.replace(`${pathname}?${params.toString()}`);
@@ -37,7 +42,7 @@ const ProjectRequestModal: FC<CustomModalProps> = ({isOpen}) => {
 		}
 	}, [onClose, state.success]);
 
-	if (!projectRoleId) {
+	if (!projectId || !projectRoleId) {
 		return null;
 	}
 

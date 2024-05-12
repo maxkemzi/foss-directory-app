@@ -6,8 +6,9 @@ interface CreateProjectBody {
 	name: string;
 	description: string;
 	repoUrl: string;
+	role: string;
 	tags: string[];
-	roles: string[];
+	roles: Record<string, number>;
 }
 
 type CreateProjectResponse = ProjectFromApi;

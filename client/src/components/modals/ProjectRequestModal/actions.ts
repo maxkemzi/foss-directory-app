@@ -1,17 +1,16 @@
 "use server";
 
-import {ProjectRequestsApi} from "#src/apis";
+import {sendProjectRequest} from "#src/apis/projects/requests";
 import {FormState} from "./types";
 
-const requestRole = async (prevState: FormState) => {
-	if (!prevState.data.projectRoleId) {
+const sendProjectRequestAction = async (prevState: FormState) => {
+	const {projectId, projectRoleId} = prevState.data;
+	if (!projectId || !projectRoleId) {
 		return prevState;
 	}
 
-	await ProjectRequestsApi.request({
-		projectRoleId: prevState.data.projectRoleId
-	});
+	await sendProjectRequest({projectId, projectRoleId});
 	return {...prevState, success: true};
 };
 
-export {requestRole};
+export {sendProjectRequestAction};

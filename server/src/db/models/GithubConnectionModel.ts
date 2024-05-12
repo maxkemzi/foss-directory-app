@@ -18,7 +18,7 @@ class GithubConnectionModel {
 	}
 
 	static async getByUserId(
-		userId: number
+		userId: string
 	): Promise<GithubConnectionDocument | null> {
 		const {rows} = await Db.query<GithubConnectionFromDb>(
 			"SELECT * FROM github_connections WHERE user_id=$1;",

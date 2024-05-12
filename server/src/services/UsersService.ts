@@ -1,7 +1,7 @@
 import {UserModel} from "#src/db/models";
 
 class UsersService {
-	static async deleteAccount(userId: number) {
+	static async deleteAccount(userId: string) {
 		await UserModel.deleteById(userId);
 	}
 }

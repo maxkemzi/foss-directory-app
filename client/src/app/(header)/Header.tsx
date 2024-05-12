@@ -1,5 +1,5 @@
-import {Cookie, Pathname} from "#src/constants";
-import {UserFromApi} from "#src/types/apis";
+import {getServerSession} from "#src/actions/auth";
+import {Pathname} from "#src/constants";
 import {
 	Button,
 	Link,
@@ -9,7 +9,6 @@ import {
 	NavbarItem
 } from "@nextui-org/react";
 import classNames from "classnames";
-import {cookies} from "next/headers";
 import {FC} from "react";
 import NavbarCenter from "./NavbarCenter";
 import UserDropdown from "./UserDropdown";
@@ -18,10 +17,8 @@ interface Props {
 	isAbsolute?: boolean;
 }
 
-const Header: FC<Props> = ({isAbsolute}) => {
-	const cookieStore = cookies();
-	const userCookie = cookieStore.get(Cookie.USER)?.value;
-	const user = userCookie ? (JSON.parse(userCookie) as UserFromApi) : null;
+const Header: FC<Props> = async ({isAbsolute}) => {
+	const session = await getServerSession();
 
 	return (
 		<Navbar
@@ -37,8 +34,8 @@ const Header: FC<Props> = ({isAbsolute}) => {
 			</NavbarBrand>
 			<NavbarCenter />
 			<NavbarContent justify="end">
-				{user ? (
-					<UserDropdown user={user} />
+				{session ? (
+					<UserDropdown user={session.user} />
 				) : (
 					<>
 						<NavbarItem className="hidden lg:flex">

@@ -1,6 +1,8 @@
 "use client";
 
+import {signOut} from "#src/actions/auth";
 import {ModalVariant, Pathname} from "#src/constants";
+import {UserFromApi} from "#src/types/apis";
 import {
 	Avatar,
 	Dropdown,
@@ -9,19 +11,22 @@ import {
 	DropdownTrigger
 } from "@nextui-org/react";
 import {useRouter} from "next/navigation";
-import {Key} from "react";
-import {logOut} from "./actions";
+import {FC, Key} from "react";
 
-const UserDropdown = ({user}: {user: any}) => {
+interface Props {
+	user: UserFromApi;
+}
+
+const UserDropdown: FC<Props> = ({user}) => {
 	const router = useRouter();
 
-	const handleAction = (key: Key) => {
+	const handleAction = async (key: Key) => {
 		switch (key) {
-			case "log-out":
-				logOut();
-				break;
 			case "create-project":
 				router.push(`?modal=${ModalVariant.CREATE_PROJECT}`);
+				break;
+			case "chats":
+				router.push(Pathname.CHATS);
 				break;
 			case "requests":
 				router.push(Pathname.REQUESTS);
@@ -31,6 +36,9 @@ const UserDropdown = ({user}: {user: any}) => {
 				break;
 			case "settings":
 				router.push(Pathname.SETTINGS);
+				break;
+			case "log-out":
+				await signOut();
 				break;
 			default:
 				break;
@@ -47,7 +55,7 @@ const UserDropdown = ({user}: {user: any}) => {
 					color="secondary"
 					name={user.username}
 					size="sm"
-					src={user.avatar}
+					src={user.avatar || undefined}
 				/>
 			</DropdownTrigger>
 			<DropdownMenu
@@ -60,6 +68,7 @@ const UserDropdown = ({user}: {user: any}) => {
 					<p className="font-semibold">{user.username}</p>
 				</DropdownItem>
 				<DropdownItem key="create-project">Create Project</DropdownItem>
+				<DropdownItem key="chats">Chats</DropdownItem>
 				<DropdownItem key="requests">Requests</DropdownItem>
 				<DropdownItem key="my-projects">My Projects</DropdownItem>
 				<DropdownItem key="settings">Settings</DropdownItem>

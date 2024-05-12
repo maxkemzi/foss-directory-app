@@ -15,13 +15,16 @@ import {FC, useEffect} from "react";
 import {useFormState} from "react-dom";
 import {CustomModalProps} from "../types";
 import FormFields from "./FormFields/FormFields";
-import {createProject} from "./FormFields/actions";
+import {createProjectAction} from "./FormFields/actions";
 import {INITIAL_FORM_STATE} from "./FormFields/constants";
 
 // TODO: split code into separate components
 const CreateProjectModal: FC<CustomModalProps> = ({isOpen, onClose}) => {
 	const router = useRouter();
-	const [state, formAction] = useFormState(createProject, INITIAL_FORM_STATE);
+	const [state, formAction] = useFormState(
+		createProjectAction,
+		INITIAL_FORM_STATE
+	);
 
 	useEffect(() => {
 		if (state.success) {
@@ -32,11 +35,16 @@ const CreateProjectModal: FC<CustomModalProps> = ({isOpen, onClose}) => {
 
 	return (
 		<Modal isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
-			<ModalContent>
+			<ModalContent action={formAction} as="form">
 				{handleClose => (
-					<form action={formAction}>
+					<>
 						<ModalHeader>Project Creation</ModalHeader>
 						<ModalBody>
+							{state?.error ? (
+								<div className="mb-4 text-danger">
+									<p>{state.error}</p>
+								</div>
+							) : null}
 							<FormFields state={state} />
 						</ModalBody>
 						<ModalFooter>
@@ -47,7 +55,7 @@ const CreateProjectModal: FC<CustomModalProps> = ({isOpen, onClose}) => {
 								<SubmitButton>Create</SubmitButton>
 							</div>
 						</ModalFooter>
-					</form>
+					</>
 				)}
 			</ModalContent>
 		</Modal>

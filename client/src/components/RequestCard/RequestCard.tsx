@@ -1,11 +1,11 @@
-import {RoleRequestFromApi} from "#src/types/apis";
+import {ProjectRequestFromApi} from "#src/types/apis";
 import {Avatar, Button, Card, CardBody} from "@nextui-org/react";
 import {FC} from "react";
 
 interface Props {
-	request: RoleRequestFromApi;
-	acceptAction: (id: number, formData: FormData) => void;
-	rejectAction: (id: number, formData: FormData) => void;
+	request: ProjectRequestFromApi;
+	acceptAction: (id: string, formData: FormData) => void;
+	rejectAction: (id: string, formData: FormData) => void;
 }
 
 const RequestCard: FC<Props> = ({request, acceptAction, rejectAction}) => {
@@ -22,13 +22,13 @@ const RequestCard: FC<Props> = ({request, acceptAction, rejectAction}) => {
 						as="button"
 						className="transition-transform"
 						color="secondary"
-						name={request.Requestor.username}
+						name={request.requester.username}
 					/>
 					<div className="flex flex-col gap-2">
 						<div>
-							<p className="font-semibold">{request.Requestor.username}</p>
-							<p>Project: {request.ProjectRole.Project.name}</p>
-							<p>Role: {request.ProjectRole.Role.name} </p>
+							<p className="font-semibold">{request.requester.username}</p>
+							<p>Project: {request.project.name}</p>
+							<p>Role: {request.role.name} </p>
 						</div>
 						<div className="flex gap-2">
 							<form action={acceptActionWithId}>

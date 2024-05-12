@@ -1,13 +1,11 @@
-import {ProjectRequestsApi} from "#src/apis";
+import {fetchProjectRequestsSentToMe} from "#src/apis/projects/requests";
 import {RequestCard} from "#src/components";
 import {Container} from "#src/components/ui";
 import {Header} from "../(header)";
 import {acceptRequest, rejectRequest} from "./actions";
 
 const Requests = async () => {
-	const requests = await ProjectRequestsApi.fetchAll();
-
-	console.log(JSON.stringify(requests));
+	const requests = await fetchProjectRequestsSentToMe();
 
 	return (
 		<>

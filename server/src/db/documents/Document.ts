@@ -2,7 +2,7 @@ import {ObjectFromDb} from "#src/types/db";
 import {DocumentImpl, DocumentObject} from "#src/types/db/documents";
 
 class Document implements DocumentImpl<DocumentObject> {
-	id: number;
+	id: string;
 	createdAt: string;
 	updatedAt: string;
 

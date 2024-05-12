@@ -1,17 +1,24 @@
 "use server";
 
-import {GithubApi, ProjectsApi, RolesApi, TagsApi, isApiError} from "#src/apis";
+import {fetchMyGithubRepos} from "#src/apis/integrations/github";
+import {createProject} from "#src/apis/projects";
+import {fetchAllRoles} from "#src/apis/roles";
+import {fetchAllTags} from "#src/apis/tags";
 import {CacheTag} from "#src/constants";
+import {isApiError} from "#src/lib";
 import {revalidateTag} from "next/cache";
 import {INITIAL_FORM_STATE, VALIDATION_SCHEMA} from "./constants";
 
-const createProject = async (prevState: any, formData: FormData) => {
-	const tagField = formData.get("tags");
+const createProjectAction = async (prevState: any, formData: FormData) => {
+	const tagsField = formData.get("tags");
 	const rolesField = formData.get("roles");
 	const validatedFields = VALIDATION_SCHEMA.safeParse({
 		name: formData.get("name"),
 		description: formData.get("description"),
-		repoUrl: formData.get("repoUrl")
+		repoUrl: formData.get("repoUrl"),
+		role: formData.get("role"),
+		tags: typeof tagsField === "string" ? JSON.parse(tagsField) : null,
+		roles: typeof rolesField === "string" ? JSON.parse(rolesField) : null
 	});
 
 	if (!validatedFields.success) {
@@ -22,12 +29,7 @@ const createProject = async (prevState: any, formData: FormData) => {
 	}
 
 	try {
-		await ProjectsApi.create({
-			...validatedFields.data,
-			tags: typeof tagField === "string" ? JSON.parse(tagField) : tagField,
-			roles:
-				typeof rolesField === "string" ? JSON.parse(rolesField) : rolesField
-		});
+		await createProject(validatedFields.data);
 		revalidateTag(CacheTag.PROJECTS);
 
 		return {...INITIAL_FORM_STATE, success: true};
@@ -42,18 +44,18 @@ const createProject = async (prevState: any, formData: FormData) => {
 };
 
 const getTags = async () => {
-	const tags = await TagsApi.fetchAll();
+	const tags = await fetchAllTags();
 	return tags;
 };
 
 const getRoles = async () => {
-	const roles = await RolesApi.fetchAll();
+	const roles = await fetchAllRoles();
 	return roles;
 };
 
-const getRepos = async () => {
-	const repos = await GithubApi.fetchRepos();
+const getGithubRepos = async () => {
+	const repos = await fetchMyGithubRepos();
 	return repos;
 };
 
-export {createProject, getRepos, getRoles, getTags};
+export {createProjectAction, getGithubRepos, getRoles, getTags};

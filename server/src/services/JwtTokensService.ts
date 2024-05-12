@@ -14,7 +14,7 @@ class JwtTokensService {
 
 	static #generateAccess(payload: string | object) {
 		return jwt.sign(payload, JwtTokensService.#ACCESS_SECRET, {
-			expiresIn: "30m"
+			expiresIn: "30s"
 		});
 	}
 

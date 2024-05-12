@@ -6,6 +6,7 @@ import ProjectRequestsService from "./projects/requests/ProjectRequestsService";
 import RolesService from "./RolesService";
 import TagsService from "./TagsService";
 import UsersService from "./UsersService";
+import ProjectMessagesService from "./projects/messages/ProjectMessagesService";
 
 export {
 	AuthService,
@@ -15,5 +16,6 @@ export {
 	ProjectsService,
 	RolesService,
 	TagsService,
-	UsersService
+	UsersService,
+	ProjectMessagesService
 };

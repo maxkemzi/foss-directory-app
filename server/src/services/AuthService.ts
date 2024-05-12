@@ -79,6 +79,11 @@ class AuthService {
 		return {user: {...userDto}, tokens};
 	}
 
+	static async check(accessToken: string) {
+		const userPayload = JwtTokensService.verifyAccess<UserDto>(accessToken);
+		return userPayload !== null;
+	}
+
 	static async logout(refreshToken: string) {
 		await RefreshTokenModel.deleteByToken(refreshToken);
 	}

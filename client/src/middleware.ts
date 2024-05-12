@@ -1,18 +1,78 @@
+import {logOut, refresh} from "#src/apis/auth";
 import {NextRequest, NextResponse} from "next/server";
-import {AuthApi} from "./apis";
-import {Cookie, COOKIE_OPTIONS, Pathname} from "./constants";
+import {Cookie, Pathname, SessionOption} from "./constants";
+import {Session} from "./types/actions/auth";
 
-const AUTH_PATHNAMES = [Pathname.LOGIN, Pathname.SIGNUP];
-const PROTECTED_PATHNAMES = [Pathname.SETTINGS, Pathname.MY_PROJECTS];
-const VALID_PATHNAMES = Object.values(Pathname);
+const getTokens = async (
+	req: NextRequest
+): Promise<Session["tokens"] | null> => {
+	const session = req.cookies.get("session");
 
-const middleware = async (req: NextRequest) => {
-	const pathIsAuth = AUTH_PATHNAMES.includes(req.nextUrl.pathname);
-	if (pathIsAuth) {
-		return NextResponse.next();
+	if (!session?.value) {
+		return null;
 	}
 
-	const isSuccessPath = req.nextUrl.pathname === Pathname.SUCCESS;
+	const {tokens} = JSON.parse(session.value);
+
+	if (!tokens) {
+		return null;
+	}
+
+	return tokens;
+};
+
+const setSession = (session: Session, req: NextRequest): NextResponse => {
+	req.cookies.set(Cookie.SESSION, JSON.stringify(session));
+
+	const res = NextResponse.next({request: {headers: req.headers}});
+	res.cookies.set(Cookie.SESSION, JSON.stringify(session), {
+		httpOnly: SessionOption.HTTP_ONLY,
+		maxAge: SessionOption.MAX_AGE,
+		secure: SessionOption.IS_SECURE,
+		sameSite: SessionOption.SAME_SITE
+	});
+
+	return res;
+};
+
+const clearSession = async (req: NextRequest) => {
+	req.cookies.delete(Cookie.SESSION);
+
+	const res = NextResponse.redirect(new URL(Pathname.LOGIN, req.url));
+	res.cookies.delete(Cookie.SESSION);
+
+	return res;
+};
+
+const signOut = async (refreshToken: string, req: NextRequest) => {
+	try {
+		await logOut(refreshToken);
+	} catch (e) {
+		console.log("Couldn't log out before clearing the session.");
+	}
+
+	return clearSession(req);
+};
+
+export const middleware = async (req: NextRequest) => {
+	const {pathname} = req.nextUrl;
+
+	const tokens = await getTokens(req);
+
+	if (!tokens) {
+		return NextResponse.redirect(new URL(Pathname.LOGIN, req.url));
+	}
+
+	let res;
+	try {
+		const data = await refresh(tokens.refresh);
+		res = setSession(data, req);
+	} catch (e) {
+		console.log("Error refreshing token: ", e);
+		return signOut(tokens.refresh, req);
+	}
+
+	const isSuccessPath = pathname.startsWith(Pathname.SUCCESS);
 	if (isSuccessPath) {
 		const {searchParams} = req.nextUrl;
 		const token = searchParams.get("token");
@@ -22,47 +82,22 @@ const middleware = async (req: NextRequest) => {
 			return NextResponse.json({message: "Access denied."}, {status: 403});
 		}
 
-		const response = NextResponse.next();
-		response.cookies.delete("csrfToken");
-		return response;
+		res.cookies.delete("csrfToken");
 	}
 
-	const isAuth = Boolean(req.cookies.get(Cookie.USER)?.value);
-	const pathIsProtected = PROTECTED_PATHNAMES.includes(req.nextUrl.pathname);
-	if (!isAuth && pathIsProtected) {
-		return NextResponse.redirect(new URL(Pathname.LOGIN, req.url));
-	}
-
-	const refreshToken = req.cookies.get("refreshToken")?.value;
-	const pathIsValid = VALID_PATHNAMES.includes(req.nextUrl.pathname);
-	if (refreshToken && pathIsValid) {
-		try {
-			const {user, tokens} = await AuthApi.refresh(refreshToken);
-
-			const response = NextResponse.next();
-			response.cookies.set(Cookie.USER, JSON.stringify(user), {
-				...COOKIE_OPTIONS,
-				httpOnly: false
-			});
-			response.cookies.set(Cookie.ACCESS_TOKEN, tokens.access, COOKIE_OPTIONS);
-			response.cookies.set(
-				Cookie.REFRESH_TOKEN,
-				tokens.refresh,
-				COOKIE_OPTIONS
-			);
-			return response;
-		} catch (e) {
-			console.log(e);
-
-			const response = NextResponse.redirect(new URL(Pathname.LOGIN, req.url));
-			response.cookies.delete(Cookie.USER);
-			response.cookies.delete(Cookie.ACCESS_TOKEN);
-			response.cookies.delete(Cookie.REFRESH_TOKEN);
-			return response;
-		}
-	}
-
-	return NextResponse.next();
+	return res;
 };
 
-export {middleware};
+export const config = {
+	matcher: [
+		/*
+		 * Match all request paths except for the ones starting with:
+		 * - api (API routes)
+		 * - _next/static (static files)
+		 * - _next/image (image optimization files)
+		 * - favicon.ico (favicon file)
+		 * - auth (auth routes)
+		 */
+		`/((?!api|_next/static|_next/image|favicon.ico|auth).*)`
+	]
+};

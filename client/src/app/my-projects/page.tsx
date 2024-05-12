@@ -1,10 +1,10 @@
-import {ProjectsApi} from "#src/apis";
+import {fetchMyProjects} from "#src/apis/projects";
 import {ProjectCard} from "#src/components";
 import {Container} from "#src/components/ui";
 import {Header} from "../(header)";
 
 const MyProjects = async () => {
-	const projects = await ProjectsApi.fetchAllAuth();
+	const projects = await fetchMyProjects();
 
 	return (
 		<>
@@ -17,8 +17,7 @@ const MyProjects = async () => {
 								<ProjectCard
 									key={project.id}
 									project={project}
-									requestable={false}
-									isAuth
+									requestable={project.requestable}
 								/>
 							))}
 						</div>

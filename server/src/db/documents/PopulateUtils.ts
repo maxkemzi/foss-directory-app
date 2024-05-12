@@ -1,100 +1,100 @@
+import {ProjectFromDb, RoleFromDb, TagFromDb, UserFromDb} from "#src/types/db";
 import {
-	ProjectFromDb,
-	ProjectRoleFromDb,
-	ProjectTagFromDb,
-	RoleFromDb,
-	UserFromDb
-} from "#src/types/db";
-import {
+	PopulatedProjectMessageDocument,
 	PopulatedProjectDocument,
-	PopulatedProjectRoleDocument,
-	PopulatedProjectRequestDocument,
-	PopulatedProjectTagDocument
+	PopulatedProjectRequestDocument
 } from "#src/types/db/documents";
 import Db from "../Db";
 import ProjectDocument from "./ProjectDocument";
-import ProjectRoleRequestDocument from "./ProjectRequestDocument";
-import ProjectRoleDocument from "./ProjectRoleDocument";
-import ProjectTagDocument from "./ProjectTagDocument";
+import MessageDocument from "./ProjectMessageDocument";
+import ProjectRequestDocument from "./ProjectRequestDocument";
 import RoleDocument from "./RoleDocument";
 import TagDocument from "./TagDocument";
 import UserDocument from "./UserDocument";
 
 class PopulateUtils {
 	static async populateProject(
-		document: ProjectDocument
+		document: ProjectDocument,
+		userId?: string
 	): Promise<PopulatedProjectDocument> {
 		const [
 			{
 				rows: [user]
 			},
-			{rows: projectTags},
-			{rows: projectRoles}
+			{rows: tags},
+			{rows: roles},
+			requestableResult
 		] = await Promise.all([
 			Db.query<UserFromDb>("SELECT * FROM users WHERE id=$1;", [
 				document.ownerId
 			]),
-			Db.query<ProjectTagFromDb>(
-				`SELECT * FROM projects_tags WHERE project_id = $1;`,
+			Db.query<TagFromDb>(
+				`
+				SELECT *
+				FROM (
+					SELECT pt.id, t.name, pt.created_at, pt.updated_at
+					FROM projects_tags pt
+					JOIN tags t ON pt.tag_id = t.id
+					WHERE pt.project_id = $1
+					UNION
+					SELECT id, name, created_at, updated_at
+					FROM projects_tags
+					WHERE project_id = $1 AND tag_id IS NULL
+				);
+				`,
 				[document.id]
 			),
-			Db.query<ProjectRoleFromDb>(
-				`SELECT * FROM projects_roles WHERE project_id = $1;`,
+			Db.query<RoleFromDb & {places_available: number}>(
+				`
+				SELECT *
+				FROM (
+					SELECT pr.id, r.name, pr.places_available, pr.created_at, pr.updated_at
+					FROM projects_roles pr
+					JOIN roles r ON pr.role_id = r.id
+					WHERE pr.project_id = $1 AND pr.places_available > 0
+					UNION
+					SELECT id, name, places_available, created_at, updated_at
+					FROM projects_roles
+					WHERE project_id = $1 AND role_id IS NULL AND places_available > 0
+				);
+				`,
 				[document.id]
-			)
+			),
+			...(userId
+				? [
+						Db.query<{count: number}>(
+							`
+				SELECT COUNT(*) FROM projects_contributors
+				WHERE project_id = $1 AND user_id = $2;
+				`,
+							[document.id, userId]
+						)
+					]
+				: [])
 		]);
-
-		const Owner = new UserDocument(user).toObject();
-		const ProjectTags = await Promise.all(
-			projectTags.map(pt =>
-				PopulateUtils.populateProjectTag(new ProjectTagDocument(pt))
-			)
-		);
-		const ProjectRoles = await Promise.all(
-			projectRoles.map(pr =>
-				PopulateUtils.populateProjectRole(new ProjectRoleDocument(pr))
-			)
-		);
 
 		return {
 			...document.toObject(),
-			Owner,
-			ProjectTags,
-			ProjectRoles
+			owner: new UserDocument(user).toObject(),
+			tags: tags.map(t => new TagDocument(t).toObject()),
+			roles: roles.map(r => ({
+				...new RoleDocument(r).toObject(),
+				placesAvailable: r.places_available
+			})),
+			requestable: userId
+				? userId !== document.ownerId &&
+					Number(requestableResult.rows[0].count) === 0
+				: false
 		};
 	}
 
-	static async populateProjectTag(
-		document: ProjectTagDocument
-	): Promise<PopulatedProjectTagDocument> {
+	static async populateProjectRequest(
+		document: ProjectRequestDocument
+	): Promise<PopulatedProjectRequestDocument> {
 		const [
 			{
-				rows: [project]
+				rows: [user]
 			},
-			{
-				rows: [tag]
-			}
-		] = await Promise.all([
-			Db.query<ProjectFromDb>("SELECT * FROM projects WHERE id=$1;", [
-				document.projectId
-			]),
-			Db.query<RoleFromDb>(`SELECT * FROM tags WHERE id=$1;`, [document.tagId])
-		]);
-
-		const Project = new ProjectDocument(project).toObject();
-		const Tag = new TagDocument(tag).toObject();
-
-		return {
-			...document.toObject(),
-			Project,
-			Tag
-		};
-	}
-
-	static async populateProjectRole(
-		document: ProjectRoleDocument
-	): Promise<PopulatedProjectRoleDocument> {
-		const [
 			{
 				rows: [project]
 			},
@@ -102,49 +102,101 @@ class PopulateUtils {
 				rows: [role]
 			}
 		] = await Promise.all([
-			Db.query<ProjectFromDb>("SELECT * FROM projects WHERE id=$1;", [
-				document.projectId
+			Db.query<UserFromDb>("SELECT * FROM users WHERE id = $1;", [
+				document.requesterId
 			]),
-			Db.query<RoleFromDb>(`SELECT * FROM roles WHERE id=$1;`, [
-				document.roleId
-			])
+			Db.query<ProjectFromDb>(
+				`
+				SELECT p.*
+				FROM projects_roles pr
+				JOIN projects p ON pr.project_id = p.id
+				WHERE pr.id = $1;
+				`,
+				[document.projectRoleId]
+			),
+			Db.query<RoleFromDb & {places_available: number}>(
+				`
+				SELECT *
+				FROM (
+					SELECT pr.id, r.name, pr.places_available, pr.created_at, pr.updated_at
+					FROM projects_roles pr
+					JOIN roles r ON pr.role_id = r.id
+					WHERE pr.id = $1 AND pr.places_available > 0
+					UNION
+					SELECT id, name, places_available, created_at, updated_at
+					FROM projects_roles
+					WHERE id = $1 AND role_id IS NULL AND places_available > 0
+				);
+			`,
+				[document.projectRoleId]
+			)
 		]);
 
 		return {
 			...document.toObject(),
-			Project: new ProjectDocument(project).toObject(),
-			Role: new RoleDocument(role).toObject()
+			requester: new UserDocument(user).toObject(),
+			project: new ProjectDocument(project).toObject(),
+			role: {
+				...new RoleDocument(role).toObject(),
+				placesAvailable: role.places_available
+			}
 		};
 	}
 
-	static async populateProjectRoleRequest(
-		document: ProjectRoleRequestDocument
-	): Promise<PopulatedProjectRequestDocument> {
+	static async populateProjectMessage(
+		document: MessageDocument
+	): Promise<PopulatedProjectMessageDocument> {
 		const [
 			{
 				rows: [user]
 			},
 			{
-				rows: [projectRole]
+				rows: [project]
+			},
+			{
+				rows: [role]
 			}
 		] = await Promise.all([
-			Db.query<UserFromDb>("SELECT * FROM users WHERE id=$1;", [
-				document.requestorId
+			Db.query<UserFromDb & {is_owner: boolean}>(
+				`
+				SELECT u.*, pc.is_owner
+				FROM projects_contributors pc
+				JOIN users u ON pc.user_id = u.id
+				WHERE pc.id = $1;
+				`,
+				[document.senderId]
+			),
+			Db.query<ProjectFromDb>("SELECT * FROM projects WHERE id = $1;", [
+				document.projectId
 			]),
-			Db.query<any>(`SELECT * FROM projects_roles WHERE id=$1;`, [
-				document.projectRoleId
-			])
+			Db.query<RoleFromDb>(
+				`
+				SELECT *
+				FROM (
+					SELECT pr.id, r.name, pr.created_at, pr.updated_at
+					FROM projects_contributors pc
+					JOIN projects_roles pr ON pc.project_role_id = pr.id
+					JOIN roles r ON pr.role_id = r.id
+					WHERE pc.id = $1
+					UNION
+					SELECT pr.id, pr.name, pr.created_at, pr.updated_at
+					FROM projects_contributors pc
+					JOIN projects_roles pr ON pc.project_role_id = pr.id
+					WHERE pc.id = $1 AND pr.role_id IS NULL
+				);
+			`,
+				[document.senderId]
+			)
 		]);
-
-		const Requestor = new UserDocument(user).toObject();
-		const ProjectRole = await PopulateUtils.populateProjectRole(
-			new ProjectRoleDocument(projectRole)
-		);
 
 		return {
 			...document.toObject(),
-			Requestor,
-			ProjectRole
+			sender: {
+				...new UserDocument(user).toObject(),
+				role: new RoleDocument(role).toObject(),
+				isOwner: user.is_owner
+			},
+			project: new ProjectDocument(project).toObject()
 		};
 	}
 }

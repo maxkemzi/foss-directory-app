@@ -1,12 +1,13 @@
 const Pathname = {
 	HOME: "/",
-	SIGNUP: "/signup",
-	LOGIN: "/login",
+	SIGNUP: "/auth/signup",
+	LOGIN: "/auth/login",
 	PROJECTS: "/projects",
 	MY_PROJECTS: "/my-projects",
 	SUCCESS: "/success",
 	SETTINGS: "/settings",
-	REQUESTS: "/requests"
+	REQUESTS: "/requests",
+	CHATS: "/chats"
 };
 
 export default Pathname;

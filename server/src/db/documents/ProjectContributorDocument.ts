@@ -9,20 +9,23 @@ class ProjectContributorDocument
 	extends Document
 	implements DocumentImpl<ProjectContributorDocumentType>
 {
+	userId: ProjectContributorDocumentType["userId"];
 	projectId: ProjectContributorDocumentType["projectId"];
-	contributorId: ProjectContributorDocumentType["contributorId"];
+	projectRoleId: ProjectContributorDocumentType["projectRoleId"];
 
 	constructor(obj: ProjectContributorFromDb) {
 		super(obj);
+		this.userId = obj.user_id;
 		this.projectId = obj.project_id;
-		this.contributorId = obj.contributor_id;
+		this.projectRoleId = obj.project_role_id;
 	}
 
 	toObject(): ProjectContributorDocumentType {
 		return {
 			...super.toObject(),
+			userId: this.userId,
 			projectId: this.projectId,
-			contributorId: this.contributorId
+			projectRoleId: this.projectRoleId
 		};
 	}
 }

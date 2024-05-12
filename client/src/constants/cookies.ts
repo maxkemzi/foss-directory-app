@@ -1,7 +1,6 @@
 const Cookie = {
-	USER: "user",
-	ACCESS_TOKEN: "accessToken",
-	REFRESH_TOKEN: "refreshToken"
+	SESSION: "session",
+	CSRF_TOKEN: "csrfToken"
 };
 
 export default Cookie;

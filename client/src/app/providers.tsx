@@ -1,13 +1,15 @@
-"use client";
-
-import {NextUIProvider} from "@nextui-org/react";
-import {useRouter} from "next/navigation";
+import {getServerSession} from "#src/actions/auth";
+import {SessionProvider, UiProvider} from "#src/providers";
 import {FC, PropsWithChildren} from "react";
 
-const Providers: FC<PropsWithChildren> = ({children}) => {
-	const router = useRouter();
+const Providers: FC<PropsWithChildren> = async ({children}) => {
+	const session = await getServerSession();
 
-	return <NextUIProvider navigate={router.push}>{children}</NextUIProvider>;
+	return (
+		<SessionProvider session={session}>
+			<UiProvider>{children}</UiProvider>
+		</SessionProvider>
+	);
 };
 
 export default Providers;

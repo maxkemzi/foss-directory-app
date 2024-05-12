@@ -1,37 +1,82 @@
 import {PopulateUtils} from "#src/db/documents";
-import {ProjectRequestModel} from "#src/db/models";
+import {ProjectRequestModel, UserModel} from "#src/db/models";
 import {PopulatedProjectRequestDto} from "#src/dtos";
+import {ApiError} from "#src/lib";
 
 class ProjectRequestsService {
 	static async request({
-		requestorId,
+		userId,
+		projectId,
 		projectRoleId
 	}: {
-		requestorId: number;
-		projectRoleId: number;
+		userId: string;
+		projectId: string;
+		projectRoleId: string;
 	}): Promise<void> {
+		const isOwner = await UserModel.isProjectOwner({
+			projectId,
+			userId
+		});
+		const isContributor = await UserModel.isProjectContributor({
+			projectId,
+			userId
+		});
+
+		if (isOwner || isContributor) {
+			throw new ApiError(403, "Frobidden.");
+		}
+
 		await ProjectRequestModel.create({
-			requestorId,
+			requesterId: userId,
+			projectId,
 			projectRoleId
 		});
 	}
 
-	static async getAllRequests(
-		userId: number
-	): Promise<PopulatedProjectRequestDto[]> {
+	static async getAll(userId: string): Promise<PopulatedProjectRequestDto[]> {
 		const requests = await ProjectRequestModel.getAllByRequestedId(userId);
 		const populatedRequests = await Promise.all(
-			requests.map(r => PopulateUtils.populateProjectRoleRequest(r))
+			requests.map(r => PopulateUtils.populateProjectRequest(r))
 		);
 		return populatedRequests.map(pr => new PopulatedProjectRequestDto(pr));
 	}
 
-	static async accept(id: number): Promise<void> {
-		await ProjectRequestModel.accept(id);
+	static async accept({
+		projectRequestId,
+		userId
+	}: {
+		projectRequestId: string;
+		userId: string;
+	}): Promise<void> {
+		const hasAccess = await UserModel.hasProjectRequestAccess({
+			projectRequestId,
+			userId
+		});
+
+		if (!hasAccess) {
+			throw new ApiError(403, "Forbidden.");
+		}
+
+		await ProjectRequestModel.accept(projectRequestId);
 	}
 
-	static async reject(id: number): Promise<void> {
-		await ProjectRequestModel.reject(id);
+	static async reject({
+		projectRequestId,
+		userId
+	}: {
+		projectRequestId: string;
+		userId: string;
+	}): Promise<void> {
+		const hasAccess = await UserModel.hasProjectRequestAccess({
+			projectRequestId,
+			userId
+		});
+
+		if (!hasAccess) {
+			throw new ApiError(403, "Forbidden.");
+		}
+
+		await ProjectRequestModel.reject(projectRequestId);
 	}
 }
 

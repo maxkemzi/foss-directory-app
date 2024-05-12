@@ -1,7 +1,8 @@
 /* eslint-disable no-await-in-loop */
 import {PopulateUtils} from "#src/db/documents";
-import {ProjectModel} from "#src/db/models";
+import {ProjectModel, UserModel} from "#src/db/models";
 import {PopulatedProjectDto} from "#src/dtos";
+import {ApiError} from "#src/lib";
 import {ProjectPayload, PaginationArgs} from "#src/types/db/models";
 
 class ProjectsService {
@@ -12,12 +13,16 @@ class ProjectsService {
 		return new PopulatedProjectDto(populatedProject);
 	}
 
-	static async getAll(
-		args: PaginationArgs
-	): Promise<{projects: PopulatedProjectDto[]; totalCount: number}> {
+	static async getAll({
+		userId,
+		...args
+	}: PaginationArgs & {userId: string}): Promise<{
+		projects: PopulatedProjectDto[];
+		totalCount: number;
+	}> {
 		const {projects, totalCount} = await ProjectModel.getAll(args);
 		const populatedProjects = await Promise.all(
-			projects.map(p => PopulateUtils.populateProject(p))
+			projects.map(p => PopulateUtils.populateProject(p, userId))
 		);
 
 		return {
@@ -26,17 +31,38 @@ class ProjectsService {
 		};
 	}
 
-	static async getAllByUserId(id: number): Promise<PopulatedProjectDto[]> {
+	static async getAllByUserId(id: string): Promise<PopulatedProjectDto[]> {
 		const projects = await ProjectModel.getAllByUserId(id);
 		const populatedProjects = await Promise.all(
-			projects.map(p => PopulateUtils.populateProject(p))
+			projects.map(p => PopulateUtils.populateProject(p, id))
 		);
 
 		return populatedProjects.map(pp => new PopulatedProjectDto(pp));
 	}
 
-	static async deleteById(id: number) {
-		await ProjectModel.deleteById(id);
+	static async getContributed(userId: string): Promise<PopulatedProjectDto[]> {
+		const projects = await ProjectModel.getContributed(userId);
+		const populatedProjects = await Promise.all(
+			projects.map(p => PopulateUtils.populateProject(p, userId))
+		);
+
+		return populatedProjects.map(pp => new PopulatedProjectDto(pp));
+	}
+
+	static async deleteById({
+		projectId,
+		userId
+	}: {
+		projectId: string;
+		userId: string;
+	}) {
+		const isOwner = await UserModel.isProjectOwner({projectId, userId});
+
+		if (!isOwner) {
+			throw new ApiError(403, "Forbidden");
+		}
+
+		await ProjectModel.deleteById(projectId);
 	}
 }
 

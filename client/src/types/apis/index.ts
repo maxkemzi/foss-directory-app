@@ -1,27 +1,29 @@
 interface ProjectFromApi {
-	id: number;
+	id: string;
 	name: string;
 	description: string;
 	repoUrl: string;
-	Owner: {id: number; username: string};
-	ProjectTags: {id: number; Tag: {id: number; name: string}}[];
-	ProjectRoles: {id: number; count: number; Role: {name: string}}[];
+	owner: {id: string; username: string};
+	tags: {id: string; name: string}[];
+	roles: {id: string; name: string; placesAvailable: number}[];
+	requestable: boolean;
 }
 
 interface TagFromApi {
-	id: number;
+	id: string;
 	name: string;
 }
 
 interface RoleFromApi {
-	id: number;
+	id: string;
 	name: string;
 }
 
 interface UserFromApi {
-	id: number;
+	id: string;
 	username: string;
 	email: string;
+	avatar: string | null;
 	githubIsConnected: boolean;
 }
 
@@ -33,25 +35,33 @@ interface RepoFromApi {
 	topics: string[];
 }
 
-interface RoleRequestFromApi {
-	id: number;
-	requestorId: number;
-	projectRoleId: number;
-	Requestor: {
-		id: number;
+interface ProjectRequestFromApi {
+	id: string;
+	requester: {
+		id: string;
 		username: string;
 	};
-	ProjectRole: {
-		id: number;
-		Project: {
-			id: number;
-			name: string;
-		};
-		Role: {
-			id: number;
-			name: string;
-		};
+	project: {
+		id: string;
+		name: string;
 	};
+	role: {
+		id: string;
+		name: string;
+	};
+}
+
+interface ProjectMessageFromApi {
+	id: string;
+	sender: {
+		id: string;
+		username: string;
+		avatar: string;
+		role: {id: string; name: string};
+		isOwner: boolean;
+	};
+	text: string;
+	createdAt: string;
 }
 
 export type {
@@ -60,5 +70,6 @@ export type {
 	UserFromApi,
 	RepoFromApi,
 	RoleFromApi,
-	RoleRequestFromApi
+	ProjectRequestFromApi,
+	ProjectMessageFromApi
 };

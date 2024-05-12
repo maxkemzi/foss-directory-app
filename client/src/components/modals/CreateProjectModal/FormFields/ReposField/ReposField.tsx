@@ -2,7 +2,7 @@ import {RepoFromApi} from "#src/types/apis";
 import {Autocomplete, AutocompleteItem} from "@nextui-org/react";
 import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
 import {FC, Key, useEffect, useState} from "react";
-import {getRepos} from "../actions";
+import {getGithubRepos} from "../actions";
 
 interface Props {
 	onSelectionChange: (repo?: RepoFromApi) => void;
@@ -26,7 +26,7 @@ const ReposField: FC<Props> = ({onSelectionChange}) => {
 	useEffect(() => {
 		const fetchTags = async () => {
 			setReposAreFetching(true);
-			setRepos(await getRepos());
+			setRepos(await getGithubRepos());
 			setReposAreFetching(false);
 		};
 		fetchTags();

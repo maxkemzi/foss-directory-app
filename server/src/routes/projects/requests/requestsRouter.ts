@@ -5,7 +5,7 @@ import {Router} from "express";
 const requestsRouter = Router();
 
 requestsRouter.post("/", authChecker, ProjectRequestsController.request);
-requestsRouter.get("/", authChecker, ProjectRequestsController.getAllRequests);
+requestsRouter.get("/", authChecker, ProjectRequestsController.getAll);
 requestsRouter.post(
 	"/:id/accept",
 	authChecker,

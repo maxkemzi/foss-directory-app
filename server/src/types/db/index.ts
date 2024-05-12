@@ -1,39 +1,44 @@
 interface ObjectFromDb {
-	id: number;
+	id: string;
 	created_at: string;
 	updated_at: string;
 }
 
 interface GithubConnectionFromDb extends ObjectFromDb {
-	user_id: number;
+	user_id: string;
 	token: string;
 }
 
 interface ProjectFromDb extends ObjectFromDb {
-	owner_id: number;
+	owner_id: string;
 	name: string;
 	description: string;
 	repo_url: string;
 }
 
 interface ProjectTagFromDb extends ObjectFromDb {
-	project_id: number;
-	tag_id: number;
+	project_id: string;
+	tag_id: string | null;
+	name: string | null;
+	is_custom: boolean;
 }
 
 interface ProjectRoleFromDb extends ObjectFromDb {
-	project_id: number;
-	role_id: number;
-	count: number;
+	project_id: string;
+	places_available: number;
+	role_id: string | null;
+	name: string | null;
+	is_custom: boolean;
 }
 
 interface ProjectRequestFromDb extends ObjectFromDb {
-	requestor_id: number;
-	project_role_id: number;
+	requester_id: string;
+	project_id: string;
+	project_role_id: string;
 }
 
 interface RefreshTokenFromDb extends ObjectFromDb {
-	user_id: number;
+	user_id: string;
 	token: string;
 }
 
@@ -49,12 +54,21 @@ interface UserFromDb extends ObjectFromDb {
 	username: string;
 	email: string;
 	password: string;
+	avatar: string | null;
 	github_connected: boolean;
 }
 
 interface ProjectContributorFromDb extends ObjectFromDb {
-	project_id: number;
-	contributor_id: number;
+	user_id: string;
+	project_id: string;
+	project_role_id: string;
+	is_owner: boolean;
+}
+
+interface ProjectMessageFromDb extends ObjectFromDb {
+	project_id: string;
+	sender_id: string;
+	text: string;
 }
 
 export type {
@@ -68,5 +82,6 @@ export type {
 	RoleFromDb,
 	TagFromDb,
 	UserFromDb,
-	ProjectContributorFromDb
+	ProjectContributorFromDb,
+	ProjectMessageFromDb
 };

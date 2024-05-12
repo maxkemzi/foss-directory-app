@@ -1,11 +1,16 @@
-import {RoleRequestFromApi} from "../..";
+import {ProjectRequestFromApi} from "../..";
 
-type RequestRoleResponse = {success: boolean};
+type ProjectRequestResponse = {success: boolean};
 
-interface RequestRoleBody {
-	projectRoleId: number;
+interface ProjectRequestBody {
+	projectId: string;
+	projectRoleId: string;
 }
 
-type FetchRoleRequestsResponse = RoleRequestFromApi[];
+type FetchRoleRequestsResponse = ProjectRequestFromApi[];
 
-export type {FetchRoleRequestsResponse, RequestRoleBody, RequestRoleResponse};
+export type {
+	FetchRoleRequestsResponse,
+	ProjectRequestBody,
+	ProjectRequestResponse
+};

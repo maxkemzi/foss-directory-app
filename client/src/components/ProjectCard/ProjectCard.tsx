@@ -14,30 +14,29 @@ import Tags from "./Tags/Tags";
 interface Props {
 	project: ProjectFromApi;
 	requestable: boolean;
-	isAuth: boolean;
 }
 
-const ProjectCard: FC<Props> = ({project, requestable, isAuth}) => {
+const ProjectCard: FC<Props> = ({project, requestable}) => {
 	return (
-		<Card className="max-w-[400px]">
+		<Card classNames={{base: "max-w-[500px]"}} fullWidth>
 			<CardHeader>
 				<p className="text-md">{project.name}</p>
 			</CardHeader>
 			<Divider />
 			<CardBody>
-				{project.ProjectRoles.length !== 0 ? (
+				{project.roles.length !== 0 ? (
 					<div className="mb-2">
 						<Roles
-							projectRoles={project.ProjectRoles}
+							roles={project.roles.reverse()}
+							projectId={project.id}
 							requestable={requestable}
-							isAuth={isAuth}
 						/>
 					</div>
 				) : null}
 				<p>{project.description}</p>
-				{project.ProjectTags.length !== 0 ? (
+				{project.tags.length !== 0 ? (
 					<div className="mt-4">
-						<Tags tags={project.ProjectTags} />
+						<Tags tags={project.tags.reverse()} />
 					</div>
 				) : null}
 			</CardBody>

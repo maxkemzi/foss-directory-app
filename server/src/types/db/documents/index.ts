@@ -1,15 +1,15 @@
 import {
 	GithubConnectionFromDb,
 	ObjectFromDb,
-	ProjectContributorFromDb,
 	ProjectFromDb,
-	ProjectRoleFromDb,
 	ProjectRequestFromDb,
-	ProjectTagFromDb,
 	RefreshTokenFromDb,
+	ProjectContributorFromDb,
+	ProjectMessageFromDb,
 	RoleFromDb,
 	TagFromDb,
-	UserFromDb
+	UserFromDb,
+	ProjectTagFromDb
 } from "..";
 
 interface DocumentObject {
@@ -26,45 +26,63 @@ interface GithubConnectionDocument extends DocumentObject {
 	token: GithubConnectionFromDb["token"];
 }
 
-interface ProjectDocument extends DocumentObject {
-	ownerId: ProjectFromDb["owner_id"];
+interface BaseProjectDocument extends DocumentObject {
 	name: ProjectFromDb["name"];
 	description: ProjectFromDb["description"];
 	repoUrl: ProjectFromDb["repo_url"];
 }
-interface PopulatedProjectDocument extends ProjectDocument {
-	Owner: UserDocument;
-	ProjectTags: PopulatedProjectTagDocument[];
-	ProjectRoles: PopulatedProjectRoleDocument[];
+interface ProjectDocument extends BaseProjectDocument {
+	ownerId: ProjectFromDb["owner_id"];
+}
+interface PopulatedProjectDocument extends BaseProjectDocument {
+	owner: UserDocument;
+	tags: TagDocument[];
+	roles: (RoleDocument & {
+		placesAvailable: ProjectRoleDocument["placesAvailable"];
+	})[];
+	requestable: boolean;
 }
 
 interface ProjectTagDocument extends DocumentObject {
 	projectId: ProjectTagFromDb["project_id"];
 	tagId: ProjectTagFromDb["tag_id"];
+	name: ProjectTagFromDb["name"];
+	isCustom: ProjectTagFromDb["is_custom"];
 }
-interface PopulatedProjectTagDocument extends DocumentObject {
+type PopulatedProjectTagDocument = DocumentObject & {
 	Project: ProjectDocument;
-	Tag: TagDocument;
-}
+	name: ProjectTagFromDb["name"];
+	isCustom: ProjectTagFromDb["is_custom"];
+} & ({tagId: null} | {Tag: TagDocument; tagId: string});
 
 interface ProjectRoleDocument extends DocumentObject {
-	projectId: ProjectRoleFromDb["project_id"];
-	roleId: ProjectRoleFromDb["role_id"];
-	count: ProjectRoleFromDb["count"];
+	projectId: string;
+	placesAvailable: number;
+	roleId: string | null;
+	name: string | null;
+	isCustom: boolean;
 }
-interface PopulatedProjectRoleDocument extends DocumentObject {
+type PopulatedProjectRoleDocument = DocumentObject & {
 	Project: ProjectDocument;
-	Role: RoleDocument;
-	count: ProjectRoleFromDb["count"];
-}
+	placesAvailable: number;
+	name: string;
+	isCustom: false;
+} & (
+		| {Role: never; role_id: null}
+		| {Role: ProjectRoleDocument; role_id: never}
+	);
 
 interface ProjectRequestDocument extends DocumentObject {
-	requestorId: ProjectRequestFromDb["requestor_id"];
+	requesterId: ProjectRequestFromDb["requester_id"];
+	projectId: ProjectRequestFromDb["project_id"];
 	projectRoleId: ProjectRequestFromDb["project_role_id"];
 }
-interface PopulatedProjectRequestDocument extends ProjectRequestDocument {
-	Requestor: UserDocument;
-	ProjectRole: PopulatedProjectRoleDocument;
+interface PopulatedProjectRequestDocument extends DocumentObject {
+	requester: UserDocument;
+	project: ProjectDocument;
+	role: RoleDocument & {
+		placesAvailable: ProjectRoleDocument["placesAvailable"];
+	};
 }
 
 interface RefreshTokenDocument extends DocumentObject {
@@ -84,29 +102,44 @@ interface UserDocument extends DocumentObject {
 	username: UserFromDb["username"];
 	email: UserFromDb["email"];
 	password: UserFromDb["password"];
+	avatar: UserFromDb["avatar"];
 	githubIsConnected: UserFromDb["github_connected"];
 }
 
 interface ProjectContributorDocument extends DocumentObject {
+	userId: ProjectContributorFromDb["user_id"];
 	projectId: ProjectContributorFromDb["project_id"];
-	contributorId: ProjectContributorFromDb["contributor_id"];
+	projectRoleId: ProjectContributorFromDb["project_role_id"];
+}
+
+interface ProjectMessageDocument extends DocumentObject {
+	projectId: ProjectMessageFromDb["project_id"];
+	senderId: ProjectMessageFromDb["sender_id"];
+	text: ProjectMessageFromDb["text"];
+}
+interface PopulatedProjectMessageDocument extends DocumentObject {
+	project: ProjectDocument;
+	sender: UserDocument & {role: RoleDocument; isOwner: boolean};
+	text: ProjectMessageFromDb["text"];
 }
 
 export type {
-	DocumentObject,
+	ProjectContributorDocument,
 	DocumentImpl,
+	DocumentObject,
 	GithubConnectionDocument,
-	ProjectDocument,
+	ProjectMessageDocument,
+	PopulatedProjectMessageDocument,
 	PopulatedProjectDocument,
+	PopulatedProjectRoleDocument,
+	PopulatedProjectRequestDocument,
+	ProjectDocument,
+	ProjectRoleDocument,
 	ProjectTagDocument,
 	PopulatedProjectTagDocument,
-	ProjectRoleDocument,
-	PopulatedProjectRoleDocument,
-	ProjectRequestDocument,
-	PopulatedProjectRequestDocument,
 	RefreshTokenDocument,
+	ProjectRequestDocument,
 	RoleDocument,
 	TagDocument,
-	UserDocument,
-	ProjectContributorDocument
+	UserDocument
 };

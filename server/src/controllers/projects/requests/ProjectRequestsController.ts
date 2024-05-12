@@ -4,11 +4,12 @@ import {NextFunction, Request, Response} from "express";
 class ProjectRequestsController {
 	static async request(req: Request, res: Response, next: NextFunction) {
 		try {
-			const {projectRoleId} = req.body;
+			const {projectId, projectRoleId} = req.body;
 			const userId = res.locals.user?.id!;
 
 			await ProjectRequestsService.request({
-				requestorId: userId,
+				userId,
+				projectId,
 				projectRoleId
 			});
 
@@ -18,11 +19,11 @@ class ProjectRequestsController {
 		}
 	}
 
-	static async getAllRequests(req: Request, res: Response, next: NextFunction) {
+	static async getAll(req: Request, res: Response, next: NextFunction) {
 		try {
 			const userId = res.locals.user?.id!;
 
-			const requests = await ProjectRequestsService.getAllRequests(userId);
+			const requests = await ProjectRequestsService.getAll(userId);
 
 			res.json(requests);
 		} catch (e) {
@@ -33,8 +34,9 @@ class ProjectRequestsController {
 	static async accept(req: Request, res: Response, next: NextFunction) {
 		try {
 			const {id} = req.params;
+			const userId = res.locals.user?.id!;
 
-			await ProjectRequestsService.accept(Number(id));
+			await ProjectRequestsService.accept({projectRequestId: id, userId});
 
 			res.json({success: true});
 		} catch (e) {
@@ -45,8 +47,9 @@ class ProjectRequestsController {
 	static async reject(req: Request, res: Response, next: NextFunction) {
 		try {
 			const {id} = req.params;
+			const userId = res.locals.user?.id!;
 
-			await ProjectRequestsService.reject(Number(id));
+			await ProjectRequestsService.reject({projectRequestId: id, userId});
 
 			res.json({success: true});
 		} catch (e) {

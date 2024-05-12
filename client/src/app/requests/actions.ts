@@ -1,16 +1,19 @@
 "use server";
 
-import {ProjectRequestsApi} from "#src/apis";
+import {
+	acceptProjectRequest,
+	rejectProjectRequest
+} from "#src/apis/projects/requests";
 import {CacheTag} from "#src/constants";
 import {revalidateTag} from "next/cache";
 
-const acceptRequest = async (id: number) => {
-	await ProjectRequestsApi.accept(id);
+const acceptRequest = async (id: string) => {
+	await acceptProjectRequest(id);
 	revalidateTag(CacheTag.REQUESTS);
 };
 
-const rejectRequest = async (id: number) => {
-	await ProjectRequestsApi.reject(id);
+const rejectRequest = async (id: string) => {
+	await rejectProjectRequest(id);
 	revalidateTag(CacheTag.REQUESTS);
 };
 

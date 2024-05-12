@@ -35,7 +35,7 @@ class GithubController {
 				throw new ApiError(404, 'Invalid "code" query parameter type.');
 			}
 
-			const payload = JwtTokensService.verifyCsrf<{userId: number}>(state);
+			const payload = JwtTokensService.verifyCsrf<{userId: string}>(state);
 			if (!payload) {
 				throw new ApiError(401, "Unauthorized.");
 			}

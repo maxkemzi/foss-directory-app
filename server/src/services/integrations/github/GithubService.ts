@@ -4,7 +4,7 @@ import {ApiError} from "#src/lib";
 import JwtTokensService from "../../JwtTokensService";
 
 class GithubService {
-	static async getOAuthUrl(userId: number) {
+	static async getOAuthUrl(userId: string) {
 		const csrfToken = JwtTokensService.generateCsrf({userId});
 		const redirectUri = `${process.env.SERVER_URL}/api/integrations/github/callback`;
 
@@ -12,7 +12,7 @@ class GithubService {
 		return {url, csrfToken};
 	}
 
-	static async createConnection(userId: number, code: string) {
+	static async createConnection(userId: string, code: string) {
 		const connection = await GithubConnectionModel.getByUserId(userId);
 		if (connection) {
 			throw new ApiError(400, "Your account had already been connected.");
@@ -26,7 +26,7 @@ class GithubService {
 		});
 	}
 
-	static async getConnectionByUserId(id: number) {
+	static async getConnectionByUserId(id: string) {
 		const connection = await GithubConnectionModel.getByUserId(id);
 		if (!connection) {
 			throw new ApiError(404, "Your account is not connected to github.");

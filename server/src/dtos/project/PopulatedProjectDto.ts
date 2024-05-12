@@ -1,34 +1,39 @@
 import {PopulatedProjectDocument} from "#src/types/db/documents";
-import ProjectDto from "./ProjectDto";
 
-type Owner = PopulatedProjectDocument["Owner"];
-type ProjectTag = PopulatedProjectDocument["ProjectTags"][number];
-type ProjectRole = PopulatedProjectDocument["ProjectRoles"][number];
+type Owner = PopulatedProjectDocument["owner"];
+type Tag = PopulatedProjectDocument["tags"][number];
+type Role = PopulatedProjectDocument["roles"][number];
 
-class PopulatedProjectDto extends ProjectDto {
-	Owner: {id: Owner["id"]; username: Owner["username"]};
-	ProjectTags: {
-		id: ProjectTag["id"];
-		Tag: {id: ProjectTag["Tag"]["id"]; name: ProjectTag["Tag"]["name"]};
+class PopulatedProjectDto {
+	id: PopulatedProjectDocument["id"];
+	name: PopulatedProjectDocument["name"];
+	description: PopulatedProjectDocument["description"];
+	repoUrl: PopulatedProjectDocument["repoUrl"];
+	owner: {id: Owner["id"]; username: Owner["username"]};
+	tags: {id: Tag["id"]; name: Tag["name"]}[];
+	roles: {
+		id: Role["id"];
+		name: Role["name"];
+		placesAvailable: Role["placesAvailable"];
 	}[];
-	ProjectRoles: {
-		id: ProjectRole["id"];
-		Role: {name: ProjectRole["Role"]["name"]};
-		count: ProjectRole["count"];
-	}[];
+	requestable: PopulatedProjectDocument["requestable"];
 
 	constructor(doc: PopulatedProjectDocument) {
-		super(doc);
-		this.Owner = {id: doc.Owner.id, username: doc.Owner.username};
-		this.ProjectTags = doc.ProjectTags.map(pt => ({
-			id: pt.id,
-			Tag: {id: pt.Tag.id, name: pt.Tag.name}
+		this.id = doc.id;
+		this.name = doc.name;
+		this.description = doc.description;
+		this.repoUrl = doc.repoUrl;
+		this.owner = {id: doc.owner.id, username: doc.owner.username};
+		this.tags = doc.tags.map(t => ({
+			id: t.id,
+			name: t.name
 		}));
-		this.ProjectRoles = doc.ProjectRoles.map(pr => ({
-			id: pr.id,
-			count: pr.count,
-			Role: {name: pr.Role.name}
+		this.roles = doc.roles.map(r => ({
+			id: r.id,
+			name: r.name,
+			placesAvailable: r.placesAvailable
 		}));
+		this.requestable = doc.requestable;
 	}
 }
 

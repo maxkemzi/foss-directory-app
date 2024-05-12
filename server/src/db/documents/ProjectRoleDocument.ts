@@ -11,13 +11,17 @@ class ProjectRoleDocument
 {
 	projectId: ProjectRoleDocumentType["projectId"];
 	roleId: ProjectRoleDocumentType["roleId"];
-	count: ProjectRoleDocumentType["count"];
+	name: ProjectRoleDocumentType["name"];
+	placesAvailable: ProjectRoleDocumentType["placesAvailable"];
+	isCustom: ProjectRoleDocumentType["isCustom"];
 
 	constructor(obj: ProjectRoleFromDb) {
 		super(obj);
 		this.projectId = obj.project_id;
 		this.roleId = obj.role_id;
-		this.count = obj.count;
+		this.name = obj.name;
+		this.placesAvailable = obj.places_available;
+		this.isCustom = obj.is_custom;
 	}
 
 	toObject(): ProjectRoleDocumentType {
@@ -25,7 +29,9 @@ class ProjectRoleDocument
 			...super.toObject(),
 			projectId: this.projectId,
 			roleId: this.roleId,
-			count: this.count
+			name: this.name,
+			placesAvailable: this.placesAvailable,
+			isCustom: this.isCustom
 		};
 	}
 }

@@ -7,6 +7,7 @@ interface FormState {
 		name?: string[];
 		description?: string[];
 		repoUrl?: string[];
+		role?: string[];
 		tags?: string[];
 		roles?: string[];
 	};
@@ -30,13 +31,24 @@ const VALIDATION_SCHEMA = z.object({
 	repoUrl: z
 		.string({invalid_type_error: "Url must be a string."})
 		.trim()
-		.min(1, "Url is required.")
+		.min(1, "Url is required."),
+	role: z
+		.string({invalid_type_error: "Role must be a string."})
+		.trim()
+		.min(1, "Role is required."),
+	tags: z.string().array().nonempty({message: "Specify at least one tag."}),
+	roles: z
+		.record(z.string(), z.number())
+		.refine(val => Object.keys(val).length > 0, {
+			message: "Specify at least one role."
+		})
 });
 
 const INITIAL_FIELD_VALUES = {
 	name: "",
 	description: "",
 	repoUrl: "",
+	role: "",
 	tags: [],
 	roles: {}
 };

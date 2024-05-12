@@ -1,14 +1,13 @@
 import {Header} from "#src/constants";
-import {ApiError} from "#src/lib";
 import {ProjectsService} from "#src/services";
 import {PaginationQueryParams} from "#src/types/controllers";
-import {Request, Response, NextFunction} from "express";
+import {NextFunction, Request, Response} from "express";
 
 class ProjectsController {
 	static async create(req: Request, res: Response, next: NextFunction) {
 		try {
 			const userId = res.locals.user?.id!;
-			const {name, description, tags, roles, repoUrl} = req.body;
+			const {name, description, tags, roles, repoUrl, role} = req.body;
 
 			const project = await ProjectsService.create({
 				name,
@@ -16,6 +15,7 @@ class ProjectsController {
 				tags,
 				roles,
 				repoUrl,
+				role,
 				ownerId: userId
 			});
 
@@ -32,6 +32,7 @@ class ProjectsController {
 	) {
 		try {
 			const {search, limit, page} = req.query;
+			const userId = res.locals.user?.id!;
 
 			const parsedLimit = limit ? parseInt(limit, 10) : 10;
 			const parsedPage = page ? parseInt(page, 10) : 1;
@@ -41,7 +42,8 @@ class ProjectsController {
 			const {projects, totalCount} = await ProjectsService.getAll({
 				search,
 				limit: parsedLimit,
-				offset
+				offset,
+				userId
 			});
 
 			res.set({[Header.TOTAL_COUNT]: totalCount});
@@ -54,7 +56,20 @@ class ProjectsController {
 	static async getAllAuth(req: Request, res: Response, next: NextFunction) {
 		try {
 			const userId = res.locals.user?.id!;
+
 			const projects = await ProjectsService.getAllByUserId(userId);
+
+			res.json(projects);
+		} catch (e) {
+			next(e);
+		}
+	}
+
+	static async getContributed(req: Request, res: Response, next: NextFunction) {
+		try {
+			const userId = res.locals.user?.id!;
+
+			const projects = await ProjectsService.getContributed(userId);
 
 			res.json(projects);
 		} catch (e) {
@@ -65,11 +80,9 @@ class ProjectsController {
 	static async delete(req: Request, res: Response, next: NextFunction) {
 		try {
 			const {id} = req.params;
-			if (!id) {
-				throw new ApiError(400, "Project id is not provided.");
-			}
+			const userId = res.locals.user?.id!;
 
-			await ProjectsService.deleteById(Number(id));
+			await ProjectsService.deleteById({projectId: id, userId});
 
 			res.json({success: true});
 		} catch (e) {

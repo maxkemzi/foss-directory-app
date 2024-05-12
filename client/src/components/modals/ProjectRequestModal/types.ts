@@ -1,6 +1,6 @@
 interface FormState {
 	success: boolean;
-	data: {projectRoleId: number | null};
+	data: {projectId: string | null; projectRoleId: string | null};
 }
 
 export type {FormState};

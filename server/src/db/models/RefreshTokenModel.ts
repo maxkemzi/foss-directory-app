@@ -12,12 +12,10 @@ class RefreshTokenModel {
 			"INSERT INTO refresh_tokens(user_id, token) VALUES($1, $2) ON CONFLICT(user_id) DO UPDATE SET user_id=EXCLUDED.user_id, token=EXCLUDED.token RETURNING *;",
 			[userId, token]
 		);
-		const refreshToken = rows[0];
-
-		return new RefreshTokenDocument(refreshToken);
+		return new RefreshTokenDocument(rows[0]);
 	}
 
-	static async getByUserId(userId: number) {
+	static async getByUserId(userId: string) {
 		const {rows} = await Db.query<RefreshTokenFromDb>(
 			"SELECT * FROM refresh_tokens WHERE user_id=$1;",
 			[userId]

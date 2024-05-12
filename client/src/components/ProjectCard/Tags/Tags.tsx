@@ -3,7 +3,7 @@ import {Chip} from "@nextui-org/react";
 import React, {FC} from "react";
 
 interface Props {
-	tags: ProjectFromApi["ProjectTags"];
+	tags: ProjectFromApi["tags"];
 }
 
 const Tags: FC<Props> = ({tags}) => {
@@ -12,11 +12,11 @@ const Tags: FC<Props> = ({tags}) => {
 	const firstRowTags = tags.slice(0, tagsPerRow);
 	const secondRowTags = tags.slice(tagsPerRow);
 
-	const renderTagRow = (items: ProjectFromApi["ProjectTags"]) => (
+	const renderTagRow = (items: ProjectFromApi["tags"]) => (
 		<ul className="flex gap-x-2">
 			{items.map(item => (
 				<li key={item.id}>
-					<Chip color="primary">{item.Tag.name}</Chip>
+					<Chip color="primary">{item.name}</Chip>
 				</li>
 			))}
 		</ul>

@@ -5,6 +5,7 @@ import ProjectRequestsController from "./projects/requests/ProjectRequestsContro
 import TagsController from "./TagsController";
 import UsersController from "./UsersController";
 import RolesController from "./RolesController";
+import ProjectMessagesController from "./projects/messages/ProjectMessagesController";
 
 export {
 	AuthController,
@@ -13,5 +14,6 @@ export {
 	ProjectRequestsController,
 	TagsController,
 	UsersController,
-	RolesController
+	RolesController,
+	ProjectMessagesController
 };

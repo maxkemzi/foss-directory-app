@@ -4,8 +4,10 @@ import UserDto from "./UserDto";
 import TagDto from "./TagDto";
 import GithubRepoDto from "./GithubRepoDto";
 import RoleDto from "./RoleDto";
-import ProjectRequestDto from "./projectRequest/ProjectRequestDto";
-import PopulatedProjectRequestDto from "./projectRequest/PopulatedProjectRequestDto";
+import ProjectRequestDto from "./project/request/ProjectRequestDto";
+import PopulatedProjectRequestDto from "./project/request/PopulatedProjectRequestDto";
+import ProjectMessageDto from "./project/message/ProjectMessageDto";
+import PopulatedProjectMessageDto from "./project/message/PopulatedProjectMessageDto";
 
 export {
 	ProjectDto,
@@ -15,5 +17,7 @@ export {
 	GithubRepoDto,
 	RoleDto,
 	ProjectRequestDto,
-	PopulatedProjectRequestDto
+	PopulatedProjectRequestDto,
+	ProjectMessageDto,
+	PopulatedProjectMessageDto
 };
