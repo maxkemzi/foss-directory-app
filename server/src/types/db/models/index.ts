@@ -65,8 +65,9 @@ interface ProjectContributorPayload {
 
 interface ProjectMessagePayload {
 	projectId: ProjectMessageFromDb["project_id"];
-	senderId: ProjectMessageFromDb["sender_id"];
+	userId: ProjectMessageFromDb["user_id"];
 	text: ProjectMessageFromDb["text"];
+	type: ProjectMessageFromDb["type"];
 }
 
 export type {

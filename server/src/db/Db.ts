@@ -1,4 +1,5 @@
 import {Pool} from "pg";
+import {NotificationChannel} from "./constants";
 
 const {
 	POSTGRES_HOST,
@@ -134,12 +135,20 @@ class Db {
 		FOR EACH ROW
 		EXECUTE FUNCTION check_places_available();
 		
-		CREATE OR REPLACE FUNCTION decrement_places_available()
+		CREATE OR REPLACE FUNCTION projects_contributors_after_insert()
 		RETURNS TRIGGER AS $$
+		DECLARE new_message_id TEXT;
 		BEGIN
 			UPDATE projects_roles
 			SET places_available = places_available - 1
 			WHERE id = NEW.project_role_id;
+
+			INSERT INTO projects_messages (project_id, user_id, text, type)
+			VALUES (NEW.project_id, NEW.user_id, (
+				SELECT CONCAT(username, ' joined the project') FROM users WHERE id = NEW.user_id
+			), 'join') RETURNING id INTO new_message_id;
+
+			PERFORM pg_notify('${NotificationChannel.USER_PROJECT_JOIN}', new_message_id);
 
 			RETURN NEW;
 		END;
@@ -147,14 +156,22 @@ class Db {
 		CREATE OR REPLACE TRIGGER projects_contributors_after_insert
 		AFTER INSERT ON projects_contributors
 		FOR EACH ROW
-		EXECUTE FUNCTION decrement_places_available();
+		EXECUTE FUNCTION projects_contributors_after_insert();
 
-		CREATE OR REPLACE FUNCTION increment_places_available()
+		CREATE OR REPLACE FUNCTION projects_contributors_after_delete()
 		RETURNS TRIGGER AS $$
+		DECLARE new_message_id TEXT;
 		BEGIN
 			UPDATE projects_roles
 			SET places_available = places_available + 1
 			WHERE id = OLD.project_role_id;
+
+			INSERT INTO projects_messages (project_id, user_id, text, type)
+			VALUES (OLD.project_id, OLD.user_id, (
+				SELECT CONCAT(username, ' left the project') FROM users WHERE id = OLD.user_id
+			), 'join') RETURNING id INTO new_message_id;
+
+			PERFORM pg_notify('${NotificationChannel.USER_PROJECT_LEAVE}', new_message_id);
 
 			RETURN OLD;
 		END;
@@ -162,7 +179,7 @@ class Db {
 		CREATE OR REPLACE TRIGGER projects_contributors_after_delete
 		AFTER DELETE ON projects_contributors
 		FOR EACH ROW
-		EXECUTE FUNCTION increment_places_available();
+		EXECUTE FUNCTION projects_contributors_after_delete();
 		`,
 		`
 		CREATE TABLE IF NOT EXISTS projects_requests (
@@ -176,11 +193,17 @@ class Db {
 		);
 		`,
 		`
+		DO $$ BEGIN
+    	CREATE TYPE MESSAGE_TYPE AS ENUM ('regular', 'join', 'date');
+		EXCEPTION
+    	WHEN duplicate_object THEN null;
+		END $$;
 		CREATE TABLE IF NOT EXISTS projects_messages (
 			id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 			project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-			sender_id UUID NOT NULL REFERENCES projects_contributors(id) ON DELETE CASCADE,
+			user_id UUID REFERENCES users(id) ON DELETE SET NULL,
 			text TEXT NOT NULL,
+			type MESSAGE_TYPE,
 			created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
@@ -239,7 +262,7 @@ class Db {
 		EXECUTE FUNCTION update_updated_at();
 		`,
 		`
-		CREATE OR REPLACE TRIGGER github_connections_updated_at
+		CREATE OR REPLACE TRIGGER github_asyncconnections_updated_at
 		BEFORE UPDATE ON github_connections
 		FOR EACH ROW
 		EXECUTE FUNCTION update_updated_at();
@@ -314,6 +337,33 @@ class Db {
 
 	static init() {
 		return Db.#execTransaction(Db.#INIT_QUERIES);
+	}
+
+	static async listenNotifications({
+		onUserProjectJoin,
+		onUserProjectLeave
+	}: {
+		onUserProjectJoin?: (projectMessageId: string) => void;
+		onUserProjectLeave?: (projectMessageId: string) => void;
+	}) {
+		const client = await Db.connect();
+
+		client.on("notification", notification => {
+			const {channel, payload} = notification;
+
+			if (!payload) {
+				return;
+			}
+
+			if (channel === NotificationChannel.USER_PROJECT_JOIN) {
+				onUserProjectJoin?.(payload);
+			} else if (channel === NotificationChannel.USER_PROJECT_LEAVE) {
+				onUserProjectLeave?.(payload);
+			}
+		});
+
+		const channels = Object.values(NotificationChannel);
+		return Promise.all(channels.map(c => client.query(`LISTEN ${c};`)));
 	}
 
 	static populate() {

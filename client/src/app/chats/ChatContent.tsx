@@ -1,8 +1,9 @@
 "use client";
 
-import {ProjectMessageFromApi} from "#src/types/apis";
+import {MessageCard} from "#src/components";
 import {Session} from "#src/types/actions/auth";
-import {Avatar, Button, Card, CardBody, Input} from "@nextui-org/react";
+import {ProjectMessageFromApi} from "#src/types/apis";
+import {Button, Card, CardBody, Input} from "@nextui-org/react";
 import {ChangeEvent, FC, FormEvent, useEffect, useState} from "react";
 import {Socket, io} from "socket.io-client";
 
@@ -39,77 +40,14 @@ const ChatContent: FC<Props> = ({initialMessages, projectId, session}) => {
 
 		socket?.emit("chat message", {
 			projectId,
-			text: newMessage
+			text: newMessage,
+			type: "regular"
 		});
 		setNewMessage("");
 	};
 
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
 		setNewMessage(e.target.value);
-
-	const renderMessage = (
-		message: ProjectMessageFromApi,
-		index: number,
-		arr: ProjectMessageFromApi[]
-	) => {
-		const {id, text, sender, createdAt} = message;
-
-		const date = new Date(createdAt);
-		const formattedTime = new Intl.DateTimeFormat("en", {
-			hour: "2-digit",
-			minute: "2-digit",
-			hour12: false
-		}).format(date);
-
-		if (sender.id === session.user.id) {
-			return (
-				<div key={id} className="flex flex-col gap-2 ml-auto">
-					<Card classNames={{base: "bg-primary"}}>
-						<CardBody>
-							<p>{text}</p>
-						</CardBody>
-					</Card>
-					<p className="self-end text-sm text-foreground-400">
-						{formattedTime}
-					</p>
-				</div>
-			);
-		}
-
-		const prevMessage = arr[index + 1];
-		if (prevMessage && prevMessage.sender.id === message.sender.id) {
-			return (
-				<div
-					key={id}
-					className="grid grid-cols-[32px,_auto] justify-start gap-4"
-				>
-					<div className="flex flex-col gap-2 col-start-2">
-						<Card classNames={{base: "bg-content2"}}>
-							<CardBody>
-								<p>{text}</p>
-							</CardBody>
-						</Card>
-						<p className="text-sm text-foreground-400">{formattedTime}</p>
-					</div>
-				</div>
-			);
-		}
-
-		return (
-			<div key={id} className="grid grid-cols-[32px,_auto] justify-start gap-4">
-				<Avatar size="sm" isBordered color="secondary" name={sender.username} />
-				<div className="flex flex-col gap-2">
-					<p className="font-semibold">{sender.role.name}</p>
-					<Card classNames={{base: "bg-content2"}}>
-						<CardBody>
-							<p>{text}</p>
-						</CardBody>
-					</Card>
-					<p className="text-sm text-foreground-400">{formattedTime}</p>
-				</div>
-			</div>
-		);
-	};
 
 	return (
 		<div className="flex flex-col items-start gap-6">
@@ -120,7 +58,30 @@ const ChatContent: FC<Props> = ({initialMessages, projectId, session}) => {
 					body: "p-6 gap-4 flex-col-reverse"
 				}}
 			>
-				<CardBody>{messages.map(renderMessage)}</CardBody>
+				<CardBody>
+					{messages.map((message, index, arr) => {
+						const isMine =
+							message.user != null
+								? message.user.id === session.user.id
+								: false;
+
+						const prevMessage = arr[index + 1];
+						const isSequential =
+							message.user != null &&
+							prevMessage?.user != null &&
+							prevMessage.user.id === message.user.id &&
+							prevMessage.type === "regular";
+
+						return (
+							<MessageCard
+								key={message.id}
+								message={message}
+								isMine={isMine}
+								isSequential={isSequential}
+							/>
+						);
+					})}
+				</CardBody>
 			</Card>
 			<form className="w-full flex gap-2 flex-shrink-0" onSubmit={sendMessage}>
 				<div className="flex-grow">

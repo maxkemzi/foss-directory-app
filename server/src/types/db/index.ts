@@ -67,8 +67,9 @@ interface ProjectContributorFromDb extends ObjectFromDb {
 
 interface ProjectMessageFromDb extends ObjectFromDb {
 	project_id: string;
-	sender_id: string;
+	user_id: string | null;
 	text: string;
+	type: "regular" | "join";
 }
 
 export type {

@@ -114,13 +114,15 @@ interface ProjectContributorDocument extends DocumentObject {
 
 interface ProjectMessageDocument extends DocumentObject {
 	projectId: ProjectMessageFromDb["project_id"];
-	senderId: ProjectMessageFromDb["sender_id"];
+	userId: ProjectMessageFromDb["user_id"];
 	text: ProjectMessageFromDb["text"];
+	type: ProjectMessageFromDb["type"];
 }
 interface PopulatedProjectMessageDocument extends DocumentObject {
 	project: ProjectDocument;
-	sender: UserDocument & {role: RoleDocument; isOwner: boolean};
+	user: (UserDocument & {role: RoleDocument; isOwner: boolean}) | null;
 	text: ProjectMessageFromDb["text"];
+	type: ProjectMessageFromDb["type"];
 }
 
 export type {

@@ -10,22 +10,25 @@ class ProjectMessageDocument
 	implements DocumentImpl<ProjectMessageDocumentType>
 {
 	projectId: ProjectMessageDocumentType["projectId"];
-	senderId: ProjectMessageDocumentType["senderId"];
+	userId: ProjectMessageDocumentType["userId"];
 	text: ProjectMessageDocumentType["text"];
+	type: ProjectMessageDocumentType["type"];
 
 	constructor(obj: ProjectMessageFromDb) {
 		super(obj);
 		this.projectId = obj.project_id;
-		this.senderId = obj.sender_id;
+		this.userId = obj.user_id;
 		this.text = obj.text;
+		this.type = obj.type;
 	}
 
 	toObject(): ProjectMessageDocumentType {
 		return {
 			...super.toObject(),
 			projectId: this.projectId,
-			senderId: this.senderId,
-			text: this.text
+			userId: this.userId,
+			text: this.text,
+			type: this.type
 		};
 	}
 }

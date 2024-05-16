@@ -4,6 +4,7 @@ import {
 	PopulatedProjectDocument,
 	PopulatedProjectRequestDocument
 } from "#src/types/db/documents";
+import {QueryResult} from "pg";
 import Db from "../Db";
 import ProjectDocument from "./ProjectDocument";
 import MessageDocument from "./ProjectMessageDocument";
@@ -146,57 +147,68 @@ class PopulateUtils {
 	static async populateProjectMessage(
 		document: MessageDocument
 	): Promise<PopulatedProjectMessageDocument> {
-		const [
-			{
-				rows: [user]
-			},
-			{
-				rows: [project]
-			},
-			{
-				rows: [role]
-			}
-		] = await Promise.all([
-			Db.query<UserFromDb & {is_owner: boolean}>(
-				`
+		const {projectId, userId} = document;
+
+		const queries: Promise<QueryResult>[] = [
+			Db.query<ProjectFromDb>("SELECT * FROM projects WHERE id = $1;", [
+				projectId
+			])
+		];
+
+		if (userId) {
+			queries.push(
+				Db.query<UserFromDb & {is_owner: boolean}>(
+					`
 				SELECT u.*, pc.is_owner
 				FROM projects_contributors pc
 				JOIN users u ON pc.user_id = u.id
-				WHERE pc.id = $1;
+				WHERE u.id = $1;
 				`,
-				[document.senderId]
-			),
-			Db.query<ProjectFromDb>("SELECT * FROM projects WHERE id = $1;", [
-				document.projectId
-			]),
-			Db.query<RoleFromDb>(
-				`
+					[userId]
+				)
+			);
+			queries.push(
+				Db.query<RoleFromDb>(
+					`
 				SELECT *
 				FROM (
 					SELECT pr.id, r.name, pr.created_at, pr.updated_at
 					FROM projects_contributors pc
 					JOIN projects_roles pr ON pc.project_role_id = pr.id
 					JOIN roles r ON pr.role_id = r.id
-					WHERE pc.id = $1
+					WHERE pc.user_id = $1
 					UNION
 					SELECT pr.id, pr.name, pr.created_at, pr.updated_at
 					FROM projects_contributors pc
 					JOIN projects_roles pr ON pc.project_role_id = pr.id
-					WHERE pc.id = $1 AND pr.role_id IS NULL
+					WHERE pc.user_id = $1 AND pr.role_id IS NULL
 				);
 			`,
-				[document.senderId]
-			)
-		]);
+					[userId]
+				)
+			);
+		}
+
+		const [projectSelect, userSelect, userRoleSelect] =
+			await Promise.all(queries);
+
+		const project = new ProjectDocument(projectSelect.rows[0]).toObject();
+
+		const userRow = userSelect.rows[0];
+		const userRoleRow = userRoleSelect.rows[0];
+		const user =
+			userRow && userRoleRow
+				? {
+						...new UserDocument(userRow).toObject(),
+						role: new RoleDocument(userRoleRow).toObject(),
+						isOwner: userRoleRow.is_owner
+					}
+				: null;
 
 		return {
 			...document.toObject(),
-			sender: {
-				...new UserDocument(user).toObject(),
-				role: new RoleDocument(role).toObject(),
-				isOwner: user.is_owner
-			},
-			project: new ProjectDocument(project).toObject()
+			project,
+			user
 		};
 	}
 }

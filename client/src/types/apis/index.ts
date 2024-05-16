@@ -53,14 +53,15 @@ interface ProjectRequestFromApi {
 
 interface ProjectMessageFromApi {
 	id: string;
-	sender: {
+	user: {
 		id: string;
 		username: string;
 		avatar: string;
 		role: {id: string; name: string};
 		isOwner: boolean;
-	};
+	} | null;
 	text: string;
+	type: "regular" | "join" | "date";
 	createdAt: string;
 }
 
