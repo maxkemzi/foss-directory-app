@@ -1,6 +1,5 @@
-import {PopulateUtils} from "#src/db/documents";
 import {ProjectMessageModel, UserModel} from "#src/db/models";
-import {PopulatedProjectMessageDto, UserDto} from "#src/dtos";
+import {UserDto} from "#src/dtos";
 import {JwtTokensService} from "#src/services";
 import {Server} from "socket.io";
 import server from "./server";
@@ -44,20 +43,14 @@ io.on("connection", async socket => {
 
 		socket.on("chat message", async message => {
 			try {
-				const newMessage = await ProjectMessageModel.create({
+				await ProjectMessageModel.create({
 					projectId: message.projectId,
 					userId: userPayload.id,
 					text: message.text,
 					type: message.type
 				});
-				const populatedNewMessage =
-					await PopulateUtils.populateProjectMessage(newMessage);
-
-				io.to(room).emit(
-					"chat message",
-					new PopulatedProjectMessageDto(populatedNewMessage)
-				);
 			} catch (e) {
+				console.log(e);
 				socket.emit("sendingMessageFailed");
 			}
 		});

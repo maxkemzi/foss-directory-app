@@ -41,6 +41,40 @@ class Db {
 			created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
+
+		CREATE OR REPLACE FUNCTION github_connections_after_insert()
+		RETURNS TRIGGER AS $$
+		BEGIN
+			UPDATE users
+			SET github_connected = TRUE
+			WHERE id = NEW.user_id;
+	
+			RETURN NEW;
+		END;
+		$$ LANGUAGE plpgsql;
+		CREATE OR REPLACE TRIGGER github_connections_after_insert
+		AFTER INSERT ON github_connections
+		FOR EACH ROW
+		EXECUTE FUNCTION github_connections_after_insert();
+
+		CREATE OR REPLACE FUNCTION github_connections_after_delete()
+		RETURNS TRIGGER AS $$
+		BEGIN
+			IF (NOT EXISTS (SELECT 1 FROM users WHERE id = OLD.user_id)) THEN
+				RETURN OLD;
+			END IF;
+
+			UPDATE users
+			SET github_connected = FALSE
+			WHERE id = OLD.user_id;
+	
+			RETURN OLD;
+		END;
+		$$ LANGUAGE plpgsql;
+		CREATE OR REPLACE TRIGGER github_connections_after_delete
+		AFTER DELETE ON github_connections
+		FOR EACH ROW
+		EXECUTE FUNCTION github_connections_after_delete();
 		`,
 		`
 		CREATE TABLE IF NOT EXISTS refresh_tokens (
@@ -114,17 +148,15 @@ class Db {
 			UNIQUE(user_id, project_role_id)
 		);
 
-		CREATE OR REPLACE FUNCTION check_places_available()
+		CREATE OR REPLACE FUNCTION projects_contributors_before_insert()
 		RETURNS TRIGGER AS $$
 		BEGIN
-			IF NOT NEW.is_owner THEN
-				IF EXISTS (
-					SELECT 1
-					FROM projects_roles
-					WHERE id = NEW.project_role_id AND places_available = 0
-				) THEN
-					RAISE EXCEPTION 'Cannot insert into projects_contributors because places_available is 0 for the corresponding project_role_id';
-				END IF;
+			IF (NOT NEW.is_owner AND EXISTS (
+				SELECT 1
+				FROM projects_roles
+				WHERE id = NEW.project_role_id AND places_available = 0
+			)) THEN
+				RAISE EXCEPTION 'Cannot insert into projects_contributors because places_available is 0 for the corresponding project_role_id';
 			END IF;
 
 			RETURN NEW;
@@ -133,22 +165,21 @@ class Db {
 		CREATE OR REPLACE TRIGGER projects_contributors_before_insert
 		BEFORE INSERT ON projects_contributors
 		FOR EACH ROW
-		EXECUTE FUNCTION check_places_available();
+		EXECUTE FUNCTION projects_contributors_before_insert();
 		
 		CREATE OR REPLACE FUNCTION projects_contributors_after_insert()
 		RETURNS TRIGGER AS $$
-		DECLARE new_message_id TEXT;
 		BEGIN
-			UPDATE projects_roles
-			SET places_available = places_available - 1
-			WHERE id = NEW.project_role_id;
+			IF (NOT NEW.is_owner) THEN
+				UPDATE projects_roles
+				SET places_available = places_available - 1
+				WHERE id = NEW.project_role_id;
 
-			INSERT INTO projects_messages (project_id, user_id, text, type)
-			VALUES (NEW.project_id, NEW.user_id, (
-				SELECT CONCAT(username, ' joined the project') FROM users WHERE id = NEW.user_id
-			), 'join') RETURNING id INTO new_message_id;
-
-			PERFORM pg_notify('${NotificationChannel.USER_PROJECT_JOIN}', new_message_id);
+				INSERT INTO projects_messages (project_id, user_id, text, type)
+				VALUES (NEW.project_id, NEW.user_id, (
+					SELECT CONCAT(username, ' joined the project') FROM users WHERE id = NEW.user_id
+				), 'join');
+			END IF;
 
 			RETURN NEW;
 		END;
@@ -160,18 +191,23 @@ class Db {
 
 		CREATE OR REPLACE FUNCTION projects_contributors_after_delete()
 		RETURNS TRIGGER AS $$
-		DECLARE new_message_id TEXT;
 		BEGIN
-			UPDATE projects_roles
-			SET places_available = places_available + 1
-			WHERE id = OLD.project_role_id;
+			IF (NOT EXISTS (SELECT 1 FROM projects WHERE id = OLD.project_id)) THEN
+				RETURN OLD;
+			END IF;
 
-			INSERT INTO projects_messages (project_id, user_id, text, type)
-			VALUES (OLD.project_id, OLD.user_id, (
-				SELECT CONCAT(username, ' left the project') FROM users WHERE id = OLD.user_id
-			), 'join') RETURNING id INTO new_message_id;
+			IF (OLD.is_owner) THEN
+				DELETE FROM projects WHERE id = OLD.project_id;
+			ELSE
+				UPDATE projects_roles
+				SET places_available = places_available + 1
+				WHERE id = OLD.project_role_id;
 
-			PERFORM pg_notify('${NotificationChannel.USER_PROJECT_LEAVE}', new_message_id);
+				INSERT INTO projects_messages (project_id, user_id, text, type)
+				VALUES (OLD.project_id, OLD.user_id, (
+					SELECT CONCAT(username, ' left the project') FROM users WHERE id = OLD.user_id
+				), 'join');
+			END IF;
 
 			RETURN OLD;
 		END;
@@ -207,43 +243,46 @@ class Db {
 			created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
-		`,
-		// Create triggers for github_connected column
-		`
-		CREATE OR REPLACE FUNCTION update_github_connected()
+
+		CREATE OR REPLACE FUNCTION projects_messages_before_insert()
 		RETURNS TRIGGER AS $$
+		DECLARE is_first_row_today BOOLEAN;
 		BEGIN
-				UPDATE users
-				SET github_connected = TRUE
-				WHERE id = NEW.user_id;
-		
+			IF (NEW.type = 'date') THEN
 				RETURN NEW;
+			END IF;
+
+			SELECT NOT EXISTS (
+				SELECT 1
+				FROM projects_messages
+				WHERE date_trunc('day', created_at) = date_trunc('day', CURRENT_TIMESTAMP)
+			) INTO is_first_row_today;
+
+			IF (is_first_row_today) THEN
+				INSERT INTO projects_messages (project_id, text, type)
+				VALUES (NEW.project_id, to_char(CURRENT_DATE, 'FMMonth FMDD'), 'date');
+			END IF;
+
+    	RETURN NEW;
 		END;
 		$$ LANGUAGE plpgsql;
-		`,
-		`
-		CREATE OR REPLACE TRIGGER github_connections_after_insert
-		AFTER INSERT ON github_connections
+		CREATE OR REPLACE TRIGGER projects_messages_before_insert
+		BEFORE INSERT ON projects_messages
 		FOR EACH ROW
-		EXECUTE FUNCTION update_github_connected();
-		`,
-		`
-		CREATE OR REPLACE FUNCTION update_github_disconnected()
+		EXECUTE FUNCTION projects_messages_before_insert();
+
+		CREATE OR REPLACE FUNCTION projects_messages_after_insert()
 		RETURNS TRIGGER AS $$
 		BEGIN
-				UPDATE users
-				SET github_connected = FALSE
-				WHERE id = OLD.user_id;
-		
-				RETURN OLD;
+			PERFORM pg_notify('${NotificationChannel.PROJECT_MESSAGE_INSERT}', NEW.id::text);
+
+    	RETURN NEW;
 		END;
 		$$ LANGUAGE plpgsql;
-		`,
-		`
-		CREATE OR REPLACE TRIGGER github_connections_after_delete
-		AFTER DELETE ON github_connections
+		CREATE OR REPLACE TRIGGER projects_messages_after_insert
+		AFTER INSERT ON projects_messages
 		FOR EACH ROW
-		EXECUTE FUNCTION update_github_disconnected();
+		EXECUTE FUNCTION projects_messages_after_insert();
 		`,
 		// Setting up automatic updated_at timestamp
 		`
@@ -262,7 +301,7 @@ class Db {
 		EXECUTE FUNCTION update_updated_at();
 		`,
 		`
-		CREATE OR REPLACE TRIGGER github_asyncconnections_updated_at
+		CREATE OR REPLACE TRIGGER github_connections_updated_at
 		BEFORE UPDATE ON github_connections
 		FOR EACH ROW
 		EXECUTE FUNCTION update_updated_at();
@@ -340,11 +379,9 @@ class Db {
 	}
 
 	static async listenNotifications({
-		onUserProjectJoin,
-		onUserProjectLeave
+		onProjectMessageInsert
 	}: {
-		onUserProjectJoin?: (projectMessageId: string) => void;
-		onUserProjectLeave?: (projectMessageId: string) => void;
+		onProjectMessageInsert?: (projectMessageId: string) => void;
 	}) {
 		const client = await Db.connect();
 
@@ -355,10 +392,8 @@ class Db {
 				return;
 			}
 
-			if (channel === NotificationChannel.USER_PROJECT_JOIN) {
-				onUserProjectJoin?.(payload);
-			} else if (channel === NotificationChannel.USER_PROJECT_LEAVE) {
-				onUserProjectLeave?.(payload);
+			if (channel === NotificationChannel.PROJECT_MESSAGE_INSERT) {
+				onProjectMessageInsert?.(payload);
 			}
 		});
 

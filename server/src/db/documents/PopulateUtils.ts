@@ -194,8 +194,8 @@ class PopulateUtils {
 
 		const project = new ProjectDocument(projectSelect.rows[0]).toObject();
 
-		const userRow = userSelect.rows[0];
-		const userRoleRow = userRoleSelect.rows[0];
+		const userRow = userSelect?.rows[0];
+		const userRoleRow = userRoleSelect?.rows[0];
 		const user =
 			userRow && userRoleRow
 				? {

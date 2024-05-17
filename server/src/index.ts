@@ -1,8 +1,8 @@
 import "dotenv/config";
 import {Db} from "#src/db";
 import {io, server} from "./core";
-import {ProjectMessageModel} from "./db/models";
 import {PopulateUtils} from "./db/documents";
+import {ProjectMessageModel} from "./db/models";
 import {PopulatedProjectMessageDto} from "./dtos";
 
 const {
@@ -42,34 +42,36 @@ if (
 const PORT = process.env.PORT || 5000;
 
 const start = async () => {
-	await Db.init();
+	try {
+		await Db.init();
 
-	const sendMessageToProjectRoom = async (id: string) => {
-		try {
-			const message = await ProjectMessageModel.getById(id);
-			if (!message) {
-				return;
+		await Db.listenNotifications({
+			onProjectMessageInsert: async (id: string) => {
+				try {
+					const message = await ProjectMessageModel.getById(id);
+					if (!message) {
+						return;
+					}
+
+					const populatedMessage =
+						await PopulateUtils.populateProjectMessage(message);
+
+					io.to(`room${message.projectId}`).emit(
+						"chat message",
+						new PopulatedProjectMessageDto(populatedMessage)
+					);
+				} catch (e) {
+					console.log(e);
+				}
 			}
+		});
 
-			const populatedMessage =
-				await PopulateUtils.populateProjectMessage(message);
-			io.to(`room${message.projectId}`).emit(
-				"chat message",
-				new PopulatedProjectMessageDto(populatedMessage)
-			);
-		} catch (e) {
-			console.log(e);
-		}
-	};
-
-	await Db.listenNotifications({
-		onUserProjectJoin: sendMessageToProjectRoom,
-		onUserProjectLeave: sendMessageToProjectRoom
-	});
-
-	server.listen(PORT, async () => {
-		console.log(`Server is working on port ${PORT}.`);
-	});
+		server.listen(PORT, async () => {
+			console.log(`Server is working on port ${PORT}.`);
+		});
+	} catch (e) {
+		console.log(e);
+	}
 };
 
 start();
