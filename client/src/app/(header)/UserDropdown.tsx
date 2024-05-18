@@ -1,6 +1,6 @@
 "use client";
 
-import {signOut} from "#src/actions/auth";
+import {logOut} from "#src/actions/auth";
 import {ModalVariant, Pathname} from "#src/constants";
 import {UserFromApi} from "#src/types/apis";
 import {
@@ -38,7 +38,7 @@ const UserDropdown: FC<Props> = ({user}) => {
 				router.push(Pathname.SETTINGS);
 				break;
 			case "log-out":
-				await signOut();
+				await logOut();
 				break;
 			default:
 				break;

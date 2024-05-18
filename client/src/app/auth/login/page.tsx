@@ -7,12 +7,15 @@ import {Input, Link} from "@nextui-org/react";
 import {useRouter} from "next/navigation";
 import {useEffect} from "react";
 import {useFormState} from "react-dom";
-import {logInAction} from "./actions";
+import {logInWithValidation} from "./actions";
 import {INITIAL_FORM_STATE} from "./constants";
 
 const Login = () => {
 	const router = useRouter();
-	const [state, formAction] = useFormState(logInAction, INITIAL_FORM_STATE);
+	const [state, formAction] = useFormState(
+		logInWithValidation,
+		INITIAL_FORM_STATE
+	);
 
 	useEffect(() => {
 		if (state.success) {

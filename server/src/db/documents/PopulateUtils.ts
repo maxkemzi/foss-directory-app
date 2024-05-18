@@ -201,7 +201,7 @@ class PopulateUtils {
 				? {
 						...new UserDocument(userRow).toObject(),
 						role: new RoleDocument(userRoleRow).toObject(),
-						isOwner: userRoleRow.is_owner
+						isOwner: userRow.is_owner
 					}
 				: null;
 

@@ -1,5 +1,6 @@
 import {ProjectMessageFromApi} from "#src/types/apis";
-import {Avatar, Card, CardBody, Chip} from "@nextui-org/react";
+import {StarIcon} from "@heroicons/react/16/solid";
+import {Avatar, Badge, Card, CardBody, Chip} from "@nextui-org/react";
 import {FC} from "react";
 
 interface Props {
@@ -66,9 +67,30 @@ const MessageCard: FC<Props> = ({message, isMine, isSequential}) => {
 	}
 
 	if (user) {
+		const avatarJsx = (
+			<Avatar isBordered size="sm" color="secondary" name={user.username} />
+		);
+
 		return (
 			<div key={id} className="grid grid-cols-[32px,_auto] justify-start gap-4">
-				<Avatar size="sm" isBordered color="secondary" name={user.username} />
+				<div>
+					{user.isOwner ? (
+						<Badge
+							isOneChar
+							content={<StarIcon className="w-[16px] h-[16px]" />}
+							variant="solid"
+							color="primary"
+							shape="circle"
+							placement="top-right"
+							size="sm"
+						>
+							{avatarJsx}
+						</Badge>
+					) : (
+						avatarJsx
+					)}
+				</div>
+
 				<div className="flex flex-col gap-2">
 					<p className="font-semibold">{user.role.name}</p>
 					<Card classNames={{base: "bg-content2"}}>

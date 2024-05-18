@@ -1,10 +1,10 @@
 "use server";
 
-import {signIn} from "#src/actions/auth";
+import {logIn} from "#src/actions/auth";
 import {isApiError} from "#src/lib";
 import {INITIAL_FORM_STATE, VALIDATION_SCHEMA} from "./constants";
 
-const logInAction = async (prevState: any, formData: FormData) => {
+const logInWithValidation = async (prevState: any, formData: FormData) => {
 	const validatedFields = VALIDATION_SCHEMA.safeParse({
 		email: formData.get("email"),
 		password: formData.get("password")
@@ -18,7 +18,7 @@ const logInAction = async (prevState: any, formData: FormData) => {
 	}
 
 	try {
-		await signIn(validatedFields.data);
+		await logIn(validatedFields.data);
 
 		return {...INITIAL_FORM_STATE, success: true};
 	} catch (e) {
@@ -31,4 +31,4 @@ const logInAction = async (prevState: any, formData: FormData) => {
 	}
 };
 
-export {logInAction};
+export {logInWithValidation};

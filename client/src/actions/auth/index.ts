@@ -1,6 +1,6 @@
 "use server";
 
-import {logIn, logOut} from "#src/apis/auth";
+import {fetchLogIn, fetchLogOut} from "#src/apis/auth";
 import {fetchApi} from "#src/actions/api";
 import {Cookie, Pathname, SessionOption} from "#src/constants";
 import {LoginBody} from "#src/types/apis/auth";
@@ -34,12 +34,12 @@ const clearServerSession = async () => {
 	cookieStore.delete(Cookie.SESSION);
 };
 
-const signIn = async (data: LoginBody) => {
-	const session = await logIn(data);
+const logIn = async (data: LoginBody) => {
+	const session = await fetchLogIn(data);
 	await setServerSession(session);
 };
 
-const signOut = async () => {
+const logOut = async () => {
 	const session = await getServerSession();
 
 	if (!session) {
@@ -47,7 +47,7 @@ const signOut = async () => {
 	}
 
 	try {
-		await logOut(session.tokens.refresh);
+		await fetchLogOut(session.tokens.refresh);
 	} catch (e) {
 		console.log("Error logging out.");
 	}
@@ -64,7 +64,7 @@ const fetchApiWithAuth = async (
 	const session = await getServerSession();
 
 	if (!session) {
-		return signOut();
+		return logOut();
 	}
 
 	const response = await fetchApi(url, {
@@ -81,7 +81,7 @@ export {
 	getServerSession,
 	setServerSession,
 	clearServerSession,
-	signIn,
-	signOut,
+	logIn,
+	logOut,
 	fetchApiWithAuth
 };

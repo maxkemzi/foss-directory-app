@@ -1,4 +1,4 @@
-import {logOut, refresh} from "#src/apis/auth";
+import {fetchLogOut, fetchRefresh} from "#src/apis/auth";
 import {NextRequest, NextResponse} from "next/server";
 import {Cookie, Pathname, SessionOption} from "./constants";
 import {Session} from "./types/actions/auth";
@@ -44,9 +44,9 @@ const clearSession = async (req: NextRequest) => {
 	return res;
 };
 
-const signOut = async (refreshToken: string, req: NextRequest) => {
+const logOut = async (refreshToken: string, req: NextRequest) => {
 	try {
-		await logOut(refreshToken);
+		await fetchLogOut(refreshToken);
 	} catch (e) {
 		console.log("Couldn't log out before clearing the session.");
 	}
@@ -65,11 +65,11 @@ export const middleware = async (req: NextRequest) => {
 
 	let res;
 	try {
-		const data = await refresh(tokens.refresh);
+		const data = await fetchRefresh(tokens.refresh);
 		res = setSession(data, req);
 	} catch (e) {
 		console.log("Error refreshing token: ", e);
-		return signOut(tokens.refresh, req);
+		return logOut(tokens.refresh, req);
 	}
 
 	const isSuccessPath = pathname.startsWith(Pathname.SUCCESS);

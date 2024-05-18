@@ -1,6 +1,7 @@
 import {ProjectsController} from "#src/controllers";
 import {authChecker} from "#src/middlewares";
 import {Router} from "express";
+import contributorsRouter from "./contributors/contributorsRouter";
 import messagesRouter from "./messages/messagesRouter";
 import requestsRouter from "./requests/requestsRouter";
 
@@ -18,5 +19,6 @@ projectsRouter.delete("/:id", authChecker, ProjectsController.delete);
 
 projectsRouter.use("/requests", requestsRouter);
 projectsRouter.use("/:id/messages", messagesRouter);
+projectsRouter.use("/:id/contributors", contributorsRouter);
 
 export default projectsRouter;

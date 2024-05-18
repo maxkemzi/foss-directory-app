@@ -2,7 +2,7 @@ import {fetchProjectRequestsSentToMe} from "#src/apis/projects/requests";
 import {RequestCard} from "#src/components";
 import {Container} from "#src/components/ui";
 import {Header} from "../(header)";
-import {acceptRequest, rejectRequest} from "./actions";
+import {acceptProjectRequest, rejectProjectRequest} from "./actions";
 
 const Requests = async () => {
 	const requests = await fetchProjectRequestsSentToMe();
@@ -20,8 +20,8 @@ const Requests = async () => {
 									<RequestCard
 										key={request.id}
 										request={request}
-										acceptAction={acceptRequest}
-										rejectAction={rejectRequest}
+										acceptAction={acceptProjectRequest}
+										rejectAction={rejectProjectRequest}
 									/>
 								);
 							})}

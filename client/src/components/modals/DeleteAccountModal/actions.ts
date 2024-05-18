@@ -1,11 +1,11 @@
 "use server";
 
-import {signOut} from "#src/actions/auth";
-import {deleteMyUserAccount} from "#src/apis/users/accounts";
+import {logOut} from "#src/actions/auth";
+import {fetchDeleteAccount} from "#src/apis/users/accounts";
 
 const deleteAccount = async () => {
-	await deleteMyUserAccount();
-	return signOut();
+	await fetchDeleteAccount();
+	return logOut();
 };
 
 export {deleteAccount};

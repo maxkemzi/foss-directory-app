@@ -1,10 +1,10 @@
 "use server";
 
-import {signUp} from "#src/apis/auth";
+import {fetchSignUp} from "#src/apis/auth";
 import {isApiError} from "#src/lib";
 import {INITIAL_FORM_STATE, VALIDATION_SCHEMA} from "./constants";
 
-const signUpAction = async (prevState: any, formData: FormData) => {
+const signUpWithValidation = async (prevState: any, formData: FormData) => {
 	const validatedFields = VALIDATION_SCHEMA.safeParse({
 		username: formData.get("username"),
 		email: formData.get("email"),
@@ -20,7 +20,7 @@ const signUpAction = async (prevState: any, formData: FormData) => {
 	}
 
 	try {
-		await signUp(validatedFields.data);
+		await fetchSignUp(validatedFields.data);
 
 		return {...INITIAL_FORM_STATE, success: true};
 	} catch (e) {
@@ -33,4 +33,4 @@ const signUpAction = async (prevState: any, formData: FormData) => {
 	}
 };
 
-export {signUpAction};
+export {signUpWithValidation};

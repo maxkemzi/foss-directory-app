@@ -8,7 +8,7 @@ import {
 
 const BASE_URL = "/projects";
 
-const createProject = async (
+const fetchCreateProject = async (
 	body: CreateProjectBody
 ): Promise<CreateProjectResponse> => {
 	const response = await fetchApiWithAuth(BASE_URL, {
@@ -42,7 +42,7 @@ const fetchContributedProjects = async (): Promise<FetchProjectsResponse> => {
 };
 
 export {
-	createProject,
+	fetchCreateProject,
 	fetchAllProjects,
 	fetchContributedProjects,
 	fetchMyProjects

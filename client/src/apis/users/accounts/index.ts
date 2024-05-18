@@ -3,7 +3,7 @@ import {DeleteAccountResponse} from "#src/types/apis/users/accounts";
 
 const BASE_URL = "/users/accounts";
 
-const deleteMyUserAccount = async (): Promise<DeleteAccountResponse> => {
+const fetchDeleteAccount = async (): Promise<DeleteAccountResponse> => {
 	const response = await fetchApiWithAuth(BASE_URL, {
 		method: "DELETE",
 		cache: "no-store"
@@ -11,4 +11,4 @@ const deleteMyUserAccount = async (): Promise<DeleteAccountResponse> => {
 	return response.json();
 };
 
-export {deleteMyUserAccount};
+export {fetchDeleteAccount};

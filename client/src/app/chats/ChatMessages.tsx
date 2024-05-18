@@ -4,7 +4,7 @@ import {MessageCard} from "#src/components";
 import {Session} from "#src/types/actions/auth";
 import {ProjectMessageFromApi} from "#src/types/apis";
 import {Button, Card, CardBody, Input} from "@nextui-org/react";
-import {ChangeEvent, FC, FormEvent, useEffect, useState} from "react";
+import {ChangeEvent, FC, FormEvent, useEffect, useRef, useState} from "react";
 import {Socket, io} from "socket.io-client";
 
 interface Props {
@@ -13,10 +13,11 @@ interface Props {
 	session: Session;
 }
 
-const ChatContent: FC<Props> = ({initialMessages, projectId, session}) => {
+const ChatMessages: FC<Props> = ({initialMessages, projectId, session}) => {
 	const [socket, setSocket] = useState<Socket | null>(null);
 	const [newMessage, setNewMessage] = useState("");
 	const [messages, setMessages] = useState(initialMessages);
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
 		const newSocket = io(process.env.NEXT_PUBLIC_SERVER_URL as string, {
@@ -44,17 +45,18 @@ const ChatContent: FC<Props> = ({initialMessages, projectId, session}) => {
 			type: "regular"
 		});
 		setNewMessage("");
+
+		inputRef.current?.focus();
 	};
 
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
 		setNewMessage(e.target.value);
 
 	return (
-		<div className="flex flex-col items-start gap-6">
+		<>
 			<Card
 				fullWidth
 				classNames={{
-					base: "flex-grow",
 					body: "p-6 gap-4 flex-col-reverse"
 				}}
 			>
@@ -83,16 +85,21 @@ const ChatContent: FC<Props> = ({initialMessages, projectId, session}) => {
 					})}
 				</CardBody>
 			</Card>
-			<form className="w-full flex gap-2 flex-shrink-0" onSubmit={sendMessage}>
+			<form className="flex gap-2" onSubmit={sendMessage}>
 				<div className="flex-grow">
-					<Input onChange={handleChange} label="Message" value={newMessage} />
+					<Input
+						ref={inputRef}
+						onChange={handleChange}
+						label="Message"
+						value={newMessage}
+					/>
 				</div>
-				<Button className="h-auto" color="primary" type="submit">
+				<Button className="flex-shrink-0 h-auto" color="primary" type="submit">
 					Send
 				</Button>
 			</form>
-		</div>
+		</>
 	);
 };
 
-export default ChatContent;
+export default ChatMessages;

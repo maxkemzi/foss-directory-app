@@ -15,14 +15,14 @@ import {FC, useEffect} from "react";
 import {useFormState} from "react-dom";
 import {CustomModalProps} from "../types";
 import FormFields from "./FormFields/FormFields";
-import {createProjectAction} from "./FormFields/actions";
+import {createProjectWithValidation} from "./FormFields/actions";
 import {INITIAL_FORM_STATE} from "./FormFields/constants";
 
 // TODO: split code into separate components
 const CreateProjectModal: FC<CustomModalProps> = ({isOpen, onClose}) => {
 	const router = useRouter();
 	const [state, formAction] = useFormState(
-		createProjectAction,
+		createProjectWithValidation,
 		INITIAL_FORM_STATE
 	);
 

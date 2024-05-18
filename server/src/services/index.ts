@@ -7,6 +7,7 @@ import RolesService from "./RolesService";
 import TagsService from "./TagsService";
 import UsersService from "./UsersService";
 import ProjectMessagesService from "./projects/messages/ProjectMessagesService";
+import ProjectsContributorsService from "./projects/contributors/ProjectsContributorsService";
 
 export {
 	AuthService,
@@ -17,5 +18,6 @@ export {
 	RolesService,
 	TagsService,
 	UsersService,
-	ProjectMessagesService
+	ProjectMessagesService,
+	ProjectsContributorsService
 };

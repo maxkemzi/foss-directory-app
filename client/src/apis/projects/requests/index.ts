@@ -8,7 +8,7 @@ import {
 
 const BASE_URL = "/projects/requests";
 
-const sendProjectRequest = async (
+const fetchCreateProjectRequest = async (
 	body: ProjectRequestBody
 ): Promise<ProjectRequestResponse> => {
 	const response = await fetchApiWithAuth(BASE_URL, {
@@ -20,7 +20,7 @@ const sendProjectRequest = async (
 	return response.json();
 };
 
-const acceptProjectRequest = async (
+const fetchAcceptProjectRequest = async (
 	id: string
 ): Promise<ProjectRequestResponse> => {
 	const response = await fetchApiWithAuth(`${BASE_URL}/${id}/accept`, {
@@ -30,7 +30,7 @@ const acceptProjectRequest = async (
 	return response.json();
 };
 
-const rejectProjectRequest = async (
+const fetchRejectProjectRequest = async (
 	id: string
 ): Promise<ProjectRequestResponse> => {
 	const response = await fetchApiWithAuth(`${BASE_URL}/${id}/reject`, {
@@ -49,8 +49,8 @@ const fetchProjectRequestsSentToMe =
 	};
 
 export {
-	acceptProjectRequest,
+	fetchAcceptProjectRequest,
 	fetchProjectRequestsSentToMe,
-	rejectProjectRequest,
-	sendProjectRequest
+	fetchRejectProjectRequest,
+	fetchCreateProjectRequest
 };

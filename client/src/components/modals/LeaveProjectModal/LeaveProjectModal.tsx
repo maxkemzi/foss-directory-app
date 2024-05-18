@@ -1,3 +1,4 @@
+import {Pathname} from "#src/constants";
 import {
 	Button,
 	Modal,
@@ -10,25 +11,23 @@ import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {FC, useCallback, useEffect} from "react";
 import {useFormState} from "react-dom";
 import {CustomModalProps} from "../types";
-import {createProjectRequest} from "./actions";
+import {leaveProject} from "./actions";
 import {FormState} from "./types";
 
-const ProjectRequestModal: FC<CustomModalProps> = ({isOpen}) => {
+const LeaveProjectModal: FC<CustomModalProps> = ({isOpen}) => {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 	const projectId = searchParams.get("project-id");
-	const projectRoleId = searchParams.get("project-role-id");
-	const [state, formAction] = useFormState<FormState>(createProjectRequest, {
+	const [state, formAction] = useFormState<FormState>(leaveProject, {
 		success: false,
-		data: {projectId, projectRoleId}
+		data: {projectId}
 	});
 
 	const onClose = useCallback(() => {
 		const params = new URLSearchParams(searchParams.toString());
 		params.delete("modal");
 		params.delete("project-id");
-		params.delete("project-role-id");
 
 		router.replace(`${pathname}?${params.toString()}`);
 	}, [pathname, router, searchParams]);
@@ -36,10 +35,11 @@ const ProjectRequestModal: FC<CustomModalProps> = ({isOpen}) => {
 	useEffect(() => {
 		if (state.success) {
 			onClose();
+			router.push(Pathname.CHATS);
 		}
-	}, [onClose, state.success]);
+	}, [onClose, router, state.success]);
 
-	if (!projectId || !projectRoleId) {
+	if (!projectId) {
 		return null;
 	}
 
@@ -49,18 +49,20 @@ const ProjectRequestModal: FC<CustomModalProps> = ({isOpen}) => {
 				{handleClose => (
 					<>
 						<ModalHeader className="flex flex-col gap-1">
-							Role request
+							Leave project
 						</ModalHeader>
 						<ModalBody>
-							<p>Are you sure you want to request role?</p>
+							<p>
+								<span className="font-bold">Important</span>: if you are the
+								project owner, the project will be deleted permanently! Are you
+								sure you want to leave the project?
+							</p>
 						</ModalBody>
 						<ModalFooter>
-							<Button color="danger" variant="light" onPress={handleClose}>
-								Cancel
-							</Button>
+							<Button onPress={handleClose}>Cancel</Button>
 							<form action={formAction}>
-								<Button type="submit" color="primary">
-									Request
+								<Button type="submit" color="danger">
+									Leave
 								</Button>
 							</form>
 						</ModalFooter>
@@ -71,4 +73,4 @@ const ProjectRequestModal: FC<CustomModalProps> = ({isOpen}) => {
 	);
 };
 
-export default ProjectRequestModal;
+export default LeaveProjectModal;

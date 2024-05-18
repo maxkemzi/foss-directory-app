@@ -17,6 +17,19 @@ class ProjectContributorModel {
 		);
 		return new ProjectContributorDocument(contributor);
 	}
+
+	static async delete({
+		projectId,
+		userId
+	}: {
+		projectId: string;
+		userId: string;
+	}): Promise<void> {
+		await Db.query(
+			"DELETE FROM projects_contributors WHERE project_id = $1 AND user_id = $2;",
+			[projectId, userId]
+		);
+	}
 }
 
 export default ProjectContributorModel;

@@ -1,7 +1,7 @@
 "use server";
 
 import {fetchMyGithubRepos} from "#src/apis/integrations/github";
-import {createProject} from "#src/apis/projects";
+import {fetchCreateProject} from "#src/apis/projects";
 import {fetchAllRoles} from "#src/apis/roles";
 import {fetchAllTags} from "#src/apis/tags";
 import {CacheTag} from "#src/constants";
@@ -9,7 +9,10 @@ import {isApiError} from "#src/lib";
 import {revalidateTag} from "next/cache";
 import {INITIAL_FORM_STATE, VALIDATION_SCHEMA} from "./constants";
 
-const createProjectAction = async (prevState: any, formData: FormData) => {
+const createProjectWithValidation = async (
+	prevState: any,
+	formData: FormData
+) => {
 	const tagsField = formData.get("tags");
 	const rolesField = formData.get("roles");
 	const validatedFields = VALIDATION_SCHEMA.safeParse({
@@ -29,7 +32,7 @@ const createProjectAction = async (prevState: any, formData: FormData) => {
 	}
 
 	try {
-		await createProject(validatedFields.data);
+		await fetchCreateProject(validatedFields.data);
 		revalidateTag(CacheTag.PROJECTS);
 
 		return {...INITIAL_FORM_STATE, success: true};
@@ -58,4 +61,4 @@ const getGithubRepos = async () => {
 	return repos;
 };
 
-export {createProjectAction, getGithubRepos, getRoles, getTags};
+export {createProjectWithValidation, getGithubRepos, getRoles, getTags};

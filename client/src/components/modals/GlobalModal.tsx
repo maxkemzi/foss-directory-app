@@ -6,6 +6,7 @@ import {FC} from "react";
 import CreateProjectModal from "./CreateProjectModal/CreateProjectModal";
 import DeleteAccountModal from "./DeleteAccountModal/DeleteAccountModal";
 import GithubModal from "./GithubModal/GithubModal";
+import LeaveProjectModal from "./LeaveProjectModal/LeaveProjectModal";
 import ProjectRequestModal from "./ProjectRequestModal/ProjectRequestModal";
 import {CustomModalProps} from "./types";
 
@@ -34,6 +35,8 @@ const GlobalModal = () => {
 		ModalComponent = CreateProjectModal;
 	} else if (modal === ModalVariant.PROJECT_REQUEST) {
 		ModalComponent = ProjectRequestModal;
+	} else if (modal === ModalVariant.LEAVE_PROJECT) {
+		ModalComponent = LeaveProjectModal;
 	}
 
 	return ModalComponent ? <ModalComponent {...modalProps} /> : null;
