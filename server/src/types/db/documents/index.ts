@@ -41,6 +41,7 @@ interface PopulatedProjectDocument extends BaseProjectDocument {
 		placesAvailable: ProjectRoleDocument["placesAvailable"];
 	})[];
 	requestable: boolean;
+	contributorCount: number;
 }
 
 interface ProjectTagDocument extends DocumentObject {
@@ -110,6 +111,12 @@ interface ProjectContributorDocument extends DocumentObject {
 	userId: ProjectContributorFromDb["user_id"];
 	projectId: ProjectContributorFromDb["project_id"];
 	projectRoleId: ProjectContributorFromDb["project_role_id"];
+	isOwner: ProjectContributorFromDb["is_owner"];
+}
+interface PopulatedProjectContributorDocument extends DocumentObject {
+	user: UserDocument;
+	role: RoleDocument;
+	isOwner: boolean;
 }
 
 interface ProjectMessageDocument extends DocumentObject {
@@ -120,7 +127,11 @@ interface ProjectMessageDocument extends DocumentObject {
 }
 interface PopulatedProjectMessageDocument extends DocumentObject {
 	project: ProjectDocument;
-	user: (UserDocument & {role: RoleDocument; isOwner: boolean}) | null;
+	sender: {
+		user: UserDocument;
+		role: RoleDocument | null;
+		isOwner: boolean;
+	} | null;
 	text: ProjectMessageFromDb["text"];
 	type: ProjectMessageFromDb["type"];
 }
@@ -135,6 +146,7 @@ export type {
 	PopulatedProjectDocument,
 	PopulatedProjectRoleDocument,
 	PopulatedProjectRequestDocument,
+	PopulatedProjectContributorDocument,
 	ProjectDocument,
 	ProjectRoleDocument,
 	ProjectTagDocument,

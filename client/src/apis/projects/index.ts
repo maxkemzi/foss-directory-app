@@ -3,6 +3,7 @@ import {CacheTag} from "#src/constants";
 import {
 	CreateProjectBody,
 	CreateProjectResponse,
+	FetchProjectResponse,
 	FetchProjectsResponse
 } from "#src/types/apis/projects";
 
@@ -41,9 +42,17 @@ const fetchContributedProjects = async (): Promise<FetchProjectsResponse> => {
 	return response.json();
 };
 
+const fetchProjectById = async (id: string): Promise<FetchProjectResponse> => {
+	const response = await fetchApiWithAuth(`${BASE_URL}/${id}`, {
+		cache: "no-store"
+	});
+	return response.json();
+};
+
 export {
-	fetchCreateProject,
 	fetchAllProjects,
 	fetchContributedProjects,
-	fetchMyProjects
+	fetchCreateProject,
+	fetchMyProjects,
+	fetchProjectById
 };

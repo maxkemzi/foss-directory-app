@@ -1,18 +1,21 @@
 import {PopulatedProjectMessageDocument} from "#src/types/db/documents";
 
-type User = NonNullable<PopulatedProjectMessageDocument["user"]>;
+type Sender = NonNullable<PopulatedProjectMessageDocument["sender"]>;
+type SenderRole = NonNullable<Sender["role"]>;
 
 class PopulatedProjectMessageDto {
 	id: PopulatedProjectMessageDocument["id"];
-	user: {
-		id: User["id"];
-		username: User["username"];
-		avatar: User["avatar"];
-		role: {
-			id: User["role"]["id"];
-			name: User["role"]["name"];
+	sender: {
+		user: {
+			id: Sender["user"]["id"];
+			username: Sender["user"]["username"];
+			avatar: Sender["user"]["avatar"];
 		};
-		isOwner: User["isOwner"];
+		role: {
+			id: SenderRole["id"];
+			name: SenderRole["name"];
+		} | null;
+		isOwner: Sender["isOwner"];
 	} | null;
 	text: PopulatedProjectMessageDocument["text"];
 	type: PopulatedProjectMessageDocument["type"];
@@ -20,13 +23,17 @@ class PopulatedProjectMessageDto {
 
 	constructor(doc: PopulatedProjectMessageDocument) {
 		this.id = doc.id;
-		this.user = doc.user
+		this.sender = doc.sender
 			? {
-					id: doc.user.id,
-					username: doc.user.username,
-					avatar: doc.user.avatar,
-					role: {id: doc.user.role.id, name: doc.user.role.name},
-					isOwner: doc.user.isOwner
+					user: {
+						id: doc.sender.user.id,
+						username: doc.sender.user.username,
+						avatar: doc.sender.user.avatar
+					},
+					role: doc.sender.role
+						? {id: doc.sender.role.id, name: doc.sender.role.name}
+						: null,
+					isOwner: doc.sender.isOwner
 				}
 			: null;
 		this.text = doc.text;

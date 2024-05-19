@@ -7,6 +7,7 @@ import CreateProjectModal from "./CreateProjectModal/CreateProjectModal";
 import DeleteAccountModal from "./DeleteAccountModal/DeleteAccountModal";
 import GithubModal from "./GithubModal/GithubModal";
 import LeaveProjectModal from "./LeaveProjectModal/LeaveProjectModal";
+import ProjectChatInfoModal from "./ProjectChatInfoModal/ProjectChatInfoModal";
 import ProjectRequestModal from "./ProjectRequestModal/ProjectRequestModal";
 import {CustomModalProps} from "./types";
 
@@ -37,6 +38,8 @@ const GlobalModal = () => {
 		ModalComponent = ProjectRequestModal;
 	} else if (modal === ModalVariant.LEAVE_PROJECT) {
 		ModalComponent = LeaveProjectModal;
+	} else if (modal === ModalVariant.PROJECT_CHAT_INFO) {
+		ModalComponent = ProjectChatInfoModal;
 	}
 
 	return ModalComponent ? <ModalComponent {...modalProps} /> : null;

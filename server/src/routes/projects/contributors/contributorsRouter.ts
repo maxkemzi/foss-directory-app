@@ -4,6 +4,11 @@ import {Router} from "express";
 
 const contributorsRouter = Router({mergeParams: true});
 
+contributorsRouter.get(
+	"/",
+	authChecker,
+	ProjectContributorsController.getByProjectId
+);
 contributorsRouter.delete(
 	"/leave",
 	authChecker,

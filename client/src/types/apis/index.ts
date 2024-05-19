@@ -7,6 +7,7 @@ interface ProjectFromApi {
 	tags: {id: string; name: string}[];
 	roles: {id: string; name: string; placesAvailable: number}[];
 	requestable: boolean;
+	contributorCount: number;
 }
 
 interface TagFromApi {
@@ -53,16 +54,29 @@ interface ProjectRequestFromApi {
 
 interface ProjectMessageFromApi {
 	id: string;
-	user: {
-		id: string;
-		username: string;
-		avatar: string;
-		role: {id: string; name: string};
+	sender: {
+		user: {
+			id: string;
+			username: string;
+			avatar: string;
+		};
+		role: {id: string; name: string} | null;
 		isOwner: boolean;
 	} | null;
 	text: string;
 	type: "regular" | "join" | "date";
 	createdAt: string;
+}
+
+interface ProjectContributorFromApi {
+	id: string;
+	user: {
+		id: string;
+		username: string;
+		avatar: string;
+	};
+	role: {id: string; name: string};
+	isOwner: boolean;
 }
 
 export type {
@@ -72,5 +86,6 @@ export type {
 	RepoFromApi,
 	RoleFromApi,
 	ProjectRequestFromApi,
-	ProjectMessageFromApi
+	ProjectMessageFromApi,
+	ProjectContributorFromApi
 };

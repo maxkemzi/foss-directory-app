@@ -63,15 +63,15 @@ const ChatMessages: FC<Props> = ({initialMessages, projectId, session}) => {
 				<CardBody>
 					{messages.map((message, index, arr) => {
 						const isMine =
-							message.user != null
-								? message.user.id === session.user.id
+							message.sender != null
+								? message.sender.user.id === session.user.id
 								: false;
 
 						const prevMessage = arr[index + 1];
 						const isSequential =
-							message.user != null &&
-							prevMessage?.user != null &&
-							prevMessage.user.id === message.user.id &&
+							message.sender != null &&
+							prevMessage?.sender != null &&
+							prevMessage.sender.user.id === message.sender.user.id &&
 							prevMessage.type === "regular";
 
 						return (

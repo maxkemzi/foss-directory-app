@@ -89,6 +89,19 @@ class ProjectsController {
 			next(e);
 		}
 	}
+
+	static async getById(req: Request, res: Response, next: NextFunction) {
+		try {
+			const {id} = req.params;
+			const userId = res.locals.user?.id!;
+
+			const project = await ProjectsService.getById({projectId: id, userId});
+
+			res.json(project);
+		} catch (e) {
+			next(e);
+		}
+	}
 }
 
 export default ProjectsController;

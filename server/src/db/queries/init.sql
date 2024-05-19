@@ -235,6 +235,7 @@ BEGIN
 		SELECT 1
 		FROM projects_messages
 		WHERE date_trunc('day', created_at) = date_trunc('day', CURRENT_TIMESTAMP)
+		AND project_id = NEW.project_id
 	) INTO is_first_row_today;
 
 	IF (is_first_row_today) THEN

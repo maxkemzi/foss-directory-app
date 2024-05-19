@@ -1,11 +1,18 @@
 import {fetchApiWithAuth} from "#src/actions/auth";
-import {FetchProjectMessagesResponse} from "#src/types/apis/projects/messages";
+import {FetchContributorsResponse} from "#src/types/apis/projects/contributors";
 
 const BASE_URL = "/projects";
 
-const fetchLeaveProject = async (
-	projectId: string
-): Promise<FetchProjectMessagesResponse> => {
+const fetchContributorsByProjectId = async (
+	id: string
+): Promise<FetchContributorsResponse> => {
+	const response = await fetchApiWithAuth(`${BASE_URL}/${id}/contributors`, {
+		cache: "no-store"
+	});
+	return response.json();
+};
+
+const fetchLeaveProject = async (projectId: string): Promise<void> => {
 	const response = await fetchApiWithAuth(
 		`${BASE_URL}/${projectId}/contributors/leave`,
 		{method: "DELETE", cache: "no-store"}
@@ -13,4 +20,4 @@ const fetchLeaveProject = async (
 	return response.json();
 };
 
-export {fetchLeaveProject};
+export {fetchContributorsByProjectId, fetchLeaveProject};

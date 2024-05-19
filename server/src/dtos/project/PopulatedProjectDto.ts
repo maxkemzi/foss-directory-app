@@ -16,6 +16,7 @@ class PopulatedProjectDto {
 		name: Role["name"];
 		placesAvailable: Role["placesAvailable"];
 	}[];
+	contributorCount: PopulatedProjectDocument["contributorCount"];
 	requestable: PopulatedProjectDocument["requestable"];
 
 	constructor(doc: PopulatedProjectDocument) {
@@ -33,6 +34,7 @@ class PopulatedProjectDto {
 			name: r.name,
 			placesAvailable: r.placesAvailable
 		}));
+		this.contributorCount = doc.contributorCount;
 		this.requestable = doc.requestable;
 	}
 }

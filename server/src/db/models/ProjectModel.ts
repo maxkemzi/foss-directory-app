@@ -170,7 +170,7 @@ class ProjectModel {
 	static async getById(id: string): Promise<ProjectDocument | null> {
 		const {
 			rows: [project]
-		} = await Db.query<ProjectFromDb>("SELECT * FROM projects WHERE id=$1;", [
+		} = await Db.query<ProjectFromDb>("SELECT * FROM projects WHERE id = $1;", [
 			id
 		]);
 

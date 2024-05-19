@@ -64,6 +64,37 @@ class ProjectsService {
 
 		await ProjectModel.deleteById(projectId);
 	}
+
+	static async getById({
+		projectId,
+		userId
+	}: {
+		projectId: string;
+		userId: string;
+	}): Promise<PopulatedProjectDto> {
+		const isContributor = await UserModel.isProjectContributor({
+			projectId,
+			userId
+		});
+		if (!isContributor) {
+			throw new ApiError(403, "Forbidden");
+		}
+
+		const project = await ProjectModel.getById(projectId);
+		if (!project) {
+			throw new ApiError(
+				400,
+				`No project by the id of ${projectId} was found.`
+			);
+		}
+
+		const populatedProject = await PopulateUtils.populateProject(
+			project,
+			userId
+		);
+
+		return new PopulatedProjectDto(populatedProject);
+	}
 }
 
 export default ProjectsService;

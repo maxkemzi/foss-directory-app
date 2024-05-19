@@ -15,10 +15,10 @@ projectsRouter.get(
 	authChecker,
 	ProjectsController.getContributed
 );
-projectsRouter.delete("/:id", authChecker, ProjectsController.delete);
-
 projectsRouter.use("/requests", requestsRouter);
-projectsRouter.use("/:id/messages", messagesRouter);
-projectsRouter.use("/:id/contributors", contributorsRouter);
+projectsRouter.get("/:id", authChecker, ProjectsController.getById);
+projectsRouter.delete("/:id", authChecker, ProjectsController.delete);
+projectsRouter.use("/:projectId/messages", messagesRouter);
+projectsRouter.use("/:projectId/contributors", contributorsRouter);
 
 export default projectsRouter;

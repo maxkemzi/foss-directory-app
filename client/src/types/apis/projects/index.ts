@@ -2,6 +2,8 @@ import {ProjectFromApi} from "..";
 
 type FetchProjectsResponse = ProjectFromApi[];
 
+type FetchProjectResponse = ProjectFromApi;
+
 interface CreateProjectBody {
 	name: string;
 	description: string;
@@ -13,4 +15,9 @@ interface CreateProjectBody {
 
 type CreateProjectResponse = ProjectFromApi;
 
-export type {CreateProjectBody, CreateProjectResponse, FetchProjectsResponse};
+export type {
+	CreateProjectBody,
+	CreateProjectResponse,
+	FetchProjectsResponse,
+	FetchProjectResponse
+};

@@ -18,6 +18,16 @@ class ProjectContributorModel {
 		return new ProjectContributorDocument(contributor);
 	}
 
+	static async getByProjectId(
+		projectId: string
+	): Promise<ProjectContributorDocument[]> {
+		const {rows: contributors} = await Db.query<ProjectContributorFromDb>(
+			"SELECT * FROM projects_contributors WHERE project_id = $1;",
+			[projectId]
+		);
+		return contributors.map(c => new ProjectContributorDocument(c));
+	}
+
 	static async delete({
 		projectId,
 		userId
