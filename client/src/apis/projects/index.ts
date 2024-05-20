@@ -15,8 +15,7 @@ const fetchCreateProject = async (
 	const response = await fetchApiWithAuth(BASE_URL, {
 		method: "POST",
 		headers: {"Content-Type": "application/json"},
-		body: JSON.stringify(body),
-		cache: "no-store"
+		body: JSON.stringify(body)
 	});
 	return response.json();
 };
@@ -43,9 +42,7 @@ const fetchContributedProjects = async (): Promise<FetchProjectsResponse> => {
 };
 
 const fetchProjectById = async (id: string): Promise<FetchProjectResponse> => {
-	const response = await fetchApiWithAuth(`${BASE_URL}/${id}`, {
-		cache: "no-store"
-	});
+	const response = await fetchApiWithAuth(`${BASE_URL}/${id}`);
 	return response.json();
 };
 

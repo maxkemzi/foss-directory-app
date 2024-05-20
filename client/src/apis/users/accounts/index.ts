@@ -5,8 +5,7 @@ const BASE_URL = "/users/accounts";
 
 const fetchDeleteAccount = async (): Promise<DeleteAccountResponse> => {
 	const response = await fetchApiWithAuth(BASE_URL, {
-		method: "DELETE",
-		cache: "no-store"
+		method: "DELETE"
 	});
 	return response.json();
 };

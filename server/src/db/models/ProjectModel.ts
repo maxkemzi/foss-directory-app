@@ -2,10 +2,12 @@
 import {
 	ProjectFromDb,
 	ProjectRoleFromDb,
+	ProjectTagFromDb,
 	RoleFromDb,
 	TagFromDb
 } from "#src/types/db";
 import {PaginationArgs, ProjectPayload} from "#src/types/db/models";
+import {PoolClient} from "pg";
 import Db from "../Db";
 import {ProjectDocument} from "../documents";
 
@@ -31,78 +33,33 @@ class ProjectModel {
 				[ownerId, name, description, repoUrl]
 			);
 
-			// Owner
-			const {
-				rows: [ownerRoleFromDb]
-			} = await client.query<Pick<TagFromDb, "id">>(
-				"SELECT id FROM roles WHERE name=$1;",
-				[role]
-			);
-
-			let ownerProjectRoleId;
-			if (!ownerRoleFromDb) {
-				const {rows} = await client.query<Pick<ProjectRoleFromDb, "id">>(
-					"INSERT INTO projects_roles(project_id, name, is_custom) VALUES($1, $2, $3) RETURNING id;",
-					[project.id, role, true]
-				);
-				ownerProjectRoleId = rows[0].id;
-			} else {
-				const {rows} = await client.query<Pick<ProjectRoleFromDb, "id">>(
-					"INSERT INTO projects_roles(project_id, role_id, is_custom) VALUES($1, $2, $3) RETURNING id;",
-					[project.id, ownerRoleFromDb.id, false]
-				);
-				ownerProjectRoleId = rows[0].id;
-			}
+			const ownerProjectRole = await ProjectModel.#createProjectRole(client, {
+				projectId: project.id,
+				name: role
+			});
 
 			await client.query(
 				"INSERT INTO projects_contributors(user_id, project_id, project_role_id, is_owner) VALUES($1, $2, $3, $4);",
-				[ownerId, project.id, ownerProjectRoleId, true]
+				[ownerId, project.id, ownerProjectRole.id, true]
 			);
 
 			// Tags
 			// eslint-disable-next-line no-restricted-syntax
 			for (const tagName of tags) {
-				const {
-					rows: [tagFromDb]
-				} = await client.query<Pick<TagFromDb, "id">>(
-					"SELECT id FROM tags WHERE name=$1;",
-					[tagName]
-				);
-
-				if (!tagFromDb) {
-					await client.query(
-						"INSERT INTO projects_tags(project_id, name, is_custom) VALUES($1, $2, $3);",
-						[project.id, tagName, true]
-					);
-				} else {
-					await client.query(
-						"INSERT INTO projects_tags(project_id, tag_id, is_custom) VALUES($1, $2, $3);",
-						[project.id, tagFromDb.id, false]
-					);
-				}
+				await ProjectModel.#createProjectTag(client, {
+					projectId: project.id,
+					name: tagName
+				});
 			}
 
 			// Roles
 			// eslint-disable-next-line no-restricted-syntax
-			for (const [roleName, quantity] of Object.entries(roles)) {
-				const {
-					rows: [roleFromDb]
-				} = await client.query<Pick<RoleFromDb, "id">>(
-					"SELECT id FROM roles WHERE name=$1;",
-					[roleName]
-				);
-
-				if (!roleFromDb) {
-					await client.query(
-						"INSERT INTO projects_roles(project_id, name, places_available, is_custom) VALUES($1, $2, $3, $4);",
-						[project.id, roleName, quantity, true]
-					);
-				} else {
-					await client.query(
-						"INSERT INTO projects_roles(project_id, role_id, places_available, is_custom) VALUES($1, $2, $3, $4);",
-						[project.id, roleFromDb.id, quantity, false]
-					);
-				}
+			for (const [roleName, placesAvailable] of Object.entries(roles)) {
+				await ProjectModel.#createProjectRole(client, {
+					projectId: project.id,
+					name: roleName,
+					placesAvailable
+				});
 			}
 
 			await client.query("COMMIT");
@@ -114,6 +71,62 @@ class ProjectModel {
 		} finally {
 			client.release();
 		}
+	}
+
+	static async #createProjectRole(
+		client: PoolClient,
+		{
+			projectId,
+			name,
+			placesAvailable = 0
+		}: {projectId: string; name: string; placesAvailable?: number}
+	) {
+		const {
+			rows: [roleFromDb]
+		} = await client.query<Pick<RoleFromDb, "id">>(
+			"SELECT id FROM roles WHERE name = $1;",
+			[name]
+		);
+
+		const {
+			rows: [role]
+		} = await (roleFromDb
+			? client.query<Pick<ProjectRoleFromDb, "id">>(
+					"INSERT INTO projects_roles(project_id, role_id, places_available, is_custom) VALUES($1, $2, $3, $4) RETURNING id;",
+					[projectId, roleFromDb.id, placesAvailable, false]
+				)
+			: client.query<Pick<ProjectRoleFromDb, "id">>(
+					"INSERT INTO projects_roles(project_id, name, places_available, is_custom) VALUES($1, $2, $3, $4) RETURNING id;",
+					[projectId, name, placesAvailable, true]
+				));
+
+		return role;
+	}
+
+	static async #createProjectTag(
+		client: PoolClient,
+		{projectId, name}: {projectId: string; name: string}
+	) {
+		const {
+			rows: [tagFromDb]
+		} = await client.query<Pick<TagFromDb, "id">>(
+			"SELECT id FROM tags WHERE name=$1;",
+			[name]
+		);
+
+		const {
+			rows: [tag]
+		} = await (tagFromDb
+			? client.query<Pick<ProjectTagFromDb, "id">>(
+					"INSERT INTO projects_tags(project_id, tag_id, is_custom) VALUES($1, $2, $3);",
+					[projectId, tagFromDb.id, false]
+				)
+			: client.query<Pick<ProjectTagFromDb, "id">>(
+					"INSERT INTO projects_tags(project_id, name, is_custom) VALUES($1, $2, $3);",
+					[projectId, name, true]
+				));
+
+		return tag;
 	}
 
 	static async getAll({search, limit, offset}: PaginationArgs): Promise<{

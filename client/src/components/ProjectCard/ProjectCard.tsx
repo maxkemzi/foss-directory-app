@@ -27,7 +27,7 @@ const ProjectCard: FC<Props> = ({project, requestable}) => {
 				{project.roles.length !== 0 ? (
 					<div className="mb-2">
 						<Roles
-							roles={project.roles.reverse()}
+							roles={project.roles}
 							projectId={project.id}
 							requestable={requestable}
 						/>
@@ -36,7 +36,7 @@ const ProjectCard: FC<Props> = ({project, requestable}) => {
 				<p>{project.description}</p>
 				{project.tags.length !== 0 ? (
 					<div className="mt-4">
-						<Tags tags={project.tags.reverse()} />
+						<Tags tags={project.tags} />
 					</div>
 				) : null}
 			</CardBody>

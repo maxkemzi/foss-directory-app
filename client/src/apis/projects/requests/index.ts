@@ -14,8 +14,7 @@ const fetchCreateProjectRequest = async (
 	const response = await fetchApiWithAuth(BASE_URL, {
 		method: "POST",
 		headers: {"Content-Type": "application/json"},
-		body: JSON.stringify(body),
-		cache: "no-store"
+		body: JSON.stringify(body)
 	});
 	return response.json();
 };
@@ -24,8 +23,7 @@ const fetchAcceptProjectRequest = async (
 	id: string
 ): Promise<ProjectRequestResponse> => {
 	const response = await fetchApiWithAuth(`${BASE_URL}/${id}/accept`, {
-		method: "POST",
-		cache: "no-store"
+		method: "POST"
 	});
 	return response.json();
 };
@@ -34,8 +32,7 @@ const fetchRejectProjectRequest = async (
 	id: string
 ): Promise<ProjectRequestResponse> => {
 	const response = await fetchApiWithAuth(`${BASE_URL}/${id}/reject`, {
-		method: "POST",
-		cache: "no-store"
+		method: "POST"
 	});
 	return response.json();
 };

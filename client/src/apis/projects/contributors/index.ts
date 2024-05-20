@@ -6,16 +6,14 @@ const BASE_URL = "/projects";
 const fetchContributorsByProjectId = async (
 	id: string
 ): Promise<FetchContributorsResponse> => {
-	const response = await fetchApiWithAuth(`${BASE_URL}/${id}/contributors`, {
-		cache: "no-store"
-	});
+	const response = await fetchApiWithAuth(`${BASE_URL}/${id}/contributors`);
 	return response.json();
 };
 
 const fetchLeaveProject = async (projectId: string): Promise<void> => {
 	const response = await fetchApiWithAuth(
 		`${BASE_URL}/${projectId}/contributors/leave`,
-		{method: "DELETE", cache: "no-store"}
+		{method: "DELETE"}
 	);
 	return response.json();
 };

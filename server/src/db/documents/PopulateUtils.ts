@@ -28,15 +28,15 @@ class PopulateUtils {
 				`
 				SELECT *
 				FROM (
-					SELECT pt.id, t.name, pt.created_at, pt.updated_at
+					SELECT pt.id, t.name, pt.created_at, pt.updated_at, row_number() OVER (ORDER BY pt.created_at) as seq_num
 					FROM projects_tags pt
 					JOIN tags t ON pt.tag_id = t.id
 					WHERE pt.project_id = $1
-					UNION
-					SELECT id, name, created_at, updated_at
+					UNION ALL
+					SELECT id, name, created_at, updated_at, row_number() OVER (ORDER BY created_at) as seq_num
 					FROM projects_tags
 					WHERE project_id = $1 AND tag_id IS NULL
-				);
+				) AS combined ORDER BY combined.seq_num;
 				`,
 				[id]
 			),
@@ -44,15 +44,15 @@ class PopulateUtils {
 				`
 				SELECT *
 				FROM (
-					SELECT pr.id, r.name, pr.places_available, pr.created_at, pr.updated_at
+					SELECT pr.id, r.name, pr.places_available, pr.created_at, pr.updated_at, row_number() OVER (ORDER BY pr.created_at) as seq_num
 					FROM projects_roles pr
 					JOIN roles r ON pr.role_id = r.id
 					WHERE pr.project_id = $1 AND pr.places_available > 0
-					UNION
-					SELECT id, name, places_available, created_at, updated_at
+					UNION ALL
+					SELECT id, name, places_available, created_at, updated_at, row_number() OVER (ORDER BY created_at) as seq_num
 					FROM projects_roles
 					WHERE project_id = $1 AND role_id IS NULL AND places_available > 0
-				);
+				) AS combined ORDER BY combined.seq_num;
 				`,
 				[id]
 			),
@@ -121,15 +121,15 @@ class PopulateUtils {
 				`
 				SELECT *
 				FROM (
-					SELECT pr.id, r.name, pr.places_available, pr.created_at, pr.updated_at
+					SELECT pr.id, r.name, pr.places_available, pr.created_at, pr.updated_at, row_number() OVER (ORDER BY pr.created_at) as seq_num
 					FROM projects_roles pr
 					JOIN roles r ON pr.role_id = r.id
 					WHERE pr.id = $1 AND pr.places_available > 0
-					UNION
-					SELECT id, name, places_available, created_at, updated_at
+					UNION ALL
+					SELECT id, name, places_available, created_at, updated_at, row_number() OVER (ORDER BY created_at) as seq_num
 					FROM projects_roles
 					WHERE id = $1 AND role_id IS NULL AND places_available > 0
-				);
+				) AS combined ORDER BY combined.seq_num;
 			`,
 				[projectRoleId]
 			)
@@ -166,17 +166,17 @@ class PopulateUtils {
 					`
 				SELECT *
 				FROM (
-					SELECT pr.id, r.name, pr.created_at, pr.updated_at
+					SELECT pr.id, r.name, pr.created_at, pr.updated_at, row_number() OVER (ORDER BY pr.created_at) as seq_num
 					FROM projects_contributors pc
 					JOIN projects_roles pr ON pc.project_role_id = pr.id
 					JOIN roles r ON pr.role_id = r.id
 					WHERE pc.project_id = $1 AND pc.user_id = $2
-					UNION
-					SELECT pr.id, pr.name, pr.created_at, pr.updated_at
+					UNION ALL
+					SELECT pr.id, pr.name, pr.created_at, pr.updated_at, row_number() OVER (ORDER BY pr.created_at) as seq_num
 					FROM projects_contributors pc
 					JOIN projects_roles pr ON pc.project_role_id = pr.id
 					WHERE pc.project_id = $1 AND pc.user_id = $2 AND pr.role_id IS NULL
-				);
+				) AS combined ORDER BY combined.seq_num;
 			`,
 					[projectId, userId]
 				)
@@ -225,17 +225,17 @@ class PopulateUtils {
 				`
 				SELECT *
 				FROM (
-					SELECT pr.id, r.name, pr.created_at, pr.updated_at
+					SELECT pr.id, r.name, pr.created_at, pr.updated_at, row_number() OVER (ORDER BY pr.created_at) as seq_num
 					FROM projects_contributors pc
 					JOIN projects_roles pr ON pc.project_role_id = pr.id
 					JOIN roles r ON pr.role_id = r.id
 					WHERE pc.project_id = $1 AND pc.user_id = $2
-					UNION
-					SELECT pr.id, pr.name, pr.created_at, pr.updated_at
+					UNION ALL
+					SELECT pr.id, pr.name, pr.created_at, pr.updated_at, row_number() OVER (ORDER BY pr.created_at) as seq_num
 					FROM projects_contributors pc
 					JOIN projects_roles pr ON pc.project_role_id = pr.id
 					WHERE pc.project_id = $1 AND pc.user_id = $2 AND pr.role_id IS NULL
-				);
+				) AS combined ORDER BY combined.seq_num;
 				`,
 				[projectId, userId]
 			)

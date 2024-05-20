@@ -7,9 +7,7 @@ import {
 const BASE_URL = "/integrations/github";
 
 const fetchGithubConnectionUrl = async (): Promise<FetchUrlResponse> => {
-	const response = await fetchApiWithAuth(BASE_URL, {
-		cache: "no-store"
-	});
+	const response = await fetchApiWithAuth(BASE_URL);
 	return response.json();
 };
 

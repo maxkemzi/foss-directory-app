@@ -1,6 +1,6 @@
 import {PopulateUtils} from "#src/db/documents";
 import {ProjectMessageModel, UserModel} from "#src/db/models";
-import {PopulatedProjectMessageDto, ProjectMessageDto} from "#src/dtos";
+import {PopulatedProjectMessageDto} from "#src/dtos";
 import {ApiError} from "#src/lib";
 import {ProjectMessagePayload} from "#src/types/db/models";
 
@@ -13,7 +13,7 @@ class ProjectMessagesService {
 		payload: ProjectMessagePayload;
 		projectId: string;
 		userId: string;
-	}): Promise<ProjectMessageDto> {
+	}): Promise<PopulatedProjectMessageDto> {
 		const isContributor = await UserModel.isProjectContributor({
 			projectId,
 			userId
