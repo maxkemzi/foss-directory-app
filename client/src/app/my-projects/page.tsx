@@ -1,30 +1,18 @@
-import {fetchMyProjects} from "#src/apis/projects";
-import {ProjectCard} from "#src/components";
-import {Container} from "#src/components/ui";
-import {Header} from "../(header)";
+import {ProjectCard, getMyProjects} from "#src/entities/project";
 
 const MyProjects = async () => {
-	const projects = await fetchMyProjects();
+	const projects = await getMyProjects();
 
 	return (
-		<>
-			<Header />
-			<main>
-				<section className="py-6">
-					<Container>
-						<div className="grid grid-cols-3 items-start gap-4">
-							{projects.map(project => (
-								<ProjectCard
-									key={project.id}
-									project={project}
-									requestable={project.requestable}
-								/>
-							))}
-						</div>
-					</Container>
-				</section>
-			</main>
-		</>
+		<div className="grid grid-cols-3 items-start gap-4">
+			{projects.map(project => (
+				<ProjectCard
+					key={project.id}
+					project={project}
+					requestable={project.requestable}
+				/>
+			))}
+		</div>
 	);
 };
 

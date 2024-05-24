@@ -1,4 +1,4 @@
-import {Pathname} from "#src/constants";
+import {Pathname} from "#src/shared/constants";
 import {Link} from "@nextui-org/react";
 
 const Success = () => (

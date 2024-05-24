@@ -49,18 +49,6 @@ class AuthController {
 		}
 	}
 
-	static async check(req: Request, res: Response, next: NextFunction) {
-		try {
-			const {accessToken} = req.body;
-
-			const isValid = await AuthService.check(accessToken);
-
-			res.json(isValid);
-		} catch (e) {
-			next(e);
-		}
-	}
-
 	static async logout(req: Request, res: Response, next: NextFunction) {
 		try {
 			const {refreshToken} = req.cookies;

@@ -7,14 +7,14 @@ class JwtTokensService {
 
 	static generateAccessAndRefresh(payload: string | object) {
 		return {
-			access: JwtTokensService.#generateAccess(payload),
+			access: JwtTokensService.generateAccess(payload),
 			refresh: JwtTokensService.#generateRefresh(payload)
 		};
 	}
 
-	static #generateAccess(payload: string | object) {
+	static generateAccess(payload: string | object) {
 		return jwt.sign(payload, JwtTokensService.#ACCESS_SECRET, {
-			expiresIn: "30s"
+			expiresIn: "30m"
 		});
 	}
 

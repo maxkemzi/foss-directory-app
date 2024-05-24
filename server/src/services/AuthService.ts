@@ -65,23 +65,16 @@ class AuthService {
 
 		const user = await UserModel.getById(userPayload.id);
 		if (!user) {
-			throw new ApiError(400, "User doesn't exist anymore.");
+			throw new ApiError(400, "User doesn't exist.");
 		}
 
 		const userDto = new UserDto(user);
-		const tokens = JwtTokensService.generateAccessAndRefresh({...userDto});
+		const accessToken = JwtTokensService.generateAccess({...userDto});
 
-		await RefreshTokenModel.upsert({
-			userId: userDto.id,
-			token: tokens.refresh
-		});
-
-		return {user: {...userDto}, tokens};
-	}
-
-	static async check(accessToken: string) {
-		const userPayload = JwtTokensService.verifyAccess<UserDto>(accessToken);
-		return userPayload !== null;
+		return {
+			user: {...userDto},
+			tokens: {access: accessToken, refresh: refreshToken}
+		};
 	}
 
 	static async logout(refreshToken: string) {

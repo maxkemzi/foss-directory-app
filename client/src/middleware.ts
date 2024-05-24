@@ -1,7 +1,8 @@
-import {fetchLogOut, fetchRefresh} from "#src/apis/auth";
+import {fetchLogOut, fetchRefresh} from "#src/shared/api/auth";
 import {NextRequest, NextResponse} from "next/server";
-import {Cookie, Pathname, SessionOption} from "./constants";
-import {Session} from "./types/actions/auth";
+import {SessionOption} from "./shared/auth";
+import {Session} from "./shared/auth/types";
+import {Cookie, Pathname} from "./shared/constants";
 
 const getTokens = async (
 	req: NextRequest
@@ -21,7 +22,7 @@ const getTokens = async (
 	return tokens;
 };
 
-const setSession = (session: Session, req: NextRequest): NextResponse => {
+const updateSession = (session: Session, req: NextRequest): NextResponse => {
 	req.cookies.set(Cookie.SESSION, JSON.stringify(session));
 
 	const res = NextResponse.next({request: {headers: req.headers}});
@@ -63,10 +64,10 @@ export const middleware = async (req: NextRequest) => {
 		return NextResponse.redirect(new URL(Pathname.LOGIN, req.url));
 	}
 
-	let res;
+	let res = NextResponse.next();
 	try {
 		const data = await fetchRefresh(tokens.refresh);
-		res = setSession(data, req);
+		res = updateSession(data, req);
 	} catch (e) {
 		console.log("Error refreshing token: ", e);
 		return logOut(tokens.refresh, req);

@@ -1,5 +1,6 @@
-import {NextFunction, Request, Response} from "express";
 import {ApiError} from "#src/lib";
+import {NextFunction, Request, Response} from "express";
+import {DatabaseError} from "pg";
 
 const errorHandler = (
 	err: unknown,
@@ -9,6 +10,13 @@ const errorHandler = (
 	next: NextFunction
 ) => {
 	console.error(err);
+
+	if (err instanceof DatabaseError) {
+		if (err.code?.startsWith("22")) {
+			res.status(400).json({error: "Wrong data type."});
+			return;
+		}
+	}
 
 	if (err instanceof ApiError) {
 		res.status(err.status).json({error: err.message});

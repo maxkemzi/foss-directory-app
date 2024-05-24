@@ -1,5 +1,5 @@
-import {Header} from "./(header)";
-import {HeroSection} from "./(hero)";
+import {Header} from "#src/widgets/Header";
+import {HeroSection} from "#src/widgets/HeroSection";
 
 const Home = () => (
 	<>

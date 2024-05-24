@@ -1,7 +1,8 @@
-import {getServerSession, logOut} from "#src/actions/auth";
-import ChatHeader from "../ChatHeader";
-import ChatMessages from "../ChatMessages";
-import {getProjectData} from "./actions";
+import {getProjectChatData} from "#src/entities/project";
+import {getServerSession, logOut} from "#src/shared/auth";
+import {ProjectChatBody} from "#src/widgets/ProjectChatBody";
+import {ProjectChatHeader} from "#src/widgets/ProjectChatHeader";
+import {ProjectChatSidebar} from "#src/widgets/ProjectChatSidebar";
 
 const ChatsChat = async ({params}: {params: {projectId: string}}) => {
 	const {projectId} = params;
@@ -11,16 +12,19 @@ const ChatsChat = async ({params}: {params: {projectId: string}}) => {
 		return logOut();
 	}
 
-	const [project, messages] = await getProjectData(projectId);
+	const [project, messages] = await getProjectChatData(projectId);
 
 	return (
-		<div className="grid grid-rows-[auto,_1fr,_auto] gap-4">
-			<ChatHeader project={project} />
-			<ChatMessages
-				projectId={projectId}
-				session={session}
-				initialMessages={messages.reverse()}
-			/>
+		<div className="grid grid-cols-[200px,_1fr] grid-rows-[70vh] gap-6">
+			<ProjectChatSidebar />
+			<div className="grid grid-rows-[auto,_1fr,_auto] gap-4">
+				<ProjectChatHeader project={project} />
+				<ProjectChatBody
+					projectId={projectId}
+					session={session}
+					initialMessages={messages.reverse()}
+				/>
+			</div>
 		</div>
 	);
 };

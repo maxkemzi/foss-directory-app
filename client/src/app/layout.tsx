@@ -1,7 +1,6 @@
-import {GlobalModal} from "#src/components/modals";
 import type {Metadata} from "next";
 import {Inter} from "next/font/google";
-import {FC, PropsWithChildren, Suspense} from "react";
+import {FC, PropsWithChildren} from "react";
 import "./globals.css";
 import Providers from "./providers";
 
@@ -18,9 +17,6 @@ const RootLayout: FC<PropsWithChildren> = async ({children}) => {
 			<body className={inter.className}>
 				<Providers>
 					<div className="flex flex-col min-h-screen">{children}</div>
-					<Suspense>
-						<GlobalModal />
-					</Suspense>
 				</Providers>
 			</body>
 		</html>

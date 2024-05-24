@@ -1,38 +1,27 @@
-import {getServerSession} from "#src/actions/auth";
-import {redirectToGithubConnectionUrl} from "#src/actions/integrations";
-import {SubmitButton} from "#src/components";
-import {Container} from "#src/components/ui";
+import {getServerSession, logOut} from "#src/features/auth";
+import {ConnectGithubButton} from "#src/features/integrations/github/connectGithub";
+import {DeleteAccountButton} from "#src/features/user/account/deleteAccount";
 import {Button} from "@nextui-org/react";
-import {Header} from "../(header)";
-import DeleteAccountButton from "./DeleteAccountButton";
 
 const Settings = async () => {
 	const session = await getServerSession();
+	if (!session) {
+		return logOut();
+	}
 
 	return (
 		<>
-			<Header />
-			<main>
-				<section>
-					<Container>
-						<div className="py-6">
-							<h1 className="text-5xl mb-6">Settings</h1>
-							<div className="mb-4">
-								{session && session.user.githubIsConnected ? (
-									<Button isDisabled>Github is connected</Button>
-								) : (
-									<form action={redirectToGithubConnectionUrl}>
-										<SubmitButton>Connect Github</SubmitButton>
-									</form>
-								)}
-							</div>
-							<div>
-								<DeleteAccountButton />
-							</div>
-						</div>
-					</Container>
-				</section>
-			</main>
+			<h1 className="text-5xl mb-6">Settings</h1>
+			<div className="mb-4">
+				{session.user.githubIsConnected ? (
+					<Button isDisabled>Github is connected</Button>
+				) : (
+					<ConnectGithubButton />
+				)}
+			</div>
+			<div>
+				<DeleteAccountButton />
+			</div>
 		</>
 	);
 };

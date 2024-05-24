@@ -1,12 +1,8 @@
-import {fetchContributedProjects} from "#src/apis/projects";
-import {Container} from "#src/components/ui";
+import {Container} from "#src/shared/ui";
 import {FC, PropsWithChildren} from "react";
-import {Header} from "../(header)";
-import ChatSidebar from "./ChatSidebar";
+import {Header} from "#src/widgets/Header";
 
-const ChatsLayout: FC<PropsWithChildren> = async ({children}) => {
-	const projects = await fetchContributedProjects();
-
+const ChatsLayout: FC<PropsWithChildren> = ({children}) => {
 	return (
 		<>
 			<Header />
@@ -14,10 +10,7 @@ const ChatsLayout: FC<PropsWithChildren> = async ({children}) => {
 				<section className="py-6">
 					<Container>
 						<h1 className="text-5xl mb-6">Chats</h1>
-						<div className="grid grid-cols-[200px,_1fr] grid-rows-[70vh] gap-6">
-							<ChatSidebar projects={projects} />
-							{children}
-						</div>
+						{children}
 					</Container>
 				</section>
 			</main>
