@@ -49,22 +49,31 @@ const getContributedProjects = async () => {
 	}
 };
 
-const getProjectChatData = async (
-	id: string
-): Promise<[FetchProjectResponse, FetchProjectMessagesResponse]> => {
+const getProjectById = async (id: string) => {
 	const session = await getServerSession();
 	if (!session) {
 		return logOut();
 	}
 
 	try {
-		const [project, messages] = await Promise.all([
-			fetchProjectById(id),
-			fetchProjectMessages(id)
-		]);
-		return [project, messages];
+		const project = await fetchProjectById(id);
+		return project;
 	} catch (e) {
-		throw new Error("Error fetching project chat data.");
+		throw new Error("Error fetching project.");
+	}
+};
+
+const getProjectMessages = async (id: string) => {
+	const session = await getServerSession();
+	if (!session) {
+		return logOut();
+	}
+
+	try {
+		const messages = await fetchProjectMessages(id);
+		return messages;
+	} catch (e) {
+		throw new Error("Error fetching project messages.");
 	}
 };
 
@@ -72,5 +81,6 @@ export {
 	getAllProjects,
 	getContributedProjects,
 	getMyProjects,
-	getProjectChatData
+	getProjectById,
+	getProjectMessages
 };

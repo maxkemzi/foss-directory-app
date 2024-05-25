@@ -1,8 +1,8 @@
 "use client";
 
 import {ProjectMessageCard} from "#src/entities/projectMessage";
-import {Session} from "#src/shared/auth";
 import {ProjectMessageFromApi} from "#src/shared/api";
+import {Session} from "#src/shared/auth";
 import {Button, Card, CardBody, Input} from "@nextui-org/react";
 import {ChangeEvent, FC, FormEvent, useEffect, useRef, useState} from "react";
 import {Socket, io} from "socket.io-client";
@@ -53,10 +53,11 @@ const ProjectChatBody: FC<Props> = ({initialMessages, projectId, session}) => {
 		setNewMessage(e.target.value);
 
 	return (
-		<>
+		<div className="h-full flex flex-col gap-4">
 			<Card
 				fullWidth
 				classNames={{
+					base: "h-full",
 					body: "p-6 gap-4 flex-col-reverse"
 				}}
 			>
@@ -98,8 +99,9 @@ const ProjectChatBody: FC<Props> = ({initialMessages, projectId, session}) => {
 					Send
 				</Button>
 			</form>
-		</>
+		</div>
 	);
 };
 
+export type {Props as ProjectChatBodyProps};
 export default ProjectChatBody;

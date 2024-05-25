@@ -1,5 +1,12 @@
-import {getProjectChatData} from "#src/entities/project";
+import {
+	getContributedProjects,
+	getProjectById,
+	getProjectMessages
+} from "#src/entities/project";
+import {ShowProjectInfoClickArea} from "#src/features/project/showProjectInfo";
 import {getServerSession, logOut} from "#src/shared/auth";
+import {ProjectChat} from "#src/widgets/ProjectChat";
+import {ProjectChatActionsDropdown} from "#src/widgets/ProjectChatActionsDropdown";
 import {ProjectChatBody} from "#src/widgets/ProjectChatBody";
 import {ProjectChatHeader} from "#src/widgets/ProjectChatHeader";
 import {ProjectChatSidebar} from "#src/widgets/ProjectChatSidebar";
@@ -12,20 +19,31 @@ const ChatsChat = async ({params}: {params: {projectId: string}}) => {
 		return logOut();
 	}
 
-	const [project, messages] = await getProjectChatData(projectId);
+	const [projects, project, messages] = await Promise.all([
+		getContributedProjects(),
+		getProjectById(projectId),
+		getProjectMessages(projectId)
+	]);
 
 	return (
-		<div className="grid grid-cols-[200px,_1fr] grid-rows-[70vh] gap-6">
-			<ProjectChatSidebar />
-			<div className="grid grid-rows-[auto,_1fr,_auto] gap-4">
-				<ProjectChatHeader project={project} />
-				<ProjectChatBody
-					projectId={projectId}
-					session={session}
-					initialMessages={messages.reverse()}
+		<ProjectChat
+			sidebarSlot={<ProjectChatSidebar projects={projects} />}
+			headerSlot={
+				<ProjectChatHeader
+					name={project.name}
+					contributorCount={project.contributorCount}
+					rightSlot={<ProjectChatActionsDropdown projectId={project.id} />}
+					clickAreaSlot={<ShowProjectInfoClickArea projectId={project.id} />}
 				/>
-			</div>
-		</div>
+			}
+			bodySlot={
+				<ProjectChatBody
+					initialMessages={messages}
+					projectId={project.id}
+					session={session}
+				/>
+			}
+		/>
 	);
 };
 

@@ -1,3 +1,5 @@
+"use client";
+
 import {Pathname} from "#src/shared/constants";
 import {ModalProps} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
