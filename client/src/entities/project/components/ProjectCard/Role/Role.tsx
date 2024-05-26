@@ -5,13 +5,13 @@ import {Chip} from "@nextui-org/react";
 import {FC} from "react";
 
 interface Props {
-	projectRole: ProjectFromApi["roles"][number];
+	role: ProjectFromApi["roles"][number];
 	onClick: () => void;
 	disabled: boolean;
 }
 
-const ProjectRole: FC<Props> = ({projectRole, onClick, disabled}) => {
-	const {name, placesAvailable} = projectRole;
+const Role: FC<Props> = ({role, onClick, disabled}) => {
+	const {name, placesAvailable} = role;
 
 	return (
 		<button onClick={onClick} disabled={disabled} type="button">
@@ -22,4 +22,4 @@ const ProjectRole: FC<Props> = ({projectRole, onClick, disabled}) => {
 	);
 };
 
-export default ProjectRole;
+export default Role;

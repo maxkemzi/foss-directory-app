@@ -1,19 +1,10 @@
-import {ProjectCard, getMyProjects} from "#src/entities/project";
+import {getMyProjects} from "#src/entities/project";
+import Table from "./Table";
 
 const MyProjects = async () => {
 	const projects = await getMyProjects();
 
-	return (
-		<div className="grid grid-cols-3 items-start gap-4">
-			{projects.map(project => (
-				<ProjectCard
-					key={project.id}
-					project={project}
-					requestable={project.requestable}
-				/>
-			))}
-		</div>
-	);
+	return <Table projects={projects} />;
 };
 
 export default MyProjects;

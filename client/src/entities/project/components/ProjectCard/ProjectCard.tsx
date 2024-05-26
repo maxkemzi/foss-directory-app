@@ -8,8 +8,8 @@ import {
 	Link
 } from "@nextui-org/react";
 import {FC} from "react";
-import ProjectRoles from "./ProjectRoles/ProjectRoles";
-import ProjectTags from "./ProjectTags/ProjectTags";
+import Roles from "./Roles/Roles";
+import Tags from "./Tags/Tags";
 
 interface Props {
 	project: ProjectFromApi;
@@ -26,7 +26,7 @@ const ProjectCard: FC<Props> = ({project, requestable}) => {
 			<CardBody>
 				{project.roles.length !== 0 ? (
 					<div className="mb-2">
-						<ProjectRoles
+						<Roles
 							roles={project.roles}
 							projectId={project.id}
 							requestable={requestable}
@@ -36,7 +36,7 @@ const ProjectCard: FC<Props> = ({project, requestable}) => {
 				<p>{project.description}</p>
 				{project.tags.length !== 0 ? (
 					<div className="mt-4">
-						<ProjectTags tags={project.tags} />
+						<Tags tags={project.tags} />
 					</div>
 				) : null}
 			</CardBody>

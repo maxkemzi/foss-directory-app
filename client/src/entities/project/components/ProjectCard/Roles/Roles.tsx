@@ -7,7 +7,7 @@ import {
 import {ProjectFromApi} from "#src/shared/api";
 import {useModal} from "#src/shared/modal";
 import {FC} from "react";
-import ProjectRole from "../ProjectRole/ProjectRole";
+import Role from "../Role/Role";
 
 interface Props {
 	roles: ProjectFromApi["roles"];
@@ -15,7 +15,7 @@ interface Props {
 	requestable: boolean;
 }
 
-const ProjectRoles: FC<Props> = ({roles, projectId, requestable}) => {
+const Roles: FC<Props> = ({roles, projectId, requestable}) => {
 	const {openModal} = useModal();
 
 	const handleClick = (projectRoleId: string) => {
@@ -28,9 +28,9 @@ const ProjectRoles: FC<Props> = ({roles, projectId, requestable}) => {
 	return (
 		<div className="flex gap-x-2 overflow-x-auto">
 			{roles.map(r => (
-				<ProjectRole
+				<Role
 					key={r.id}
-					projectRole={r}
+					role={r}
 					onClick={() => handleClick(r.id)}
 					disabled={!requestable}
 				/>
@@ -39,4 +39,4 @@ const ProjectRoles: FC<Props> = ({roles, projectId, requestable}) => {
 	);
 };
 
-export default ProjectRoles;
+export default Roles;

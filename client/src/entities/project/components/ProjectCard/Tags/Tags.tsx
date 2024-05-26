@@ -6,7 +6,7 @@ interface Props {
 	tags: ProjectFromApi["tags"];
 }
 
-const ProjectTags: FC<Props> = ({tags}) => {
+const Tags: FC<Props> = ({tags}) => {
 	const tagsPerRow = Math.ceil(tags.length / 2);
 
 	const firstRowTags = tags.slice(0, tagsPerRow);
@@ -30,4 +30,4 @@ const ProjectTags: FC<Props> = ({tags}) => {
 	);
 };
 
-export default ProjectTags;
+export default Tags;
