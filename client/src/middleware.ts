@@ -49,7 +49,7 @@ const logOut = async (refreshToken: string, req: NextRequest) => {
 	try {
 		await fetchLogOut(refreshToken);
 	} catch (e) {
-		console.log("Couldn't log out before clearing the session.");
+		console.log("Couldn't log out before clearing the session");
 	}
 
 	return clearSession(req);
@@ -80,7 +80,7 @@ export const middleware = async (req: NextRequest) => {
 		const csrfToken = req.cookies.get("csrfToken")?.value;
 
 		if (!token || !csrfToken || token !== csrfToken) {
-			return NextResponse.json({message: "Access denied."}, {status: 403});
+			return NextResponse.json({message: "Access denied"}, {status: 403});
 		}
 
 		res.cookies.delete("csrfToken");

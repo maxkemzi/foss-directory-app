@@ -8,7 +8,7 @@ const getContributorsByProjectId = async (id: string) => {
 		return contributors;
 	} catch (e) {
 		console.error(e);
-		throw new Error("Error fetching contributors.");
+		throw new Error("Error fetching contributors");
 	}
 };
 

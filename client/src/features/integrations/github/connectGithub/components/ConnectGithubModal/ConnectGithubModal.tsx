@@ -1,7 +1,8 @@
 "use client";
 
-import {useToast} from "#src/shared/toast";
+import {useFormAction} from "#src/shared/hooks";
 import {ModalProps} from "#src/shared/modal";
+import {useToast} from "#src/shared/toast";
 import {
 	Button,
 	Modal,
@@ -11,28 +12,22 @@ import {
 	ModalHeader
 } from "@nextui-org/react";
 import {useRouter} from "next/navigation";
-import {FC, useEffect} from "react";
-import {useFormState} from "react-dom";
-import {getGithubConnectionUrlWithState} from "./actions";
-import {INITIAL_FORM_STATE} from "./constants";
+import {FC} from "react";
+import {getGithubConnectionUrl} from "../../actions";
 
 type Props = ModalProps;
 
 const ConnectGithubModal: FC<Props> = ({onClose}) => {
 	const router = useRouter();
 	const {showToast} = useToast();
-	const [state, formAction] = useFormState(
-		getGithubConnectionUrlWithState,
-		INITIAL_FORM_STATE
-	);
-
-	useEffect(() => {
-		if (state.url) {
-			router.push(state.url);
-		} else if (state.error) {
-			showToast({variant: "error", message: state.error});
+	const {formAction} = useFormAction<void, string>(getGithubConnectionUrl, {
+		onSuccess: url => {
+			router.push(url);
+		},
+		onError: () => {
+			showToast({variant: "error", message: "Error connecting github account"});
 		}
-	}, [router, showToast, state.url, state.error, state.triggerStatusHandler]);
+	});
 
 	return (
 		<Modal isOpen onClose={onClose}>

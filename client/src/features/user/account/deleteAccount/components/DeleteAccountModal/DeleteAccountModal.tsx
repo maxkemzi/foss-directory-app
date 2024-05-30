@@ -1,8 +1,9 @@
 "use client";
 
 import {logOut} from "#src/features/auth";
-import {useToast} from "#src/shared/toast";
+import {useFormAction} from "#src/shared/hooks";
 import {ModalProps} from "#src/shared/modal";
+import {useToast} from "#src/shared/toast";
 import {
 	Button,
 	Modal,
@@ -11,29 +12,22 @@ import {
 	ModalFooter,
 	ModalHeader
 } from "@nextui-org/react";
-import {FC, useEffect} from "react";
-import {useFormState} from "react-dom";
+import {FC} from "react";
 import {deleteAccount} from "./actions";
-import {INITIAL_FORM_STATE} from "./constants";
 
 type Props = ModalProps;
 
 const DeleteAccountModal: FC<Props> = ({onClose}) => {
 	const {showToast} = useToast();
-	const [state, formAction] = useFormState(deleteAccount, INITIAL_FORM_STATE);
-
-	useEffect(() => {
-		const handleStatus = async () => {
-			if (state.success) {
-				await logOut();
-				showToast({variant: "success", message: "Account has been deleted."});
-			} else if (state.error) {
-				showToast({variant: "error", message: state.error});
-			}
-		};
-
-		handleStatus();
-	}, [showToast, state.error, state.success, state.triggerStatusHandler]);
+	const {formAction} = useFormAction(deleteAccount, {
+		onSuccess: async () => {
+			await logOut();
+			showToast({variant: "success", message: "Account has been deleted"});
+		},
+		onError: () => {
+			showToast({variant: "error", message: "Error deleting account"});
+		}
+	});
 
 	return (
 		<Modal isOpen onClose={onClose}>

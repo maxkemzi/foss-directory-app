@@ -17,7 +17,7 @@ const getAllProjects = async () => {
 		const projects = await fetchAllProjects();
 		return projects;
 	} catch (e) {
-		throw new Error("Error fetching projects.");
+		throw new Error("Error fetching projects");
 	}
 };
 
@@ -31,7 +31,7 @@ const getMyProjects = async () => {
 		const projects = await fetchMyProjects();
 		return projects;
 	} catch (e) {
-		throw new Error("Error fetching your projects.");
+		throw new Error("Error fetching your projects");
 	}
 };
 
@@ -45,7 +45,7 @@ const getContributedProjects = async () => {
 		const projects = await fetchContributedProjects();
 		return projects;
 	} catch (e) {
-		throw new Error("Error fetching projects.");
+		throw new Error("Error fetching projects");
 	}
 };
 
@@ -59,7 +59,7 @@ const getProjectById = async (id: string) => {
 		const project = await fetchProjectById(id);
 		return project;
 	} catch (e) {
-		throw new Error("Error fetching project.");
+		throw new Error("Error fetching project");
 	}
 };
 
@@ -73,7 +73,7 @@ const getProjectMessages = async (id: string) => {
 		const messages = await fetchProjectMessages(id);
 		return messages;
 	} catch (e) {
-		throw new Error("Error fetching project messages.");
+		throw new Error("Error fetching project messages");
 	}
 };
 

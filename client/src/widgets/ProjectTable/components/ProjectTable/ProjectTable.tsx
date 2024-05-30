@@ -37,7 +37,7 @@ const ProjectTable: FC<Props> = ({projects, renderActionsCell}) => {
 			columns={tableColumns}
 			rows={rows}
 			renderCell={renderCell}
-			emptyContent="You have no projects created."
+			emptyContent="You have no projects created"
 		/>
 	);
 };

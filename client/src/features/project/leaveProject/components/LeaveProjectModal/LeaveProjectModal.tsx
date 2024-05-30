@@ -1,6 +1,6 @@
 "use client";
 
-import {Pathname} from "#src/shared/constants";
+import {useFormAction} from "#src/shared/hooks";
 import {ModalProps} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
 import {
@@ -12,10 +12,10 @@ import {
 	ModalHeader
 } from "@nextui-org/react";
 import {useRouter} from "next/navigation";
-import {FC, useEffect} from "react";
-import {useFormState} from "react-dom";
-import {leaveProject} from "./actions";
-import {FormState, INITIAL_FORM_STATE} from "./constants";
+import {FC, useCallback} from "react";
+import {FormFields} from "../../types";
+import {leaveProject} from "../../actions";
+import {VALIDATION_SCHEMA} from "../../constants";
 
 interface Props extends ModalProps {
 	projectId: string;
@@ -24,28 +24,22 @@ interface Props extends ModalProps {
 const LeaveProjectModal: FC<Props> = ({onClose, projectId}) => {
 	const router = useRouter();
 	const {showToast} = useToast();
-	const [state, formAction] = useFormState<FormState>(leaveProject, {
-		...INITIAL_FORM_STATE,
-		projectId
-	});
 
-	useEffect(() => {
-		if (state.success) {
+	const handleError = useCallback(
+		() => showToast({variant: "error", message: "Error leaving the project"}),
+		[showToast]
+	);
+
+	const {formAction} = useFormAction<FormFields>(leaveProject, {
+		onSuccess: () => {
 			onClose();
 			showToast({variant: "success", message: "You've left the project"});
-			router.replace(Pathname.CHATS);
 			router.refresh();
-		} else if (state.error) {
-			showToast({variant: "error", message: state.error});
-		}
-	}, [
-		onClose,
-		router,
-		showToast,
-		state.success,
-		state.error,
-		state.triggerStatusHandler
-	]);
+		},
+		onError: handleError,
+		onValidationError: handleError,
+		validationSchema: VALIDATION_SCHEMA
+	});
 
 	return (
 		<Modal isOpen onClose={onClose}>
@@ -64,6 +58,7 @@ const LeaveProjectModal: FC<Props> = ({onClose, projectId}) => {
 						<Button type="submit" color="danger">
 							Leave
 						</Button>
+						<input name="projectId" value={projectId} type="hidden" />
 					</form>
 				</ModalFooter>
 			</ModalContent>

@@ -14,7 +14,7 @@ const fetchApi = async (url: string, options: RequestInit = {}) => {
 		const errorData = await response.json();
 		throw new ApiError(
 			response.status || 404,
-			errorData.error || "Something went wrong."
+			errorData.error || "Something went wrong"
 		);
 	}
 

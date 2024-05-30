@@ -21,7 +21,7 @@ const getProjectRequestsSentToMe = async () => {
 		return requests;
 	} catch (e) {
 		throw new Error(
-			isApiError(e) ? e.message : "Error fetching project requests."
+			isApiError(e) ? e.message : "Error fetching project requests"
 		);
 	}
 };
@@ -37,7 +37,7 @@ const acceptProjectRequest = async (id: string) => {
 		return revalidateTag(CacheTag.REQUESTS);
 	} catch (e) {
 		throw new Error(
-			isApiError(e) ? e.message : "Error acceping project request."
+			isApiError(e) ? e.message : "Error acceping project request"
 		);
 	}
 };
@@ -53,7 +53,7 @@ const rejectProjectRequest = async (id: string) => {
 		return revalidateTag(CacheTag.REQUESTS);
 	} catch (e) {
 		throw new Error(
-			isApiError(e) ? e.message : "Error rejecting project request."
+			isApiError(e) ? e.message : "Error rejecting project request"
 		);
 	}
 };

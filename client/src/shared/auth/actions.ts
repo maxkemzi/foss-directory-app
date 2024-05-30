@@ -49,7 +49,7 @@ const logOut = async () => {
 	try {
 		await fetchLogOut(session.tokens.refresh);
 	} catch (e) {
-		console.log("Error logging out.");
+		console.log("Error logging out");
 	}
 
 	await clearServerSession();

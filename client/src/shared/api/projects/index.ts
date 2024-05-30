@@ -46,10 +46,20 @@ const fetchProjectById = async (id: string): Promise<FetchProjectResponse> => {
 	return response.json();
 };
 
+const fetchDeleteProjectById = async (
+	id: string
+): Promise<FetchProjectResponse> => {
+	const response = await fetchApiWithAuth(`${BASE_URL}/${id}`, {
+		method: "DELETE"
+	});
+	return response.json();
+};
+
 export {
 	fetchAllProjects,
 	fetchContributedProjects,
 	fetchCreateProject,
 	fetchMyProjects,
-	fetchProjectById
+	fetchProjectById,
+	fetchDeleteProjectById
 };

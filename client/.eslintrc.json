@@ -33,6 +33,7 @@
 			{
 				"controlComponents": ["Input"]
 			}
-		]
+		],
+		"prefer-const": ["error", {"destructuring": "all"}]
 	}
 }

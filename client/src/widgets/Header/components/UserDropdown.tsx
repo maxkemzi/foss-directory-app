@@ -47,7 +47,7 @@ const UserDropdown: FC<Props> = ({user}) => {
 				break;
 			case "log-out":
 				await logOut();
-				showToast({variant: "success", message: "Successfuly logged out."});
+				showToast({variant: "success", message: "Successfuly logged out"});
 				break;
 			default:
 				break;

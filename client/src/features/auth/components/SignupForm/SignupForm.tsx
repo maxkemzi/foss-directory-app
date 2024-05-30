@@ -1,30 +1,29 @@
 "use client";
 
 import {Pathname} from "#src/shared/constants";
-import {SubmitButton, PasswordInput} from "#src/shared/ui";
+import {useFormAction} from "#src/shared/hooks";
+import {PasswordInput, SubmitButton} from "#src/shared/ui";
 import {Input, Link} from "@nextui-org/react";
 import {useRouter} from "next/navigation";
-import {useEffect} from "react";
-import {useFormState} from "react-dom";
-import {signUpWithState} from "./actions";
-import {INITIAL_FORM_STATE} from "./constants";
+import {signUp} from "./actions";
+import {VALIDATION_SCHEMA} from "./constants";
+import {FormFields} from "./types";
 
 const SignupForm = () => {
 	const router = useRouter();
-	const [state, formAction] = useFormState(signUpWithState, INITIAL_FORM_STATE);
-
-	useEffect(() => {
-		if (state.success) {
+	const {formAction, error, fieldErrors} = useFormAction<FormFields>(signUp, {
+		onSuccess: () => {
 			router.push(Pathname.LOGIN);
-		}
-	}, [router, state.success]);
+		},
+		validationSchema: VALIDATION_SCHEMA
+	});
 
 	return (
 		<div className="max-w-[325px] w-full">
 			<h1 className="text-5xl mb-6">Signup</h1>
-			{state?.error ? (
+			{error ? (
 				<div className="mb-4 text-danger">
-					<p>{state.error}</p>
+					<p>{error}</p>
 				</div>
 			) : null}
 			<form className="mb-2" action={formAction}>
@@ -33,28 +32,28 @@ const SignupForm = () => {
 						label="Username"
 						placeholder="Enter your username"
 						name="username"
-						isInvalid={Object.hasOwn(state.fieldErrors, "username")}
-						errorMessage={state.fieldErrors?.username?.[0]}
+						isInvalid={"username" in fieldErrors}
+						errorMessage={fieldErrors?.username?.[0]}
 					/>
 					<Input
 						label="Email"
 						placeholder="Enter your email"
 						name="email"
 						type="email"
-						isInvalid={Object.hasOwn(state.fieldErrors, "email")}
-						errorMessage={state.fieldErrors?.email?.[0]}
+						isInvalid={"email" in fieldErrors}
+						errorMessage={fieldErrors?.email?.[0]}
 					/>
 					<PasswordInput
 						name="password"
-						isInvalid={Object.hasOwn(state.fieldErrors, "password")}
-						errorMessage={state.fieldErrors?.password?.[0]}
+						isInvalid={"password" in fieldErrors}
+						errorMessage={fieldErrors?.password?.[0]}
 					/>
 					<PasswordInput
 						label="Confirm Password"
 						placeholder="Confirm your password"
 						name="confirmPassword"
-						isInvalid={Object.hasOwn(state.fieldErrors, "confirmPassword")}
-						errorMessage={state.fieldErrors?.confirmPassword?.[0]}
+						isInvalid={"confirmPassword" in fieldErrors}
+						errorMessage={fieldErrors?.confirmPassword?.[0]}
 					/>
 				</div>
 				<SubmitButton>Sign Up</SubmitButton>
