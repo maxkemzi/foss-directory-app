@@ -3,8 +3,17 @@
 import {ProjectMessageCard} from "#src/entities/projectMessage";
 import {ProjectMessageFromApi} from "#src/shared/api";
 import {Session} from "#src/shared/auth";
+import {useStateEffect} from "#src/shared/hooks";
 import {Button, Card, CardBody, Input} from "@nextui-org/react";
-import {ChangeEvent, FC, FormEvent, useEffect, useRef, useState} from "react";
+import {
+	ChangeEvent,
+	FC,
+	FormEvent,
+	useCallback,
+	useEffect,
+	useRef,
+	useState
+} from "react";
 import {Socket, io} from "socket.io-client";
 
 interface Props {
@@ -17,6 +26,7 @@ const ProjectChatBody: FC<Props> = ({initialMessages, projectId, session}) => {
 	const [socket, setSocket] = useState<Socket | null>(null);
 	const [newMessage, setNewMessage] = useState("");
 	const [messages, setMessages] = useState(initialMessages);
+	const lastElementRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
@@ -35,6 +45,11 @@ const ProjectChatBody: FC<Props> = ({initialMessages, projectId, session}) => {
 			newSocket.disconnect();
 		};
 	}, [session, projectId]);
+
+	const scrollToBottom = useCallback(() => {
+		lastElementRef.current?.scrollIntoView({block: "end"});
+	}, []);
+	useStateEffect(scrollToBottom, [messages]);
 
 	const sendMessage = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -58,32 +73,35 @@ const ProjectChatBody: FC<Props> = ({initialMessages, projectId, session}) => {
 				fullWidth
 				classNames={{
 					base: "h-full",
-					body: "p-6 gap-4 flex-col-reverse"
+					body: "p-0 flex-col-reverse"
 				}}
 			>
 				<CardBody>
-					{messages.map((message, index, arr) => {
-						const isMine =
-							message.sender != null
-								? message.sender.user.id === session.user.id
-								: false;
+					<div ref={lastElementRef} className="invisible" />
+					<div className="flex flex-col-reverse gap-4 p-6">
+						{messages.map((message, index, arr) => {
+							const isMine =
+								message.sender != null
+									? message.sender.user.id === session.user.id
+									: false;
 
-						const prevMessage = arr[index + 1];
-						const isSequential =
-							message.sender != null &&
-							prevMessage?.sender != null &&
-							prevMessage.sender.user.id === message.sender.user.id &&
-							prevMessage.type === "regular";
+							const prevMessage = arr[index + 1];
+							const isSequential =
+								message.sender != null &&
+								prevMessage?.sender != null &&
+								prevMessage.sender.user.id === message.sender.user.id &&
+								prevMessage.type === "regular";
 
-						return (
-							<ProjectMessageCard
-								key={message.id}
-								message={message}
-								isMine={isMine}
-								isSequential={isSequential}
-							/>
-						);
-					})}
+							return (
+								<ProjectMessageCard
+									key={message.id}
+									message={message}
+									isMine={isMine}
+									isSequential={isSequential}
+								/>
+							);
+						})}
+					</div>
 				</CardBody>
 			</Card>
 			<form className="flex gap-2" onSubmit={sendMessage}>

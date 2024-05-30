@@ -59,7 +59,7 @@ const RequestProjectModal: FC<Props> = ({
 						<Button type="submit" color="primary">
 							Request
 						</Button>
-						<input name="projectId" value={projectId} type="hidden" />\
+						<input name="projectId" value={projectId} type="hidden" />
 						<input name="projectRoleId" value={projectRoleId} type="hidden" />
 					</form>
 				</ModalFooter>

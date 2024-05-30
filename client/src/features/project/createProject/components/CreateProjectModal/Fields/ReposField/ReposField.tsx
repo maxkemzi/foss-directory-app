@@ -3,7 +3,7 @@ import {RepoFromApi} from "#src/shared/api";
 import {Autocomplete, AutocompleteItem} from "@nextui-org/react";
 import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
 import {FC, Key, KeyboardEventHandler, useEffect, useState} from "react";
-import {getMyGithubRepos} from "../../../../actions";
+import {getYourGithubRepos} from "../../../../actions";
 
 interface Props {
 	onSelectionChange: (repo?: RepoFromApi) => void;
@@ -31,7 +31,7 @@ const ReposField: FC<Props> = ({onSelectionChange, onKeyDown}) => {
 		const fetchTags = async () => {
 			setReposAreFetching(true);
 			try {
-				setRepos(await getMyGithubRepos());
+				setRepos(await getYourGithubRepos());
 			} catch (e) {
 				showToast({
 					variant: "error",

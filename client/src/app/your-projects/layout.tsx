@@ -2,7 +2,7 @@ import {Container} from "#src/shared/ui";
 import {FC, PropsWithChildren} from "react";
 import {Header} from "#src/widgets/Header";
 
-const MyProjectsLayout: FC<PropsWithChildren> = ({children}) => {
+const YourProjectsLayout: FC<PropsWithChildren> = ({children}) => {
 	return (
 		<>
 			<Header />
@@ -15,4 +15,4 @@ const MyProjectsLayout: FC<PropsWithChildren> = ({children}) => {
 	);
 };
 
-export default MyProjectsLayout;
+export default YourProjectsLayout;

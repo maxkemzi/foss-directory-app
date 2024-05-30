@@ -32,13 +32,17 @@ const ChatsChat = async ({params}: {params: {projectId: string}}) => {
 				<ProjectChatHeader
 					name={project.name}
 					contributorCount={project.contributorCount}
-					rightSlot={<ProjectChatActionsDropdown projectId={project.id} />}
+					rightSlot={
+						session.user.id !== project.owner.id ? (
+							<ProjectChatActionsDropdown projectId={project.id} />
+						) : null
+					}
 					clickAreaSlot={<ShowProjectInfoClickArea projectId={project.id} />}
 				/>
 			}
 			bodySlot={
 				<ProjectChatBody
-					initialMessages={messages}
+					initialMessages={messages.reverse()}
 					projectId={project.id}
 					session={session}
 				/>

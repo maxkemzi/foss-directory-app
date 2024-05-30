@@ -39,8 +39,8 @@ const UserDropdown: FC<Props> = ({user}) => {
 			case "requests":
 				router.push(Pathname.REQUESTS);
 				break;
-			case "my-projects":
-				router.push(Pathname.MY_PROJECTS);
+			case "your-projects":
+				router.push(Pathname.YOUR_PROJECTS);
 				break;
 			case "settings":
 				router.push(Pathname.SETTINGS);
@@ -79,7 +79,7 @@ const UserDropdown: FC<Props> = ({user}) => {
 				<DropdownItem key="create-project">Create Project</DropdownItem>
 				<DropdownItem key="chats">Chats</DropdownItem>
 				<DropdownItem key="requests">Requests</DropdownItem>
-				<DropdownItem key="my-projects">My Projects</DropdownItem>
+				<DropdownItem key="your-projects">Your Projects</DropdownItem>
 				<DropdownItem key="settings">Settings</DropdownItem>
 				<DropdownItem key="log-out" color="danger">
 					Log Out

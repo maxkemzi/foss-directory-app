@@ -8,7 +8,7 @@ interface Props {
 	projectId: string;
 }
 
-const OwnedProjectActionsDropdown: FC<Props> = ({projectId}) => {
+const YourProjectActionsDropdown: FC<Props> = ({projectId}) => {
 	const deleteProjectItem = useDeleteProjectDropdownItem(projectId);
 
 	const items = useMemo(() => [deleteProjectItem], [deleteProjectItem]);
@@ -16,4 +16,4 @@ const OwnedProjectActionsDropdown: FC<Props> = ({projectId}) => {
 	return <EllipsisDropdown items={items} />;
 };
 
-export default OwnedProjectActionsDropdown;
+export default YourProjectActionsDropdown;

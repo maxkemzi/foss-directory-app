@@ -1,5 +1,6 @@
 "use client";
 
+import {Pathname} from "#src/shared/constants";
 import {useFormAction} from "#src/shared/hooks";
 import {ModalProps} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
@@ -13,9 +14,9 @@ import {
 } from "@nextui-org/react";
 import {useRouter} from "next/navigation";
 import {FC, useCallback} from "react";
-import {FormFields} from "../../types";
 import {leaveProject} from "../../actions";
 import {VALIDATION_SCHEMA} from "../../constants";
+import {FormFields} from "../../types";
 
 interface Props extends ModalProps {
 	projectId: string;
@@ -34,6 +35,7 @@ const LeaveProjectModal: FC<Props> = ({onClose, projectId}) => {
 		onSuccess: () => {
 			onClose();
 			showToast({variant: "success", message: "You've left the project"});
+			router.push(Pathname.CHATS);
 			router.refresh();
 		},
 		onError: handleError,

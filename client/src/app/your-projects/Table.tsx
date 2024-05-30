@@ -1,7 +1,7 @@
 "use client";
 
 import {ProjectFromApi} from "#src/shared/api";
-import {OwnedProjectActionsDropdown} from "#src/widgets/OwnedProjectActionsDropdown";
+import {YourProjectActionsDropdown} from "#src/widgets/YourProjectActionsDropdown";
 import {ProjectTable} from "#src/widgets/ProjectTable";
 import {FC} from "react";
 
@@ -14,7 +14,7 @@ const Table: FC<Props> = ({projects}) => {
 		<ProjectTable
 			projects={projects}
 			renderActionsCell={projectId => (
-				<OwnedProjectActionsDropdown projectId={projectId} />
+				<YourProjectActionsDropdown projectId={projectId} />
 			)}
 		/>
 	);

@@ -3,7 +3,7 @@ const Pathname = {
 	SIGNUP: "/auth/signup",
 	LOGIN: "/auth/login",
 	PROJECTS: "/projects",
-	MY_PROJECTS: "/my-projects",
+	YOUR_PROJECTS: "/your-projects",
 	SUCCESS: "/success",
 	SETTINGS: "/settings",
 	REQUESTS: "/requests",

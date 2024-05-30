@@ -31,7 +31,7 @@ const CreateProjectModal: FC<Props> = ({onClose}) => {
 		{
 			onSuccess: () => {
 				onClose();
-				router.push(Pathname.MY_PROJECTS);
+				router.push(Pathname.YOUR_PROJECTS);
 				showToast({variant: "success", message: "Project has been created"});
 			},
 			onError: () => {

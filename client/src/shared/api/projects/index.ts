@@ -27,7 +27,7 @@ const fetchAllProjects = async (): Promise<FetchProjectsResponse> => {
 	return response.json();
 };
 
-const fetchMyProjects = async (): Promise<FetchProjectsResponse> => {
+const fetchYourProjects = async (): Promise<FetchProjectsResponse> => {
 	const response = await fetchApiWithAuth(`${BASE_URL}/auth`, {
 		next: {tags: [CacheTag.PROJECTS]}
 	});
@@ -59,7 +59,7 @@ export {
 	fetchAllProjects,
 	fetchContributedProjects,
 	fetchCreateProject,
-	fetchMyProjects,
+	fetchYourProjects,
 	fetchProjectById,
 	fetchDeleteProjectById
 };

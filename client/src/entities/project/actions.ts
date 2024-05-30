@@ -1,7 +1,7 @@
 import {
 	fetchAllProjects,
 	fetchContributedProjects,
-	fetchMyProjects,
+	fetchYourProjects,
 	fetchProjectById
 } from "#src/shared/api/projects";
 import {fetchProjectMessages} from "#src/shared/api/projects/messages";
@@ -21,14 +21,14 @@ const getAllProjects = async () => {
 	}
 };
 
-const getMyProjects = async () => {
+const getYourProjects = async () => {
 	const session = await getServerSession();
 	if (!session) {
 		return logOut();
 	}
 
 	try {
-		const projects = await fetchMyProjects();
+		const projects = await fetchYourProjects();
 		return projects;
 	} catch (e) {
 		throw new Error("Error fetching your projects");
@@ -80,7 +80,7 @@ const getProjectMessages = async (id: string) => {
 export {
 	getAllProjects,
 	getContributedProjects,
-	getMyProjects,
+	getYourProjects,
 	getProjectById,
 	getProjectMessages
 };
