@@ -3,17 +3,9 @@
 import {ProjectMessageCard} from "#src/entities/projectMessage";
 import {ProjectMessageFromApi} from "#src/shared/api";
 import {Session} from "#src/shared/auth";
-import {useStateEffect} from "#src/shared/hooks";
+import {useEffectUpdateOnly} from "#src/shared/hooks";
 import {Button, Card, CardBody, Input} from "@nextui-org/react";
-import {
-	ChangeEvent,
-	FC,
-	FormEvent,
-	useCallback,
-	useEffect,
-	useRef,
-	useState
-} from "react";
+import {ChangeEvent, FC, FormEvent, useEffect, useRef, useState} from "react";
 import {Socket, io} from "socket.io-client";
 
 interface Props {
@@ -46,10 +38,9 @@ const ProjectChatBody: FC<Props> = ({initialMessages, projectId, session}) => {
 		};
 	}, [session, projectId]);
 
-	const scrollToBottom = useCallback(() => {
+	useEffectUpdateOnly(() => {
 		lastElementRef.current?.scrollIntoView({block: "end"});
-	}, []);
-	useStateEffect(scrollToBottom, [messages]);
+	}, [messages]);
 
 	const sendMessage = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
