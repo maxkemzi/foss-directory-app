@@ -3,6 +3,7 @@ import {
 	getProjectById,
 	getProjectMessages
 } from "#src/entities/project";
+import {formatProjectMessageCreatedAt} from "#src/entities/projectMessage";
 import {ShowProjectInfoClickArea} from "#src/features/project/showProjectInfo";
 import {getServerSession, logOut} from "#src/shared/auth";
 import {ProjectChat} from "#src/widgets/ProjectChat";
@@ -19,11 +20,17 @@ const ChatsChat = async ({params}: {params: {projectId: string}}) => {
 		return logOut();
 	}
 
-	const [projects, project, messages] = await Promise.all([
+	let [projects, project, messages] = await Promise.all([
 		getContributedProjects(),
 		getProjectById(projectId),
 		getProjectMessages(projectId)
 	]);
+
+	// Format createdAt date on the server to prevent hydration errors
+	messages = messages.map(m => ({
+		...m,
+		createdAt: formatProjectMessageCreatedAt(m.createdAt)
+	}));
 
 	return (
 		<ProjectChat
