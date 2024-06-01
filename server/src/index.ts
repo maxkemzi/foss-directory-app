@@ -16,8 +16,8 @@ const {
 	JWT_CSRF_SECRET,
 	GITHUB_CLIENT_ID,
 	GITHUB_CLIENT_SECRET,
-	CLIENT_URL,
-	SERVER_URL
+	PUBLIC_CLIENT_URL,
+	PUBLIC_SERVER_URL
 } = process.env;
 
 if (
@@ -31,8 +31,8 @@ if (
 	!JWT_CSRF_SECRET ||
 	!GITHUB_CLIENT_ID ||
 	!GITHUB_CLIENT_SECRET ||
-	!CLIENT_URL ||
-	!SERVER_URL
+	!PUBLIC_CLIENT_URL ||
+	!PUBLIC_SERVER_URL
 ) {
 	throw new Error(
 		"Required variables are not defined in .env file. Refer to the .env.example file for an example."

@@ -42,7 +42,7 @@ class GithubController {
 
 			await GithubService.createConnection(payload.userId, code);
 
-			res.redirect(`${process.env.CLIENT_URL}/success?token=${state}`);
+			res.redirect(`${process.env.PUBLIC_CLIENT_URL}/success?token=${state}`);
 		} catch (e) {
 			next(e);
 		}

@@ -1,30 +1,20 @@
-import {ProjectMessageFromApi} from "#src/shared/api";
 import {StarIcon} from "@heroicons/react/16/solid";
 import {Avatar, Badge, Card, CardBody, Chip} from "@nextui-org/react";
 import {FC} from "react";
+import withServerProps from "../../hocs/withServerProps";
+import {ProjectMessageCardProps} from "../../types";
 
-interface Props {
-	message: ProjectMessageFromApi;
-	isMine: boolean;
-	isSequential: boolean;
-}
-
-const ProjectMessageCard: FC<Props> = ({message, isMine, isSequential}) => {
-	const {id, text, type, sender, createdAt} = message;
-
-	const date = new Date(createdAt);
-	const formattedTime = new Intl.DateTimeFormat("en", {
-		hour: "2-digit",
-		minute: "2-digit",
-		hour12: false
-	}).format(date);
+const ProjectMessageCard: FC<
+	ProjectMessageCardProps & {formattedDate: string}
+> = ({message, isMine, isSequential, formattedDate}) => {
+	const {id, text, type, sender} = message;
 
 	if (type === "join") {
 		return (
 			<div key={id} className="flex flex-col gap-2 ml-auto mr-auto">
 				<Chip size="lg">{text}</Chip>
 				<p className="self-center text-sm text-foreground-400">
-					{formattedTime}
+					{formattedDate}
 				</p>
 			</div>
 		);
@@ -46,7 +36,7 @@ const ProjectMessageCard: FC<Props> = ({message, isMine, isSequential}) => {
 						<p>{text}</p>
 					</CardBody>
 				</Card>
-				<p className="self-end text-sm text-foreground-400">{formattedTime}</p>
+				<p className="self-end text-sm text-foreground-400">{formattedDate}</p>
 			</div>
 		);
 	}
@@ -60,7 +50,7 @@ const ProjectMessageCard: FC<Props> = ({message, isMine, isSequential}) => {
 							<p>{text}</p>
 						</CardBody>
 					</Card>
-					<p className="text-sm text-foreground-400">{formattedTime}</p>
+					<p className="text-sm text-foreground-400">{formattedDate}</p>
 				</div>
 			</div>
 		);
@@ -106,7 +96,7 @@ const ProjectMessageCard: FC<Props> = ({message, isMine, isSequential}) => {
 							<p>{text}</p>
 						</CardBody>
 					</Card>
-					<p className="text-sm text-foreground-400">{formattedTime}</p>
+					<p className="text-sm text-foreground-400">{formattedDate}</p>
 				</div>
 			</div>
 		);
@@ -125,10 +115,10 @@ const ProjectMessageCard: FC<Props> = ({message, isMine, isSequential}) => {
 						<p>{text}</p>
 					</CardBody>
 				</Card>
-				<p className="text-sm text-foreground-400">{formattedTime}</p>
+				<p className="text-sm text-foreground-400">{formattedDate}</p>
 			</div>
 		</div>
 	);
 };
 
-export default ProjectMessageCard;
+export default withServerProps(ProjectMessageCard);

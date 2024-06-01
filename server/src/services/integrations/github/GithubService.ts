@@ -6,7 +6,7 @@ import JwtTokensService from "../../JwtTokensService";
 class GithubService {
 	static async getOAuthUrl(userId: string) {
 		const csrfToken = JwtTokensService.generateCsrf({userId});
-		const redirectUri = `${process.env.SERVER_URL}/api/integrations/github/callback`;
+		const redirectUri = `${process.env.PUBLIC_SERVER_URL}/api/integrations/github/callback`;
 
 		const url = GithubApi.getOAuthUrl({state: csrfToken, redirectUri});
 		return {url, csrfToken};
