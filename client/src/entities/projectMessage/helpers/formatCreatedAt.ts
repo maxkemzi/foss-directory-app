@@ -1,4 +1,4 @@
-const formatProjectMessageCreatedAt = (createdAt: string) => {
+const formatCreatedAt = (createdAt: string) => {
 	const date = new Date(createdAt);
 	return new Intl.DateTimeFormat("en", {
 		hour: "2-digit",
@@ -7,4 +7,4 @@ const formatProjectMessageCreatedAt = (createdAt: string) => {
 	}).format(date);
 };
 
-export default formatProjectMessageCreatedAt;
+export default formatCreatedAt;

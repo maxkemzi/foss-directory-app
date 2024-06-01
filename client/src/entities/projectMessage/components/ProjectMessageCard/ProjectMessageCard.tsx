@@ -1,6 +1,9 @@
+"use client";
+
 import {StarIcon} from "@heroicons/react/16/solid";
 import {Avatar, Badge, Card, CardBody, Chip} from "@nextui-org/react";
 import {FC} from "react";
+import formatCreatedAt from "../../helpers/formatCreatedAt";
 import {ProjectMessageCardProps} from "../../types";
 
 const ProjectMessageCard: FC<ProjectMessageCardProps> = ({
@@ -10,11 +13,15 @@ const ProjectMessageCard: FC<ProjectMessageCardProps> = ({
 }) => {
 	const {id, text, type, sender, createdAt} = message;
 
+	const formattedDate = formatCreatedAt(createdAt);
+
 	if (type === "join") {
 		return (
 			<div key={id} className="flex flex-col gap-2 ml-auto mr-auto">
 				<Chip size="lg">{text}</Chip>
-				<p className="self-center text-sm text-foreground-400">{createdAt}</p>
+				<p className="self-center text-sm text-foreground-400">
+					{formattedDate}
+				</p>
 			</div>
 		);
 	}
@@ -35,7 +42,7 @@ const ProjectMessageCard: FC<ProjectMessageCardProps> = ({
 						<p>{text}</p>
 					</CardBody>
 				</Card>
-				<p className="self-end text-sm text-foreground-400">{createdAt}</p>
+				<p className="self-end text-sm text-foreground-400">{formattedDate}</p>
 			</div>
 		);
 	}
@@ -49,7 +56,7 @@ const ProjectMessageCard: FC<ProjectMessageCardProps> = ({
 							<p>{text}</p>
 						</CardBody>
 					</Card>
-					<p className="text-sm text-foreground-400">{createdAt}</p>
+					<p className="text-sm text-foreground-400">{formattedDate}</p>
 				</div>
 			</div>
 		);
@@ -95,7 +102,7 @@ const ProjectMessageCard: FC<ProjectMessageCardProps> = ({
 							<p>{text}</p>
 						</CardBody>
 					</Card>
-					<p className="text-sm text-foreground-400">{createdAt}</p>
+					<p className="text-sm text-foreground-400">{formattedDate}</p>
 				</div>
 			</div>
 		);
@@ -114,7 +121,7 @@ const ProjectMessageCard: FC<ProjectMessageCardProps> = ({
 						<p>{text}</p>
 					</CardBody>
 				</Card>
-				<p className="text-sm text-foreground-400">{createdAt}</p>
+				<p className="text-sm text-foreground-400">{formattedDate}</p>
 			</div>
 		</div>
 	);

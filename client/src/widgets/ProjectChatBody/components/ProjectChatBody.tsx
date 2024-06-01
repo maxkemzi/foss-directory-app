@@ -1,9 +1,6 @@
 "use client";
 
-import {
-	ProjectMessageCard,
-	formatProjectMessageCreatedAt
-} from "#src/entities/projectMessage";
+import {ProjectMessageCard} from "#src/entities/projectMessage";
 import {ProjectMessageFromApi} from "#src/shared/api";
 import {Session} from "#src/shared/auth";
 import {useEffectUpdateOnly} from "#src/shared/hooks";
@@ -31,13 +28,7 @@ const ProjectChatBody: FC<Props> = ({initialMessages, projectId, session}) => {
 		});
 
 		newSocket.on("chat message", message => {
-			setMessages(prev => [
-				{
-					...message,
-					createdAt: formatProjectMessageCreatedAt(message.createdAt)
-				},
-				...prev
-			]);
+			setMessages(prev => [message, ...prev]);
 		});
 
 		setSocket(newSocket);
