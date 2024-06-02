@@ -14,8 +14,10 @@ services:
   backend:
     build:
       context: ./server
-      target: prod
+      target: dev
     container_name: backend
+    volumes:
+      - ./server:/app
     depends_on:
       - postgres
     networks:
@@ -24,8 +26,13 @@ services:
   frontend:
     build:
       context: ./client
-      target: prod
+      target: dev
     container_name: frontend
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./client:/app
     depends_on:
       - backend
     networks:
@@ -34,10 +41,11 @@ services:
   nginx:
     image: nginx:1.27
     container_name: nginx
+    attach: false
     ports:
       - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf
     depends_on:
       - frontend
     networks:
