@@ -1,27 +1,27 @@
 "use client";
 
+import {ProjectMessageFromApi} from "#src/shared/api";
 import {StarIcon} from "@heroicons/react/16/solid";
 import {Avatar, Badge, Card, CardBody, Chip} from "@nextui-org/react";
 import {FC} from "react";
-import formatCreatedAt from "../../helpers/formatCreatedAt";
-import {ProjectMessageCardProps} from "../../types";
+import CreatedAtTime from "./CreatedAtTime/CreatedAtTime";
 
-const ProjectMessageCard: FC<ProjectMessageCardProps> = ({
-	message,
-	isMine,
-	isSequential
-}) => {
+interface Props {
+	message: ProjectMessageFromApi;
+	isMine: boolean;
+	isSequential: boolean;
+}
+
+const ProjectMessageCard: FC<Props> = ({message, isMine, isSequential}) => {
 	const {id, text, type, sender, createdAt} = message;
-
-	const formattedDate = formatCreatedAt(createdAt);
 
 	if (type === "join") {
 		return (
 			<div key={id} className="flex flex-col gap-2 ml-auto mr-auto">
 				<Chip size="lg">{text}</Chip>
-				<p className="self-center text-sm text-foreground-400">
-					{formattedDate}
-				</p>
+				<div className="self-center">
+					<CreatedAtTime createdAt={createdAt} />
+				</div>
 			</div>
 		);
 	}
@@ -42,7 +42,9 @@ const ProjectMessageCard: FC<ProjectMessageCardProps> = ({
 						<p>{text}</p>
 					</CardBody>
 				</Card>
-				<p className="self-end text-sm text-foreground-400">{formattedDate}</p>
+				<div className="self-end">
+					<CreatedAtTime createdAt={createdAt} />
+				</div>
 			</div>
 		);
 	}
@@ -56,14 +58,14 @@ const ProjectMessageCard: FC<ProjectMessageCardProps> = ({
 							<p>{text}</p>
 						</CardBody>
 					</Card>
-					<p className="text-sm text-foreground-400">{formattedDate}</p>
+					<CreatedAtTime createdAt={createdAt} />
 				</div>
 			</div>
 		);
 	}
 
 	if (sender) {
-		const avatarJsx = (
+		const avatar = (
 			<Avatar
 				isBordered
 				size="sm"
@@ -85,10 +87,10 @@ const ProjectMessageCard: FC<ProjectMessageCardProps> = ({
 							placement="top-right"
 							size="sm"
 						>
-							{avatarJsx}
+							{avatar}
 						</Badge>
 					) : (
-						avatarJsx
+						avatar
 					)}
 				</div>
 
@@ -102,7 +104,7 @@ const ProjectMessageCard: FC<ProjectMessageCardProps> = ({
 							<p>{text}</p>
 						</CardBody>
 					</Card>
-					<p className="text-sm text-foreground-400">{formattedDate}</p>
+					<CreatedAtTime createdAt={createdAt} />
 				</div>
 			</div>
 		);
@@ -121,7 +123,7 @@ const ProjectMessageCard: FC<ProjectMessageCardProps> = ({
 						<p>{text}</p>
 					</CardBody>
 				</Card>
-				<p className="text-sm text-foreground-400">{formattedDate}</p>
+				<CreatedAtTime createdAt={createdAt} />
 			</div>
 		</div>
 	);
