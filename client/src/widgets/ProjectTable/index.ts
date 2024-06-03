@@ -1,3 +1,3 @@
-import ProjectTable from "./components/ProjectTable/ProjectTable";
+import ProjectTable from "./ProjectTable/ProjectTable";
 
 export {ProjectTable};

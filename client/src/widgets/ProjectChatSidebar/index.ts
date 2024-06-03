@@ -1,3 +1,3 @@
-import ProjectChatSidebar from "./components/ProjectChatSidebar";
+import ProjectChatSidebar from "./ProjectChatSidebar/ProjectChatSidebar";
 
 export {ProjectChatSidebar};

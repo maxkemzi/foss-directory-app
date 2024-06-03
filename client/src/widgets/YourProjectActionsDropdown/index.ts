@@ -1,3 +1,3 @@
-import YourProjectActionsDropdown from "./components/YourProjectActionsDropdown";
+import YourProjectActionsDropdown from "./YourProjectActionsDropdown";
 
 export {YourProjectActionsDropdown};

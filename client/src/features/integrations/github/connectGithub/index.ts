@@ -1,3 +1,3 @@
-import ConnectGithubButton from "./components/ConnectGithubButton/ConnectGithubButton";
+import ConnectGithubButton from "./components/ConnectGithubButton";
 
 export {ConnectGithubButton};

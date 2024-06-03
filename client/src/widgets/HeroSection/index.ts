@@ -1,3 +1,3 @@
-import HeroSection from "./components/HeroSection";
+import HeroSection from "./HeroSection";
 
 export {HeroSection};

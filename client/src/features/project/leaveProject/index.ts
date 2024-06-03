@@ -1,7 +1,5 @@
-import LeaveProjectModal, {
-	LeaveProjectModalProps
-} from "./components/LeaveProjectModal/LeaveProjectModal";
-import {useLeaveProjectDropdownItemData} from "./hooks/useLeaveProjectDropdownItemData";
+import LeaveProjectModal, {LeaveProjectModalProps} from "./LeaveProjectModal";
+import {useLeaveProjectDropdownItemData} from "./hooks";
 
 export {LeaveProjectModal, useLeaveProjectDropdownItemData};
 export type {LeaveProjectModalProps};

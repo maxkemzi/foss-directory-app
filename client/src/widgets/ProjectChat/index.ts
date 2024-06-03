@@ -1,3 +1,3 @@
-import ProjectChat from "./components/ProjectChat/ProjectChat";
+import ProjectChat from "./ProjectChat";
 
 export {ProjectChat};

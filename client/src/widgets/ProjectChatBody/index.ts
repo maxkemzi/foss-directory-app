@@ -1,3 +1,3 @@
-import ProjectChatBody from "./components/ProjectChatBody";
+import ProjectChatBody from "./ProjectChatBody";
 
 export {ProjectChatBody};

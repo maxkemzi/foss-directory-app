@@ -1,19 +1,25 @@
-import {Container} from "#src/shared/ui";
-import {FC, PropsWithChildren} from "react";
+import {
+	Body,
+	PageContainer,
+	PageContent,
+	PageSection,
+	PageTitle
+} from "#src/shared/ui";
 import {Header} from "#src/widgets/Header";
+import {FC, PropsWithChildren} from "react";
 
 const ChatsLayout: FC<PropsWithChildren> = ({children}) => {
 	return (
 		<>
 			<Header />
-			<main>
-				<section className="py-6">
-					<Container>
-						<h1 className="text-5xl mb-6">Chats</h1>
-						{children}
-					</Container>
-				</section>
-			</main>
+			<Body>
+				<PageSection>
+					<PageContainer>
+						<PageTitle>Chats</PageTitle>
+						<PageContent>{children}</PageContent>
+					</PageContainer>
+				</PageSection>
+			</Body>
 		</>
 	);
 };

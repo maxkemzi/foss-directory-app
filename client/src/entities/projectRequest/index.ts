@@ -1,4 +1,4 @@
-import ProjectRequestCard from "./components/ProjectRequestCard/ProjectRequestCard";
+import ProjectRequestCard from "./ProjectRequestCard/ProjectRequestCard";
 
 export * from "./actions";
 export {ProjectRequestCard};

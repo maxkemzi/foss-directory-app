@@ -1,6 +1,6 @@
 import RequestProjectModal, {
 	RequestProjectModalProps
-} from "./components/RequestProjectModal/RequestProjectModal";
+} from "./RequestProjectModal";
 
 export {RequestProjectModal};
 export type {RequestProjectModalProps};

@@ -1,7 +1,7 @@
-import ShowProjectInfoClickArea from "./components/ShowProjectInfoClickArea/ShowProjectInfoClickArea";
+import ShowProjectInfoClickArea from "./components/ShowProjectInfoClickArea";
 import ShowProjectInfoModal, {
 	ShowProjectInfoModalProps
-} from "./components/ShowProjectInfoModal/ShowProjectInfoModal";
+} from "./components/ShowProjectInfoModal";
 
 export {ShowProjectInfoClickArea, ShowProjectInfoModal};
 export type {ShowProjectInfoModalProps};

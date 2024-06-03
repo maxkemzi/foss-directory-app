@@ -1,3 +1,1 @@
-import useDeleteProjectDropdownItem from "./hooks/useDeleteProjectDropdownItem";
-
-export {useDeleteProjectDropdownItem};
+export * from "./hooks";

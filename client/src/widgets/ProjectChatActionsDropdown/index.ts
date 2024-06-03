@@ -1,3 +1,3 @@
-import ProjectChatActionsDropdown from "./components/ProjectChatActionsDropdown";
+import ProjectChatActionsDropdown from "./ProjectChatActionsDropdown";
 
 export {ProjectChatActionsDropdown};

@@ -3,13 +3,8 @@ import {
 	getProjectById,
 	getProjectMessages
 } from "#src/entities/project";
-import {ShowProjectInfoClickArea} from "#src/features/project/showProjectInfo";
 import {getServerSession, logOut} from "#src/shared/auth";
-import {ProjectChat} from "#src/widgets/ProjectChat";
-import {ProjectChatActionsDropdown} from "#src/widgets/ProjectChatActionsDropdown";
-import {ProjectChatBody} from "#src/widgets/ProjectChatBody";
-import {ProjectChatHeader} from "#src/widgets/ProjectChatHeader";
-import {ProjectChatSidebar} from "#src/widgets/ProjectChatSidebar";
+import Content from "./Content";
 
 const ChatsChat = async ({params}: {params: {projectId: string}}) => {
 	const {projectId} = params;
@@ -26,27 +21,11 @@ const ChatsChat = async ({params}: {params: {projectId: string}}) => {
 	]);
 
 	return (
-		<ProjectChat
-			sidebarSlot={<ProjectChatSidebar projects={projects} />}
-			headerSlot={
-				<ProjectChatHeader
-					name={project.name}
-					contributorCount={project.contributorCount}
-					rightSlot={
-						session.user.id !== project.owner.id ? (
-							<ProjectChatActionsDropdown projectId={project.id} />
-						) : null
-					}
-					clickAreaSlot={<ShowProjectInfoClickArea projectId={project.id} />}
-				/>
-			}
-			bodySlot={
-				<ProjectChatBody
-					initialMessages={messages.reverse()}
-					projectId={project.id}
-					session={session}
-				/>
-			}
+		<Content
+			projects={projects}
+			project={project}
+			messages={messages.reverse()}
+			session={session}
 		/>
 	);
 };

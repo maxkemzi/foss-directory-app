@@ -1,3 +1,3 @@
-import ProjectChatHeader from "./components/ProjectChatHeader";
+import ProjectChatHeader from "./ProjectChatHeader";
 
 export {ProjectChatHeader};

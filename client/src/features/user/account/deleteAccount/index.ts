@@ -1,3 +1,3 @@
-import DeleteAccountButton from "./components/DeleteAccountButton/DeleteAccountButton";
+import DeleteAccountButton from "./components/DeleteAccountButton";
 
 export {DeleteAccountButton};
