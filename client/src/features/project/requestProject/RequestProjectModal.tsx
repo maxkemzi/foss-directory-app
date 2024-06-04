@@ -59,8 +59,12 @@ const RequestProjectModal: FC<Props> = ({
 						<Button type="submit" color="primary">
 							Request
 						</Button>
-						<input name="projectId" value={projectId} type="hidden" />
-						<input name="projectRoleId" value={projectRoleId} type="hidden" />
+						<input type="hidden" name="projectId" defaultValue={projectId} />
+						<input
+							type="hidden"
+							name="projectRoleId"
+							defaultValue={projectRoleId}
+						/>
 					</form>
 				</ModalFooter>
 			</ModalContent>

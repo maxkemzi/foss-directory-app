@@ -60,7 +60,7 @@ const LeaveProjectModal: FC<Props> = ({onClose, projectId}) => {
 						<Button type="submit" color="danger">
 							Leave
 						</Button>
-						<input name="projectId" value={projectId} type="hidden" />
+						<input type="hidden" name="projectId" defaultValue={projectId} />
 					</form>
 				</ModalFooter>
 			</ModalContent>

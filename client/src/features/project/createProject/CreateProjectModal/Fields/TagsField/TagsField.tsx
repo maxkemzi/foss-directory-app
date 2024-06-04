@@ -138,7 +138,11 @@ const TagsField: FC<Props> = ({
 					))}
 				</div>
 			) : null}
-			<input type="hidden" name="tags" value={JSON.stringify(addedTags)} />
+			<input
+				type="hidden"
+				name="tags"
+				defaultValue={JSON.stringify(addedTags)}
+			/>
 		</div>
 	);
 };

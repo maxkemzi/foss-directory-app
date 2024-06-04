@@ -12,7 +12,7 @@ const DeleteProjectButton: FC<Props> = ({action, projectId}) => {
 	return (
 		<form action={action}>
 			<SubmitButton color="danger">Delete</SubmitButton>
-			<input name="projectId" value={projectId} hidden />
+			<input type="hidden" name="projectId" defaultValue={projectId} />
 		</form>
 	);
 };

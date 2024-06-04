@@ -176,7 +176,11 @@ const RolesField: FC<Props> = ({
 					))}
 				</div>
 			) : null}
-			<input type="hidden" name="roles" value={JSON.stringify(addedRoles)} />
+			<input
+				type="hidden"
+				name="roles"
+				defaultValue={JSON.stringify(addedRoles)}
+			/>
 		</div>
 	);
 };

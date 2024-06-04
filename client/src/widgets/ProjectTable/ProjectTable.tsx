@@ -2,8 +2,9 @@
 
 import {ProjectFromApi} from "#src/shared/api";
 import {MyTable, TableRowData} from "#src/shared/ui";
+import {Link} from "@nextui-org/react";
 import {FC, Key, ReactNode} from "react";
-import {TableColumnKey, tableColumns} from "../constants";
+import {TableColumnKey, tableColumns} from "./constants";
 
 interface Props {
 	projects: ProjectFromApi[];
@@ -20,8 +21,18 @@ const ProjectTable: FC<Props> = ({projects, renderActionsCell}) => {
 		switch (columnKey) {
 			case TableColumnKey.ACTIONS:
 				return renderActionsCell(project.id);
+			case TableColumnKey.REPO_URL:
+				return (
+					<Link
+						href={value as string}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						{value}
+					</Link>
+				);
 			default:
-				return value;
+				return <p>{value}</p>;
 		}
 	};
 
@@ -29,6 +40,7 @@ const ProjectTable: FC<Props> = ({projects, renderActionsCell}) => {
 		id: p.id,
 		name: p.name,
 		description: p.description,
+		repoUrl: p.repoUrl,
 		contributorCount: p.contributorCount
 	}));
 

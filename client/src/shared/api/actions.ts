@@ -5,10 +5,7 @@ import ApiError from "./lib/ApiError";
 const {API_URL} = process.env;
 
 const fetchApi = async (url: string, options: RequestInit = {}) => {
-	const response = await fetch(`${API_URL}${url}`, {
-		cache: "no-store",
-		...options
-	});
+	const response = await fetch(`${API_URL}${url}`, options);
 
 	if (!response.ok) {
 		const errorData = await response.json();

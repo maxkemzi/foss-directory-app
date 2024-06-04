@@ -3,8 +3,12 @@ import {LoginBody, SignupBody} from "./types";
 
 const BASE_URL = "/auth";
 
+const fetchAuthApi = (url: string, options: RequestInit = {}) => {
+	return fetchApi(`${BASE_URL}${url}`, {cache: "no-store", ...options});
+};
+
 const fetchSignUp = async (body: SignupBody) => {
-	const response = await fetchApi(`${BASE_URL}/signup`, {
+	const response = await fetchAuthApi("/signup", {
 		method: "POST",
 		headers: {"Content-Type": "application/json"},
 		body: JSON.stringify(body)
@@ -13,7 +17,7 @@ const fetchSignUp = async (body: SignupBody) => {
 };
 
 const fetchLogIn = async (body: LoginBody) => {
-	const response = await fetchApi(`${BASE_URL}/login`, {
+	const response = await fetchAuthApi("/login", {
 		method: "POST",
 		headers: {"Content-Type": "application/json"},
 		body: JSON.stringify(body)
@@ -22,7 +26,7 @@ const fetchLogIn = async (body: LoginBody) => {
 };
 
 const fetchLogOut = async (refreshToken: string) => {
-	const response = await fetchApi(`${BASE_URL}/logout`, {
+	const response = await fetchAuthApi("/logout", {
 		method: "POST",
 		headers: {Cookie: `refreshToken=${refreshToken}`}
 	});
@@ -30,7 +34,7 @@ const fetchLogOut = async (refreshToken: string) => {
 };
 
 const fetchRefresh = async (refreshToken: string) => {
-	const response = await fetchApi(`${BASE_URL}/refresh`, {
+	const response = await fetchAuthApi("/refresh", {
 		method: "POST",
 		headers: {Cookie: `refreshToken=${refreshToken}`}
 	});

@@ -1,3 +1,3 @@
-import ProjectTable from "./ProjectTable/ProjectTable";
+import ProjectTable from "./ProjectTable";
 
 export {ProjectTable};
