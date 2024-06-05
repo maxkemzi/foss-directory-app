@@ -14,7 +14,7 @@ class GithubConnectionDocument
 
 	constructor(obj: GithubConnectionFromDb) {
 		super(obj);
-		this.userId = obj.user_id;
+		this.userId = obj.user_account_id;
 		this.token = obj.token;
 	}
 

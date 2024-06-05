@@ -2,13 +2,13 @@ import {ProjectRequestDocument} from "#src/types/db/documents";
 
 class ProjectRequestDto {
 	id: ProjectRequestDocument["id"];
-	requesterId: ProjectRequestDocument["requesterId"];
+	userId: ProjectRequestDocument["userId"];
 	projectId: ProjectRequestDocument["projectId"];
 	projectRoleId: ProjectRequestDocument["projectRoleId"];
 
 	constructor(doc: ProjectRequestDocument) {
 		this.id = doc.id;
-		this.requesterId = doc.requesterId;
+		this.userId = doc.userId;
 		this.projectId = doc.projectId;
 		this.projectRoleId = doc.projectRoleId;
 	}

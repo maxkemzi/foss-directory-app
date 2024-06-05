@@ -17,7 +17,7 @@ class ProjectMessageDocument
 	constructor(obj: ProjectMessageFromDb) {
 		super(obj);
 		this.projectId = obj.project_id;
-		this.userId = obj.user_id;
+		this.userId = obj.user_account_id;
 		this.text = obj.text;
 		this.type = obj.type;
 	}

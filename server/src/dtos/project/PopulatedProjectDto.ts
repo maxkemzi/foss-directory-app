@@ -1,6 +1,6 @@
 import {PopulatedProjectDocument} from "#src/types/db/documents";
 
-type Owner = PopulatedProjectDocument["owner"];
+type OwnerUser = PopulatedProjectDocument["ownerUser"];
 type Tag = PopulatedProjectDocument["tags"][number];
 type Role = PopulatedProjectDocument["roles"][number];
 
@@ -9,14 +9,14 @@ class PopulatedProjectDto {
 	name: PopulatedProjectDocument["name"];
 	description: PopulatedProjectDocument["description"];
 	repoUrl: PopulatedProjectDocument["repoUrl"];
-	owner: {id: Owner["id"]; username: Owner["username"]};
+	ownerUser: {id: OwnerUser["id"]; username: OwnerUser["username"]};
 	tags: {id: Tag["id"]; name: Tag["name"]}[];
 	roles: {
 		id: Role["id"];
 		name: Role["name"];
 		placesAvailable: Role["placesAvailable"];
 	}[];
-	contributorCount: PopulatedProjectDocument["contributorCount"];
+	userCount: PopulatedProjectDocument["userCount"];
 	requestable: PopulatedProjectDocument["requestable"];
 
 	constructor(doc: PopulatedProjectDocument) {
@@ -24,7 +24,7 @@ class PopulatedProjectDto {
 		this.name = doc.name;
 		this.description = doc.description;
 		this.repoUrl = doc.repoUrl;
-		this.owner = {id: doc.owner.id, username: doc.owner.username};
+		this.ownerUser = {id: doc.ownerUser.id, username: doc.ownerUser.username};
 		this.tags = doc.tags.map(t => ({
 			id: t.id,
 			name: t.name
@@ -34,7 +34,7 @@ class PopulatedProjectDto {
 			name: r.name,
 			placesAvailable: r.placesAvailable
 		}));
-		this.contributorCount = doc.contributorCount;
+		this.userCount = doc.userCount;
 		this.requestable = doc.requestable;
 	}
 }

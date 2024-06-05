@@ -9,7 +9,7 @@ class GithubConnectionModel {
 		token
 	}: GithubConnectionPayload): Promise<GithubConnectionDocument> {
 		const {rows} = await Db.query<GithubConnectionFromDb>(
-			"INSERT INTO github_connections(user_id, token) VALUES($1, $2) RETURNING *;",
+			"INSERT INTO github_connection(user_account_id, token) VALUES($1, $2) RETURNING *;",
 			[userId, token]
 		);
 		const connection = rows[0];
@@ -21,7 +21,7 @@ class GithubConnectionModel {
 		userId: string
 	): Promise<GithubConnectionDocument | null> {
 		const {rows} = await Db.query<GithubConnectionFromDb>(
-			"SELECT * FROM github_connections WHERE user_id=$1;",
+			"SELECT * FROM github_connection WHERE user_account_id=$1;",
 			[userId]
 		);
 		const connection = rows[0];

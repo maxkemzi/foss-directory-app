@@ -1,16 +1,16 @@
 import GithubConnectionModel from "./GithubConnectionModel";
-import ProjectContributorModel from "./ProjectContributorModel";
 import ProjectMessageModel from "./ProjectMessageModel";
 import ProjectModel from "./ProjectModel";
 import ProjectRequestModel from "./ProjectRequestModel";
+import ProjectUserModel from "./ProjectUserModel";
 import RefreshTokenModel from "./RefreshTokenModel";
 import RoleModel from "./RoleModel";
 import TagModel from "./TagModel";
 import UserModel from "./UserModel";
 
 export {
-	ProjectContributorModel,
 	GithubConnectionModel,
+	ProjectUserModel,
 	ProjectMessageModel,
 	ProjectModel,
 	ProjectRequestModel,

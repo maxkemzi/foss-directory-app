@@ -1,4 +1,4 @@
-INSERT INTO tags (name) VALUES
+INSERT INTO tag (name) VALUES
 ('Typescript'),
 ('CSS'),
 ('HTML'),
@@ -8,7 +8,7 @@ INSERT INTO tags (name) VALUES
 ('Java'),
 ('TailwindCSS');
 
-INSERT INTO roles (name) VALUES
+INSERT INTO role (name) VALUES
 ('Designer'),
 ('Software engineer'),
 ('Manager'),

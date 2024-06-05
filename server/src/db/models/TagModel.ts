@@ -4,7 +4,7 @@ import {TagDocument} from "../documents";
 
 class TagModel {
 	static async getAll(): Promise<TagDocument[]> {
-		const {rows} = await Db.query<TagFromDb>("SELECT * FROM tags;");
+		const {rows} = await Db.query<TagFromDb>("SELECT * FROM tag;");
 		return rows.map(t => new TagDocument(t));
 	}
 }

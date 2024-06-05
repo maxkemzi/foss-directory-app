@@ -1,6 +1,6 @@
 import {
 	GithubConnectionFromDb,
-	ProjectContributorFromDb,
+	ProjectUserFromDb,
 	ProjectFromDb,
 	ProjectMessageFromDb,
 	ProjectRequestFromDb,
@@ -17,12 +17,12 @@ interface PaginationArgs {
 }
 
 interface GithubConnectionPayload {
-	userId: GithubConnectionFromDb["user_id"];
+	userId: GithubConnectionFromDb["user_account_id"];
 	token: GithubConnectionFromDb["token"];
 }
 
 interface ProjectPayload {
-	ownerId: ProjectFromDb["owner_id"];
+	ownerUserId: ProjectFromDb["owner_user_account_id"];
 	name: ProjectFromDb["name"];
 	description: ProjectFromDb["description"];
 	repoUrl: ProjectFromDb["repo_url"];
@@ -32,13 +32,13 @@ interface ProjectPayload {
 }
 
 interface ProjectRequestPayload {
-	requesterId: ProjectRequestFromDb["requester_id"];
-	projectId: ProjectContributorFromDb["project_id"];
+	userId: ProjectRequestFromDb["user_account_id"];
+	projectId: ProjectRequestFromDb["project_id"];
 	projectRoleId: ProjectRequestFromDb["project_role_id"];
 }
 
 interface RefreshTokenPayload {
-	userId: RefreshTokenFromDb["user_id"];
+	userId: RefreshTokenFromDb["user_account_id"];
 	token: RefreshTokenFromDb["token"];
 }
 
@@ -57,15 +57,15 @@ interface UserPayload {
 	password: UserFromDb["password"];
 }
 
-interface ProjectContributorPayload {
-	userId: ProjectContributorFromDb["user_id"];
-	projectId: ProjectContributorFromDb["project_id"];
-	projectRoleId: ProjectContributorFromDb["project_role_id"];
+interface ProjectUserPayload {
+	userId: ProjectUserFromDb["user_account_id"];
+	projectId: ProjectUserFromDb["project_id"];
+	projectRoleId: ProjectUserFromDb["project_role_id"];
 }
 
 interface ProjectMessagePayload {
 	projectId: ProjectMessageFromDb["project_id"];
-	userId: ProjectMessageFromDb["user_id"];
+	userId: ProjectMessageFromDb["user_account_id"];
 	text: ProjectMessageFromDb["text"];
 	type: ProjectMessageFromDb["type"];
 }
@@ -79,6 +79,6 @@ export type {
 	RolePayload,
 	TagPayload,
 	UserPayload,
-	ProjectContributorPayload,
+	ProjectUserPayload,
 	ProjectMessagePayload
 };

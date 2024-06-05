@@ -36,9 +36,9 @@ const Content: FC<Props> = ({projects, project, messages, session}) => {
 			headerSlot={
 				<ProjectChatHeader
 					name={project.name}
-					contributorCount={project.contributorCount}
+					userCount={project.userCount}
 					rightSlot={
-						session.user.id !== project.owner.id ? (
+						session.user.id !== project.ownerUser.id ? (
 							<ProjectChatActionsDropdown projectId={project.id} />
 						) : null
 					}

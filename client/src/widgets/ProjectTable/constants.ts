@@ -4,7 +4,7 @@ const TableColumnKey = {
 	NAME: "name",
 	DESCRIPTION: "description",
 	REPO_URL: "repoUrl",
-	CONTRIBUTOR_COUNT: "contributorCount",
+	USER_COUNT: "userCount",
 	ACTIONS: "actions"
 };
 
@@ -12,7 +12,7 @@ const tableColumns: TableColumnData[] = [
 	{key: TableColumnKey.NAME, text: "Name"},
 	{key: TableColumnKey.DESCRIPTION, text: "Description"},
 	{key: TableColumnKey.REPO_URL, text: "Url"},
-	{key: TableColumnKey.CONTRIBUTOR_COUNT, text: "Contributors"},
+	{key: TableColumnKey.USER_COUNT, text: "Users"},
 	{key: TableColumnKey.ACTIONS, text: "Actions"}
 ];
 

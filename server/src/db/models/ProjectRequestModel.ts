@@ -5,15 +5,15 @@ import {ProjectRequestDocument} from "../documents";
 
 class ProjectRequestModel {
 	static async create({
-		requesterId,
+		userId,
 		projectId,
 		projectRoleId
 	}: ProjectRequestPayload): Promise<ProjectRequestDocument> {
 		const {
 			rows: [request]
 		} = await Db.query<ProjectRequestFromDb>(
-			"INSERT INTO projects_requests(requester_id, project_id, project_role_id) VALUES($1, $2, $3) RETURNING *;",
-			[requesterId, projectId, projectRoleId]
+			"INSERT INTO project_requests(user_account_id, project_id, project_role_id) VALUES($1, $2, $3) RETURNING *;",
+			[userId, projectId, projectRoleId]
 		);
 		return new ProjectRequestDocument(request);
 	}
@@ -23,9 +23,9 @@ class ProjectRequestModel {
 	): Promise<ProjectRequestDocument[]> {
 		const {rows} = await Db.query<ProjectRequestFromDb>(
 			`
-			SELECT pr.* FROM projects_requests pr
-			JOIN projects p ON pr.project_id = p.id
-			WHERE p.owner_id = $1;
+			SELECT pr.* FROM project_requests pr
+			JOIN project p ON pr.project_id = p.id
+			WHERE p.owner_user_account_id = $1;
 			`,
 			[requestedId]
 		);
@@ -41,16 +41,16 @@ class ProjectRequestModel {
 			const {
 				rows: [request]
 			} = await client.query<ProjectRequestFromDb>(
-				"SELECT * FROM projects_requests WHERE id = $1;",
+				"SELECT * FROM project_requests WHERE id = $1;",
 				[id]
 			);
 
 			await client.query(
-				"INSERT INTO projects_contributors(user_id, project_id, project_role_id) VALUES($1, $2, $3);",
-				[request.requester_id, request.project_id, request.project_role_id]
+				"INSERT INTO project_user_accounts(user_account_id, project_id, project_role_id) VALUES($1, $2, $3);",
+				[request.user_account_id, request.project_id, request.project_role_id]
 			);
 
-			await client.query("DELETE FROM projects_requests WHERE id = $1;", [id]);
+			await client.query("DELETE FROM project_requests WHERE id = $1;", [id]);
 
 			await client.query("COMMIT");
 		} catch (e) {
@@ -63,7 +63,7 @@ class ProjectRequestModel {
 
 	static async reject(id: string): Promise<void> {
 		await Db.query<ProjectRequestFromDb>(
-			"DELETE FROM projects_requests WHERE id=$1;",
+			"DELETE FROM project_requests WHERE id=$1;",
 			[id]
 		);
 	}

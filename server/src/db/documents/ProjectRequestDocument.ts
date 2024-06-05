@@ -9,13 +9,13 @@ class ProjectRequestDocument
 	extends Document
 	implements DocumentImpl<ProjectRequestDocumentType>
 {
-	requesterId: ProjectRequestDocumentType["requesterId"];
+	userId: ProjectRequestDocumentType["userId"];
 	projectId: ProjectRequestDocumentType["projectId"];
 	projectRoleId: ProjectRequestDocumentType["projectRoleId"];
 
 	constructor(obj: ProjectRequestFromDb) {
 		super(obj);
-		this.requesterId = obj.requester_id;
+		this.userId = obj.user_account_id;
 		this.projectId = obj.project_id;
 		this.projectRoleId = obj.project_role_id;
 	}
@@ -23,7 +23,7 @@ class ProjectRequestDocument
 	toObject(): ProjectRequestDocumentType {
 		return {
 			...super.toObject(),
-			requesterId: this.requesterId,
+			userId: this.userId,
 			projectId: this.projectId,
 			projectRoleId: this.projectRoleId
 		};

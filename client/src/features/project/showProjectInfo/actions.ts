@@ -1,15 +1,15 @@
 "use server";
 
-import {fetchContributorsByProjectId} from "#src/shared/api/projects/contributors";
+import {fetchProjectUsersByProjectId} from "#src/shared/api/projects/users";
 
-const getContributorsByProjectId = async (id: string) => {
+const getProjectUsersByProjectId = async (id: string) => {
 	try {
-		const contributors = await fetchContributorsByProjectId(id);
-		return contributors;
+		const projectUsers = await fetchProjectUsersByProjectId(id);
+		return projectUsers;
 	} catch (e) {
 		console.error(e);
-		throw new Error("Error fetching contributors");
+		throw new Error("Error fetching project users");
 	}
 };
 
-export {getContributorsByProjectId};
+export {getProjectUsersByProjectId};

@@ -29,11 +29,11 @@ io.on("connection", async socket => {
 			throw new Error();
 		}
 
-		const isContributor = await UserModel.isProjectContributor({
+		const hasProjectAccess = await UserModel.isProjectUser({
 			projectId,
 			userId: userPayload.id
 		});
-		if (!isContributor) {
+		if (!hasProjectAccess) {
 			throw new Error();
 		}
 

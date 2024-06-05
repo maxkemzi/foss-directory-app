@@ -9,7 +9,7 @@ class RefreshTokenModel {
 		token
 	}: RefreshTokenPayload): Promise<RefreshTokenDocument> {
 		const {rows} = await Db.query<RefreshTokenFromDb>(
-			"INSERT INTO refresh_tokens(user_id, token) VALUES($1, $2) ON CONFLICT(user_id) DO UPDATE SET user_id=EXCLUDED.user_id, token=EXCLUDED.token RETURNING *;",
+			"INSERT INTO refresh_token(user_account_id, token) VALUES($1, $2) ON CONFLICT(user_account_id) DO UPDATE SET user_account_id=EXCLUDED.user_account_id, token=EXCLUDED.token RETURNING *;",
 			[userId, token]
 		);
 		return new RefreshTokenDocument(rows[0]);
@@ -17,7 +17,7 @@ class RefreshTokenModel {
 
 	static async getByUserId(userId: string) {
 		const {rows} = await Db.query<RefreshTokenFromDb>(
-			"SELECT * FROM refresh_tokens WHERE user_id=$1;",
+			"SELECT * FROM refresh_token WHERE user_account_id=$1;",
 			[userId]
 		);
 		const refreshToken = rows[0];
@@ -30,7 +30,7 @@ class RefreshTokenModel {
 
 	static async getByToken(token: string) {
 		const {rows} = await Db.query<RefreshTokenFromDb>(
-			"SELECT * FROM refresh_tokens WHERE token=$1;",
+			"SELECT * FROM refresh_token WHERE token=$1;",
 			[token]
 		);
 		const refreshToken = rows[0];
@@ -43,7 +43,7 @@ class RefreshTokenModel {
 
 	static async deleteByToken(token: string) {
 		await Db.query<RefreshTokenFromDb>(
-			"DELETE FROM refresh_tokens WHERE token=$1;",
+			"DELETE FROM refresh_token WHERE token=$1;",
 			[token]
 		);
 	}

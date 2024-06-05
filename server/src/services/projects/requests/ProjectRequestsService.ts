@@ -13,24 +13,16 @@ class ProjectRequestsService {
 		projectId: string;
 		projectRoleId: string;
 	}): Promise<void> {
-		const isOwner = await UserModel.isProjectOwner({
-			projectId,
-			userId
-		});
-		const isContributor = await UserModel.isProjectContributor({
+		const hasProjectAccess = await UserModel.isProjectUser({
 			projectId,
 			userId
 		});
 
-		if (isOwner || isContributor) {
-			throw new ApiError(403, "Frobidden.");
+		if (hasProjectAccess) {
+			throw new ApiError(403, "Forbidden.");
 		}
 
-		await ProjectRequestModel.create({
-			requesterId: userId,
-			projectId,
-			projectRoleId
-		});
+		await ProjectRequestModel.create({userId, projectId, projectRoleId});
 	}
 
 	static async getAll(userId: string): Promise<PopulatedProjectRequestDto[]> {

@@ -5,12 +5,12 @@ interface ObjectFromDb {
 }
 
 interface GithubConnectionFromDb extends ObjectFromDb {
-	user_id: string;
+	user_account_id: string;
 	token: string;
 }
 
 interface ProjectFromDb extends ObjectFromDb {
-	owner_id: string;
+	owner_user_account_id: string;
 	name: string;
 	description: string;
 	repo_url: string;
@@ -32,13 +32,13 @@ interface ProjectRoleFromDb extends ObjectFromDb {
 }
 
 interface ProjectRequestFromDb extends ObjectFromDb {
-	requester_id: string;
+	user_account_id: string;
 	project_id: string;
 	project_role_id: string;
 }
 
 interface RefreshTokenFromDb extends ObjectFromDb {
-	user_id: string;
+	user_account_id: string;
 	token: string;
 }
 
@@ -58,8 +58,8 @@ interface UserFromDb extends ObjectFromDb {
 	github_connected: boolean;
 }
 
-interface ProjectContributorFromDb extends ObjectFromDb {
-	user_id: string;
+interface ProjectUserFromDb extends ObjectFromDb {
+	user_account_id: string;
 	project_id: string;
 	project_role_id: string;
 	is_owner: boolean;
@@ -67,7 +67,7 @@ interface ProjectContributorFromDb extends ObjectFromDb {
 
 interface ProjectMessageFromDb extends ObjectFromDb {
 	project_id: string;
-	user_id: string | null;
+	user_account_id: string | null;
 	text: string;
 	type: "regular" | "join";
 }
@@ -83,6 +83,6 @@ export type {
 	RoleFromDb,
 	TagFromDb,
 	UserFromDb,
-	ProjectContributorFromDb,
+	ProjectUserFromDb,
 	ProjectMessageFromDb
 };

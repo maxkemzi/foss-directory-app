@@ -1,7 +1,7 @@
 "use client";
 
-import {parseProjectContributorCount} from "#src/entities/project";
-import {ProjectContributorFromApi} from "#src/shared/api";
+import {parseProjectUserCount} from "#src/entities/project";
+import {ProjectUserFromApi} from "#src/shared/api";
 import {ModalProps} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
 import {StarIcon} from "@heroicons/react/16/solid";
@@ -17,7 +17,7 @@ import {
 	Spinner
 } from "@nextui-org/react";
 import {FC, useEffect, useState} from "react";
-import {getContributorsByProjectId} from "../actions";
+import {getProjectUsersByProjectId} from "../actions";
 
 interface Props extends ModalProps {
 	projectId: string;
@@ -25,27 +25,25 @@ interface Props extends ModalProps {
 
 const ShowProjectInfoModal: FC<Props> = ({onClose, projectId}) => {
 	const {showToast} = useToast();
-	const [contributors, setContributors] = useState<ProjectContributorFromApi[]>(
-		[]
-	);
-	const [contributorsAreFetching, setContributorsAreFetching] = useState(false);
+	const [projectUsers, setProjectUsers] = useState<ProjectUserFromApi[]>([]);
+	const [projectUsersAreFetching, setProjectUsersAreFetching] = useState(false);
 
 	useEffect(() => {
-		const fetchContributors = async () => {
-			setContributorsAreFetching(true);
+		const fetchProjectUsers = async () => {
+			setProjectUsersAreFetching(true);
 			try {
-				const data = await getContributorsByProjectId(projectId);
-				setContributors(data);
+				const data = await getProjectUsersByProjectId(projectId);
+				setProjectUsers(data);
 			} catch (e) {
 				showToast({
 					variant: "error",
 					message: e instanceof Error ? e.message : "Something went wrong"
 				});
 			} finally {
-				setContributorsAreFetching(false);
+				setProjectUsersAreFetching(false);
 			}
 		};
-		fetchContributors();
+		fetchProjectUsers();
 	}, [projectId, showToast]);
 
 	if (!projectId) {
@@ -55,7 +53,7 @@ const ShowProjectInfoModal: FC<Props> = ({onClose, projectId}) => {
 	return (
 		<Modal isOpen onClose={onClose}>
 			<ModalContent>
-				{contributorsAreFetching ? (
+				{projectUsersAreFetching ? (
 					<ModalBody>
 						<Spinner />
 					</ModalBody>
@@ -65,23 +63,23 @@ const ShowProjectInfoModal: FC<Props> = ({onClose, projectId}) => {
 							Project info
 						</ModalHeader>
 						<ModalBody>
-							<h3>{parseProjectContributorCount(contributors.length)}</h3>
+							<h3>{parseProjectUserCount(projectUsers.length)}</h3>
 							<ul className="flex flex-col gap-2">
-								{contributors.map(c => {
+								{projectUsers.map(pu => {
 									const avatarJsx = (
 										<Avatar
 											isBordered
 											color="secondary"
-											src={c.user.avatar}
-											name={c.user.username}
+											src={pu.user.avatar}
+											name={pu.user.username}
 										/>
 									);
 									return (
-										<li key={c.id}>
+										<li key={pu.id}>
 											<Card>
 												<CardBody>
 													<div className="flex gap-4 items-center">
-														{c.isOwner ? (
+														{pu.isOwner ? (
 															<Badge
 																isOneChar
 																content={
@@ -100,8 +98,8 @@ const ShowProjectInfoModal: FC<Props> = ({onClose, projectId}) => {
 														)}
 
 														<div>
-															<p className="font-bold">{c.role.name}</p>
-															<p>{c.user.username}</p>
+															<p className="font-bold">{pu.role.name}</p>
+															<p>{pu.user.username}</p>
 														</div>
 													</div>
 												</CardBody>

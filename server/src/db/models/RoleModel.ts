@@ -4,7 +4,7 @@ import {RoleDocument} from "../documents";
 
 class RoleModel {
 	static async getAll(): Promise<RoleDocument[]> {
-		const {rows} = await Db.query<RoleFromDb>("SELECT * FROM roles;");
+		const {rows} = await Db.query<RoleFromDb>("SELECT * FROM role;");
 		return rows.map(t => new RoleDocument(t));
 	}
 }

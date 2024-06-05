@@ -1,23 +1,23 @@
 import AuthService from "./AuthService";
-import GithubService from "./integrations/github/GithubService";
 import JwtTokensService from "./JwtTokensService";
-import ProjectsService from "./projects/ProjectsService";
-import ProjectRequestsService from "./projects/requests/ProjectRequestsService";
 import RolesService from "./RolesService";
 import TagsService from "./TagsService";
 import UsersService from "./UsersService";
+import GithubService from "./integrations/github/GithubService";
+import ProjectsService from "./projects/ProjectsService";
 import ProjectMessagesService from "./projects/messages/ProjectMessagesService";
-import ProjectsContributorsService from "./projects/contributors/ProjectsContributorsService";
+import ProjectRequestsService from "./projects/requests/ProjectRequestsService";
+import ProjectUsersService from "./projects/users/ProjectUsersService";
 
 export {
 	AuthService,
 	GithubService,
 	JwtTokensService,
+	ProjectMessagesService,
 	ProjectRequestsService,
+	ProjectUsersService,
 	ProjectsService,
 	RolesService,
 	TagsService,
-	UsersService,
-	ProjectMessagesService,
-	ProjectsContributorsService
+	UsersService
 };

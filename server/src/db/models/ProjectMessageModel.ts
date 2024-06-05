@@ -11,7 +11,7 @@ class ProjectMessageModel {
 		type
 	}: ProjectMessagePayload): Promise<ProjectMessageDocument> {
 		const {rows} = await Db.query<ProjectMessageFromDb>(
-			"INSERT INTO projects_messages(project_id, user_id, text, type) VALUES($1, $2, $3, $4) RETURNING *;",
+			"INSERT INTO project_messages(project_id, user_account_id, text, type) VALUES($1, $2, $3, $4) RETURNING *;",
 			[projectId, userId, text, type]
 		);
 		return new ProjectMessageDocument(rows[0]);
@@ -19,7 +19,7 @@ class ProjectMessageModel {
 
 	static async getByProjectId(id: string): Promise<ProjectMessageDocument[]> {
 		const {rows} = await Db.query<ProjectMessageFromDb>(
-			"SELECT * FROM projects_messages WHERE project_id = $1;",
+			"SELECT * FROM project_messages WHERE project_id = $1;",
 			[id]
 		);
 		return rows.map(r => new ProjectMessageDocument(r));
@@ -29,7 +29,7 @@ class ProjectMessageModel {
 		const {
 			rows: [message]
 		} = await Db.query<ProjectMessageFromDb>(
-			"SELECT * FROM projects_messages WHERE id = $1;",
+			"SELECT * FROM project_messages WHERE id = $1;",
 			[id]
 		);
 

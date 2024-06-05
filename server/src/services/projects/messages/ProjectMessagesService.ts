@@ -14,12 +14,12 @@ class ProjectMessagesService {
 		projectId: string;
 		userId: string;
 	}): Promise<PopulatedProjectMessageDto> {
-		const isContributor = await UserModel.isProjectContributor({
+		const hasProjectAccess = await UserModel.isProjectUser({
 			projectId,
 			userId
 		});
 
-		if (!isContributor) {
+		if (!hasProjectAccess) {
 			throw new ApiError(403, "Forbidden.");
 		}
 
@@ -36,12 +36,12 @@ class ProjectMessagesService {
 		projectId: string;
 		userId: string;
 	}) {
-		const isContributor = await UserModel.isProjectContributor({
+		const hasProjectAccess = await UserModel.isProjectUser({
 			projectId,
 			userId
 		});
 
-		if (!isContributor) {
+		if (!hasProjectAccess) {
 			throw new ApiError(403, "Forbidden.");
 		}
 

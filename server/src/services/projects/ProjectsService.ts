@@ -72,11 +72,11 @@ class ProjectsService {
 		projectId: string;
 		userId: string;
 	}): Promise<PopulatedProjectDto> {
-		const isContributor = await UserModel.isProjectContributor({
+		const hasProjectAccess = await UserModel.isProjectUser({
 			projectId,
 			userId
 		});
-		if (!isContributor) {
+		if (!hasProjectAccess) {
 			throw new ApiError(403, "Forbidden");
 		}
 

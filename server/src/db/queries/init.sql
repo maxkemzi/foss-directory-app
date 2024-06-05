@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS user_account (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 	username TEXT UNIQUE NOT NULL,
 	email TEXT UNIQUE NOT NULL,
@@ -11,25 +11,30 @@ CREATE TABLE IF NOT EXISTS users (
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS github_connections (
+CREATE TABLE IF NOT EXISTS temp_username (
+  user_account_id UUID PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS github_connection (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-	user_id UUID UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	user_account_id UUID UNIQUE NOT NULL REFERENCES user_account(id) ON DELETE CASCADE,
 	token TEXT NOT NULL,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS refresh_tokens (
+CREATE TABLE IF NOT EXISTS refresh_token (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-	user_id UUID UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	user_account_id UUID UNIQUE NOT NULL REFERENCES user_account(id) ON DELETE CASCADE,
 	token TEXT NOT NULL,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS projects (
+CREATE TABLE IF NOT EXISTS project (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-	owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	owner_user_account_id UUID NOT NULL REFERENCES user_account(id) ON DELETE CASCADE,
 	name TEXT NOT NULL,
 	description TEXT NOT NULL,
 	repo_url TEXT NOT NULL,
@@ -37,34 +42,34 @@ CREATE TABLE IF NOT EXISTS projects (
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS tags (
+CREATE TABLE IF NOT EXISTS tag (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 	name TEXT UNIQUE NOT NULL,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS projects_tags (
+CREATE TABLE IF NOT EXISTS project_tags (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-	project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-	tag_id UUID REFERENCES tags(id) ON DELETE CASCADE,
+	project_id UUID NOT NULL REFERENCES project(id) ON DELETE CASCADE,
+	tag_id UUID REFERENCES tag(id) ON DELETE CASCADE,
 	name TEXT,
 	is_custom BOOLEAN NOT NULL,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS roles (
+CREATE TABLE IF NOT EXISTS role (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 	name TEXT UNIQUE NOT NULL,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS projects_roles (
+CREATE TABLE IF NOT EXISTS project_roles (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-	project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-	role_id UUID REFERENCES roles(id) ON DELETE CASCADE,
+	project_id UUID NOT NULL REFERENCES project(id) ON DELETE CASCADE,
+	role_id UUID REFERENCES role(id) ON DELETE CASCADE,
 	name TEXT,
 	is_custom BOOLEAN NOT NULL,
 	places_available INT NOT NULL DEFAULT 0,
@@ -73,25 +78,25 @@ CREATE TABLE IF NOT EXISTS projects_roles (
 	UNIQUE(project_id, role_id)
 );
 
-CREATE TABLE IF NOT EXISTS projects_contributors (
+CREATE TABLE IF NOT EXISTS project_user_accounts (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-	user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-	project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-	project_role_id UUID NOT NULL REFERENCES projects_roles(id) ON DELETE CASCADE,
+	user_account_id UUID NOT NULL REFERENCES user_account(id) ON DELETE CASCADE,
+	project_id UUID NOT NULL REFERENCES project(id) ON DELETE CASCADE,
+	project_role_id UUID NOT NULL REFERENCES project_roles(id) ON DELETE CASCADE,
 	is_owner BOOLEAN NOT NULL DEFAULT FALSE,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	UNIQUE(user_id, project_role_id)
+	UNIQUE(user_account_id, project_id)
 );
 
-CREATE TABLE IF NOT EXISTS projects_requests (
+CREATE TABLE IF NOT EXISTS project_requests (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-	requester_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-	project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-	project_role_id UUID NOT NULL REFERENCES projects_roles(id) ON DELETE CASCADE,
+	user_account_id UUID NOT NULL REFERENCES user_account(id) ON DELETE CASCADE,
+	project_id UUID NOT NULL REFERENCES project(id) ON DELETE CASCADE,
+	project_role_id UUID NOT NULL REFERENCES project_roles(id) ON DELETE CASCADE,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	UNIQUE(requester_id, project_role_id)
+	UNIQUE(user_account_id, project_role_id)
 );
 
 DO $$ BEGIN
@@ -99,131 +104,148 @@ DO $$ BEGIN
 EXCEPTION
 	WHEN duplicate_object THEN null;
 END $$;
-CREATE TABLE IF NOT EXISTS projects_messages (
+CREATE TABLE IF NOT EXISTS project_messages (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-	project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-	user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+	project_id UUID NOT NULL REFERENCES project(id) ON DELETE CASCADE,
+	user_account_id UUID REFERENCES user_account(id) ON DELETE SET NULL DEFAULT NULL,
 	text TEXT NOT NULL,
 	type MESSAGE_TYPE,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- github_connections triggers
+-- github_connection triggers
 
-CREATE OR REPLACE FUNCTION github_connections_after_insert()
+CREATE OR REPLACE FUNCTION github_connection_after_insert()
 RETURNS TRIGGER AS $$
 BEGIN
-	UPDATE users
+	UPDATE user_account
 	SET github_connected = TRUE
-	WHERE id = NEW.user_id;
+	WHERE id = NEW.user_account_id;
 
 	RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER github_connections_after_insert
-AFTER INSERT ON github_connections
+CREATE OR REPLACE TRIGGER github_connection_after_insert
+AFTER INSERT ON github_connection
 FOR EACH ROW
-EXECUTE FUNCTION github_connections_after_insert();
+EXECUTE FUNCTION github_connection_after_insert();
 
-CREATE OR REPLACE FUNCTION github_connections_after_delete()
+CREATE OR REPLACE FUNCTION github_connection_after_delete()
 RETURNS TRIGGER AS $$
 BEGIN
-	IF (NOT EXISTS (SELECT 1 FROM users WHERE id = OLD.user_id)) THEN
+	IF (NOT EXISTS (SELECT 1 FROM user_account WHERE id = OLD.user_account_id)) THEN
 		RETURN OLD;
 	END IF;
 
-	UPDATE users
+	UPDATE user_account
 	SET github_connected = FALSE
-	WHERE id = OLD.user_id;
+	WHERE id = OLD.user_account_id;
 
 	RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER github_connections_after_delete
-AFTER DELETE ON github_connections
+CREATE OR REPLACE TRIGGER github_connection_after_delete
+AFTER DELETE ON github_connection
 FOR EACH ROW
-EXECUTE FUNCTION github_connections_after_delete();
+EXECUTE FUNCTION github_connection_after_delete();
 
--- project_contributors triggers
+-- project_user_accounts triggers
 
-CREATE OR REPLACE FUNCTION projects_contributors_before_insert()
+CREATE OR REPLACE FUNCTION project_user_accounts_before_insert()
 RETURNS TRIGGER AS $$
 BEGIN
 	IF (NOT NEW.is_owner AND EXISTS (
 		SELECT 1
-		FROM projects_roles
+		FROM project_roles
 		WHERE id = NEW.project_role_id AND places_available = 0
 	)) THEN
-		RAISE EXCEPTION 'Cannot insert into projects_contributors because places_available is 0 for the corresponding project_role_id';
+		RAISE EXCEPTION 'Cannot insert into project_user_accounts because places_available is 0 for the corresponding project_role_id';
 	END IF;
 
 	RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER projects_contributors_before_insert
-BEFORE INSERT ON projects_contributors
+CREATE OR REPLACE TRIGGER project_user_accounts_before_insert
+BEFORE INSERT ON project_user_accounts
 FOR EACH ROW
-EXECUTE FUNCTION projects_contributors_before_insert();
+EXECUTE FUNCTION project_user_accounts_before_insert();
 
-CREATE OR REPLACE FUNCTION projects_contributors_after_insert()
+CREATE OR REPLACE FUNCTION project_user_accounts_after_insert()
 RETURNS TRIGGER AS $$
 BEGIN
-	IF (NOT NEW.is_owner) THEN
-		UPDATE projects_roles
-		SET places_available = places_available - 1
-		WHERE id = NEW.project_role_id;
-
-		INSERT INTO projects_messages (project_id, user_id, text, type)
-		VALUES (NEW.project_id, NEW.user_id, (
-			SELECT CONCAT(username, ' joined the project') FROM users WHERE id = NEW.user_id
-		), 'join');
+	IF (NEW.is_owner) THEN
+		RETURN NEW;
 	END IF;
+
+	UPDATE project_roles
+	SET places_available = places_available - 1
+	WHERE id = NEW.project_role_id;
+
+	INSERT INTO project_messages (project_id, user_account_id, text, type)
+	VALUES (NEW.project_id, NEW.user_account_id, (
+		SELECT CONCAT(username, ' joined the project') FROM user_account WHERE id = NEW.user_account_id
+	), 'join');
+
+	INSERT INTO temp_username (user_account_id, username)
+  VALUES (NEW.user_account_id, (SELECT username FROM user_account WHERE id = NEW.user_account_id))
+	ON CONFLICT (user_account_id) DO NOTHING;
 
 	RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER projects_contributors_after_insert
-AFTER INSERT ON projects_contributors
+CREATE OR REPLACE TRIGGER project_user_accounts_after_insert
+AFTER INSERT ON project_user_accounts
 FOR EACH ROW
-EXECUTE FUNCTION projects_contributors_after_insert();
+EXECUTE FUNCTION project_user_accounts_after_insert();
 
-CREATE OR REPLACE FUNCTION projects_contributors_after_delete()
+CREATE OR REPLACE FUNCTION project_user_accounts_after_delete()
 RETURNS TRIGGER AS $$
+DECLARE
+	temp_username TEXT;
 BEGIN
-	IF (NOT EXISTS (SELECT 1 FROM projects WHERE id = OLD.project_id)) THEN
+	IF (NOT EXISTS (SELECT 1 FROM project WHERE id = OLD.project_id)) THEN
 		RETURN OLD;
 	END IF;
 
 	IF (OLD.is_owner) THEN
-		DELETE FROM projects WHERE id = OLD.project_id;
+		DELETE FROM project WHERE id = OLD.project_id;
 	ELSE
-		UPDATE projects_roles
+		UPDATE project_roles
 		SET places_available = places_available + 1
 		WHERE id = OLD.project_role_id;
 
-		INSERT INTO projects_messages (project_id, user_id, text, type)
-		VALUES (OLD.project_id, OLD.user_id, (
-			SELECT CONCAT(username, ' left the project') FROM users WHERE id = OLD.user_id
-		), 'join');
+		IF (NOT EXISTS (SELECT 1 FROM user_account WHERE id = OLD.user_account_id)) THEN
+			SELECT username INTO temp_username FROM temp_username WHERE user_account_id = OLD.user_account_id;
+
+			INSERT INTO project_messages (project_id, text, type)
+			VALUES (OLD.project_id, CONCAT(temp_username, ' left the project'), 'join');
+		ELSE
+			INSERT INTO project_messages (project_id, user_account_id, text, type)
+			VALUES (OLD.project_id, OLD.user_account_id, (
+				SELECT CONCAT(username, ' left the project') FROM user_account WHERE id = OLD.user_account_id
+			), 'join');
+		END IF;
 	END IF;
+
+	DELETE FROM temp_username WHERE user_account_id = OLD.user_account_id;
 
 	RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER projects_contributors_after_delete
-AFTER DELETE ON projects_contributors
+CREATE OR REPLACE TRIGGER project_user_accounts_after_delete
+AFTER DELETE ON project_user_accounts
 FOR EACH ROW
-EXECUTE FUNCTION projects_contributors_after_delete();
+EXECUTE FUNCTION project_user_accounts_after_delete();
 
--- projects_messages triggers
+-- project_messages triggers
 
-CREATE OR REPLACE FUNCTION projects_messages_before_insert()
+CREATE OR REPLACE FUNCTION project_messages_before_insert()
 RETURNS TRIGGER AS $$
 DECLARE is_first_row_today BOOLEAN;
 BEGIN
@@ -233,13 +255,13 @@ BEGIN
 
 	SELECT NOT EXISTS (
 		SELECT 1
-		FROM projects_messages
+		FROM project_messages
 		WHERE date_trunc('day', created_at) = date_trunc('day', CURRENT_TIMESTAMP)
 		AND project_id = NEW.project_id
 	) INTO is_first_row_today;
 
 	IF (is_first_row_today) THEN
-		INSERT INTO projects_messages (project_id, text, type)
+		INSERT INTO project_messages (project_id, text, type)
 		VALUES (NEW.project_id, to_char(CURRENT_DATE, 'FMMonth FMDD'), 'date');
 	END IF;
 
@@ -247,12 +269,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER projects_messages_before_insert
-BEFORE INSERT ON projects_messages
+CREATE OR REPLACE TRIGGER project_messages_before_insert
+BEFORE INSERT ON project_messages
 FOR EACH ROW
-EXECUTE FUNCTION projects_messages_before_insert();
+EXECUTE FUNCTION project_messages_before_insert();
 
-CREATE OR REPLACE FUNCTION projects_messages_after_insert()
+CREATE OR REPLACE FUNCTION project_messages_after_insert()
 RETURNS TRIGGER AS $$
 BEGIN
 	PERFORM pg_notify('project_message_insert_notification', NEW.id::text);
@@ -261,10 +283,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER projects_messages_after_insert
-AFTER INSERT ON projects_messages
+CREATE OR REPLACE TRIGGER project_messages_after_insert
+AFTER INSERT ON project_messages
 FOR EACH ROW
-EXECUTE FUNCTION projects_messages_after_insert();
+EXECUTE FUNCTION project_messages_after_insert();
 
 -- update_at column triggers
 
@@ -276,57 +298,57 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER users_updated_at
-BEFORE UPDATE ON users
+CREATE OR REPLACE TRIGGER user_account_updated_at
+BEFORE UPDATE ON user_account
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();
 
-CREATE OR REPLACE TRIGGER github_connections_updated_at
-BEFORE UPDATE ON github_connections
+CREATE OR REPLACE TRIGGER github_connection_updated_at
+BEFORE UPDATE ON github_connection
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();
 
-CREATE OR REPLACE TRIGGER refresh_tokens_updated_at
-BEFORE UPDATE ON refresh_tokens
+CREATE OR REPLACE TRIGGER refresh_token_updated_at
+BEFORE UPDATE ON refresh_token
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();
 
-CREATE OR REPLACE TRIGGER projects_updated_at
-BEFORE UPDATE ON projects
+CREATE OR REPLACE TRIGGER project_updated_at
+BEFORE UPDATE ON project
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();
 
-CREATE OR REPLACE TRIGGER tags_updated_at
-BEFORE UPDATE ON tags
+CREATE OR REPLACE TRIGGER tag_updated_at
+BEFORE UPDATE ON tag
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();
 
-CREATE OR REPLACE TRIGGER projects_tags_updated_at
-BEFORE UPDATE ON projects_tags
+CREATE OR REPLACE TRIGGER project_tags_updated_at
+BEFORE UPDATE ON project_tags
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();
 
-CREATE OR REPLACE TRIGGER roles_updated_at
-BEFORE UPDATE ON roles
+CREATE OR REPLACE TRIGGER role_updated_at
+BEFORE UPDATE ON role
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();
 
-CREATE OR REPLACE TRIGGER projects_roles_updated_at
-BEFORE UPDATE ON projects_roles
+CREATE OR REPLACE TRIGGER project_roles_updated_at
+BEFORE UPDATE ON project_roles
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();
 
-CREATE OR REPLACE TRIGGER projects_contributors_updated_at
-BEFORE UPDATE ON projects_contributors
+CREATE OR REPLACE TRIGGER project_user_accounts_updated_at
+BEFORE UPDATE ON project_user_accounts
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();
 
-CREATE OR REPLACE TRIGGER projects_requests_updated_at
-BEFORE UPDATE ON projects_requests
+CREATE OR REPLACE TRIGGER project_requests_updated_at
+BEFORE UPDATE ON project_requests
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();
 
-CREATE OR REPLACE TRIGGER projects_messages_updated_at
-BEFORE UPDATE ON projects_messages
+CREATE OR REPLACE TRIGGER project_messages_updated_at
+BEFORE UPDATE ON project_messages
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();

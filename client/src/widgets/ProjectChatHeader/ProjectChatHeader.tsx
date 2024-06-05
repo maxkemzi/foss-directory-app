@@ -1,11 +1,11 @@
-import {parseProjectContributorCount} from "#src/entities/project";
+import {parseProjectUserCount} from "#src/entities/project";
 import {Bars2Icon} from "@heroicons/react/24/solid";
 import {Button, Card, CardBody} from "@nextui-org/react";
 import {FC, ReactNode} from "react";
 
 interface Props {
 	name: string;
-	contributorCount: number;
+	userCount: number;
 	rightSlot?: ReactNode;
 	clickAreaSlot?: ReactNode;
 	onBurgerButtonClick?: () => void;
@@ -13,7 +13,7 @@ interface Props {
 
 const ProjectChatHeader: FC<Props> = ({
 	name,
-	contributorCount,
+	userCount,
 	rightSlot,
 	clickAreaSlot,
 	onBurgerButtonClick
@@ -31,7 +31,7 @@ const ProjectChatHeader: FC<Props> = ({
 						<div>
 							<h3 className="font-bold">{name}</h3>
 							<p className="text-foreground-400">
-								{parseProjectContributorCount(contributorCount)}
+								{parseProjectUserCount(userCount)}
 							</p>
 						</div>
 						{rightSlot ? <div className="ml-auto">{rightSlot}</div> : null}

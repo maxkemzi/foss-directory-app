@@ -1,4 +1,4 @@
-import ProjectRequestCard from "./ProjectRequestCard/ProjectRequestCard";
+import ProjectRequestCard from "./ProjectRequestCard";
 
 export * from "./actions";
 export {ProjectRequestCard};

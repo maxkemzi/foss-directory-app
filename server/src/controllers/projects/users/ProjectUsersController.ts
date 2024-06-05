@@ -1,18 +1,18 @@
-import {ProjectsContributorsService} from "#src/services";
+import {ProjectUsersService} from "#src/services";
 import {NextFunction, Request, Response} from "express";
 
-class ProjectsContributorsController {
+class ProjectUsersController {
 	static async getByProjectId(req: Request, res: Response, next: NextFunction) {
 		try {
 			const {projectId} = req.params;
 			const userId = res.locals.user?.id!;
 
-			const contributors = await ProjectsContributorsService.getByProjectId({
+			const users = await ProjectUsersService.getByProjectId({
 				projectId,
 				userId
 			});
 
-			res.json(contributors);
+			res.json(users);
 		} catch (e) {
 			next(e);
 		}
@@ -23,10 +23,7 @@ class ProjectsContributorsController {
 			const {projectId} = req.params;
 			const userId = res.locals.user?.id!;
 
-			await ProjectsContributorsService.leave({
-				projectId,
-				userId
-			});
+			await ProjectUsersService.leave({projectId, userId});
 
 			res.json({success: true});
 		} catch (e) {
@@ -35,4 +32,4 @@ class ProjectsContributorsController {
 	}
 }
 
-export default ProjectsContributorsController;
+export default ProjectUsersController;

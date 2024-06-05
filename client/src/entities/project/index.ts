@@ -1,5 +1,5 @@
 import ProjectCard from "./ProjectCard/ProjectCard";
-import {parseProjectContributorCount} from "./helpers";
+import {parseProjectUserCount} from "./helpers";
 
 export * from "./actions";
-export {ProjectCard, parseProjectContributorCount};
+export {ProjectCard, parseProjectUserCount};

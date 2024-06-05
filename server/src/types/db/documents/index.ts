@@ -4,7 +4,7 @@ import {
 	ProjectFromDb,
 	ProjectRequestFromDb,
 	RefreshTokenFromDb,
-	ProjectContributorFromDb,
+	ProjectUserFromDb,
 	ProjectMessageFromDb,
 	RoleFromDb,
 	TagFromDb,
@@ -22,7 +22,7 @@ type DocumentImpl<T extends DocumentObject> = T & {
 };
 
 interface GithubConnectionDocument extends DocumentObject {
-	userId: GithubConnectionFromDb["user_id"];
+	userId: GithubConnectionFromDb["user_account_id"];
 	token: GithubConnectionFromDb["token"];
 }
 
@@ -32,16 +32,16 @@ interface BaseProjectDocument extends DocumentObject {
 	repoUrl: ProjectFromDb["repo_url"];
 }
 interface ProjectDocument extends BaseProjectDocument {
-	ownerId: ProjectFromDb["owner_id"];
+	ownerUserId: ProjectFromDb["owner_user_account_id"];
 }
 interface PopulatedProjectDocument extends BaseProjectDocument {
-	owner: UserDocument;
+	ownerUser: UserDocument;
 	tags: TagDocument[];
 	roles: (RoleDocument & {
 		placesAvailable: ProjectRoleDocument["placesAvailable"];
 	})[];
 	requestable: boolean;
-	contributorCount: number;
+	userCount: number;
 }
 
 interface ProjectTagDocument extends DocumentObject {
@@ -74,12 +74,12 @@ type PopulatedProjectRoleDocument = DocumentObject & {
 	);
 
 interface ProjectRequestDocument extends DocumentObject {
-	requesterId: ProjectRequestFromDb["requester_id"];
+	userId: ProjectRequestFromDb["user_account_id"];
 	projectId: ProjectRequestFromDb["project_id"];
 	projectRoleId: ProjectRequestFromDb["project_role_id"];
 }
 interface PopulatedProjectRequestDocument extends DocumentObject {
-	requester: UserDocument;
+	user: UserDocument;
 	project: ProjectDocument;
 	role: RoleDocument & {
 		placesAvailable: ProjectRoleDocument["placesAvailable"];
@@ -87,7 +87,7 @@ interface PopulatedProjectRequestDocument extends DocumentObject {
 }
 
 interface RefreshTokenDocument extends DocumentObject {
-	userId: RefreshTokenFromDb["user_id"];
+	userId: RefreshTokenFromDb["user_account_id"];
 	token: RefreshTokenFromDb["token"];
 }
 
@@ -107,13 +107,13 @@ interface UserDocument extends DocumentObject {
 	githubIsConnected: UserFromDb["github_connected"];
 }
 
-interface ProjectContributorDocument extends DocumentObject {
-	userId: ProjectContributorFromDb["user_id"];
-	projectId: ProjectContributorFromDb["project_id"];
-	projectRoleId: ProjectContributorFromDb["project_role_id"];
-	isOwner: ProjectContributorFromDb["is_owner"];
+interface ProjectUserDocument extends DocumentObject {
+	userId: ProjectUserFromDb["user_account_id"];
+	projectId: ProjectUserFromDb["project_id"];
+	projectRoleId: ProjectUserFromDb["project_role_id"];
+	isOwner: ProjectUserFromDb["is_owner"];
 }
-interface PopulatedProjectContributorDocument extends DocumentObject {
+interface PopulatedProjectUserDocument extends DocumentObject {
 	user: UserDocument;
 	role: RoleDocument;
 	isOwner: boolean;
@@ -121,7 +121,7 @@ interface PopulatedProjectContributorDocument extends DocumentObject {
 
 interface ProjectMessageDocument extends DocumentObject {
 	projectId: ProjectMessageFromDb["project_id"];
-	userId: ProjectMessageFromDb["user_id"];
+	userId: ProjectMessageFromDb["user_account_id"];
 	text: ProjectMessageFromDb["text"];
 	type: ProjectMessageFromDb["type"];
 }
@@ -137,7 +137,7 @@ interface PopulatedProjectMessageDocument extends DocumentObject {
 }
 
 export type {
-	ProjectContributorDocument,
+	ProjectUserDocument,
 	DocumentImpl,
 	DocumentObject,
 	GithubConnectionDocument,
@@ -146,7 +146,7 @@ export type {
 	PopulatedProjectDocument,
 	PopulatedProjectRoleDocument,
 	PopulatedProjectRequestDocument,
-	PopulatedProjectContributorDocument,
+	PopulatedProjectUserDocument,
 	ProjectDocument,
 	ProjectRoleDocument,
 	ProjectTagDocument,

@@ -16,7 +16,7 @@ class ProjectsController {
 				roles,
 				repoUrl,
 				role,
-				ownerId: userId
+				ownerUserId: userId
 			});
 
 			res.status(201).json(project);

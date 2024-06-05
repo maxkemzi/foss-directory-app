@@ -5,7 +5,7 @@ import GithubRepoDto from "./GithubRepoDto";
 import RoleDto from "./RoleDto";
 import PopulatedProjectRequestDto from "./project/request/PopulatedProjectRequestDto";
 import PopulatedProjectMessageDto from "./project/message/PopulatedProjectMessageDto";
-import PopulatedProjectContributorDto from "./project/contributor/PopulatedProjectContributorDto";
+import PopulatedProjectUserDto from "./project/user/PopulatedProjectUserDto";
 
 export {
 	PopulatedProjectDto,
@@ -15,5 +15,5 @@ export {
 	RoleDto,
 	PopulatedProjectRequestDto,
 	PopulatedProjectMessageDto,
-	PopulatedProjectContributorDto
+	PopulatedProjectUserDto
 };

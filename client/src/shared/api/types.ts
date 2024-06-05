@@ -3,11 +3,11 @@ interface ProjectFromApi {
 	name: string;
 	description: string;
 	repoUrl: string;
-	owner: {id: string; username: string};
+	ownerUser: {id: string; username: string};
 	tags: {id: string; name: string}[];
 	roles: {id: string; name: string; placesAvailable: number}[];
 	requestable: boolean;
-	contributorCount: number;
+	userCount: number;
 }
 
 interface TagFromApi {
@@ -38,7 +38,7 @@ interface RepoFromApi {
 
 interface ProjectRequestFromApi {
 	id: string;
-	requester: {
+	user: {
 		id: string;
 		username: string;
 	};
@@ -68,7 +68,7 @@ interface ProjectMessageFromApi {
 	createdAt: string;
 }
 
-interface ProjectContributorFromApi {
+interface ProjectUserFromApi {
 	id: string;
 	user: {
 		id: string;
@@ -87,5 +87,5 @@ export type {
 	RoleFromApi,
 	ProjectRequestFromApi,
 	ProjectMessageFromApi,
-	ProjectContributorFromApi
+	ProjectUserFromApi
 };

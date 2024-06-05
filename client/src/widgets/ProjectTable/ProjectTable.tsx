@@ -41,7 +41,7 @@ const ProjectTable: FC<Props> = ({projects, renderActionsCell}) => {
 		name: p.name,
 		description: p.description,
 		repoUrl: p.repoUrl,
-		contributorCount: p.contributorCount
+		userCount: p.userCount
 	}));
 
 	return (
