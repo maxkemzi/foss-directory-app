@@ -1,16 +1,20 @@
-import {ProjectRequestDocument} from "#src/types/db/documents";
+import {PopulatedProjectRequestDocument} from "#src/types/db/documents";
+
+type User = PopulatedProjectRequestDocument["user"];
+type Project = PopulatedProjectRequestDocument["project"];
+type Role = PopulatedProjectRequestDocument["role"];
 
 class ProjectRequestDto {
-	id: ProjectRequestDocument["id"];
-	userId: ProjectRequestDocument["userId"];
-	projectId: ProjectRequestDocument["projectId"];
-	projectRoleId: ProjectRequestDocument["projectRoleId"];
+	id: PopulatedProjectRequestDocument["id"];
+	user: {id: User["id"]; username: User["username"]};
+	project: {id: Project["id"]; name: Project["name"]};
+	role: {id: Role["id"]; name: Role["name"]};
 
-	constructor(doc: ProjectRequestDocument) {
+	constructor(doc: PopulatedProjectRequestDocument) {
 		this.id = doc.id;
-		this.userId = doc.userId;
-		this.projectId = doc.projectId;
-		this.projectRoleId = doc.projectRoleId;
+		this.user = {id: doc.user.id, username: doc.user.username};
+		this.project = {id: doc.project.id, name: doc.project.name};
+		this.role = {id: doc.role.id, name: doc.role.name};
 	}
 }
 

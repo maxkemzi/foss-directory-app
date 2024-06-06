@@ -1,8 +1,6 @@
 import {
-	ProjectRequestCard,
-	acceptProjectRequest,
-	getProjectRequestsSentToMe,
-	rejectProjectRequest
+	ProjectRequestList,
+	getIncomingProjectRequests
 } from "#src/entities/projectRequest";
 import {
 	PageContainer,
@@ -10,9 +8,10 @@ import {
 	PageSection,
 	PageTitle
 } from "#src/shared/ui";
+import {ProjectRequestCard} from "#src/widgets/ProjectRequestCard";
 
 const Requests = async () => {
-	const requests = await getProjectRequestsSentToMe();
+	const requests = await getIncomingProjectRequests();
 
 	return (
 		<PageSection>
@@ -20,18 +19,11 @@ const Requests = async () => {
 				<PageTitle>Requests</PageTitle>
 				<PageContent>
 					{requests.length !== 0 ? (
-						<div className="flex flex-col items-start gap-4">
-							{requests.map(request => {
-								return (
-									<ProjectRequestCard
-										key={request.id}
-										request={request}
-										acceptAction={acceptProjectRequest}
-										rejectAction={rejectProjectRequest}
-									/>
-								);
+						<ProjectRequestList>
+							{requests.map(r => {
+								return <ProjectRequestCard key={r.id} request={r} />;
 							})}
-						</div>
+						</ProjectRequestList>
 					) : (
 						<p>There are no requests</p>
 					)}

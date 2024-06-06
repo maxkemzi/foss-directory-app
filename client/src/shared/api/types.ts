@@ -52,7 +52,25 @@ interface ProjectRequestFromApi {
 	};
 }
 
-interface ProjectMessageFromApi {
+interface ProjectUserFromApi {
+	id: string;
+	user: {
+		id: string;
+		username: string;
+		avatar: string;
+	};
+	role: {id: string; name: string};
+	isOwner: boolean;
+}
+
+interface ProjectChatFromApi {
+	projectId: string;
+	name: string;
+	userCount: number;
+	ownerUser: {id: string};
+}
+
+interface ProjectChatMessageFromApi {
 	id: string;
 	sender: {
 		user: {
@@ -68,17 +86,6 @@ interface ProjectMessageFromApi {
 	createdAt: string;
 }
 
-interface ProjectUserFromApi {
-	id: string;
-	user: {
-		id: string;
-		username: string;
-		avatar: string;
-	};
-	role: {id: string; name: string};
-	isOwner: boolean;
-}
-
 export type {
 	ProjectFromApi,
 	TagFromApi,
@@ -86,6 +93,7 @@ export type {
 	RepoFromApi,
 	RoleFromApi,
 	ProjectRequestFromApi,
-	ProjectMessageFromApi,
-	ProjectUserFromApi
+	ProjectChatMessageFromApi,
+	ProjectUserFromApi,
+	ProjectChatFromApi
 };

@@ -3,7 +3,7 @@ import {Db} from "#src/db";
 import {io, server} from "./core";
 import {PopulateUtils} from "./db/documents";
 import {ProjectMessageModel} from "./db/models";
-import {PopulatedProjectMessageDto} from "./dtos";
+import {ProjectChatMessageDto} from "./dtos";
 
 const {
 	POSTGRES_HOST,
@@ -58,7 +58,7 @@ const start = async () => {
 
 					io.to(`room${message.projectId}`).emit(
 						"chat message",
-						new PopulatedProjectMessageDto(populatedMessage)
+						new ProjectChatMessageDto(populatedMessage)
 					);
 				} catch (e) {
 					console.log(e);

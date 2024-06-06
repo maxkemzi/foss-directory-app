@@ -1,4 +1,11 @@
-import ProjectRequestCard from "./ProjectRequestCard";
+import ProjectRequest from "./components/ProjectRequest";
+import ProjectRequestList from "./components/ProjectRequestList";
+import ProjectRequestButtonList from "./components/ProjectRequestButtonList";
+import {getIncomingProjectRequests} from "./actions";
 
-export * from "./actions";
-export {ProjectRequestCard};
+export {
+	ProjectRequest,
+	ProjectRequestList,
+	ProjectRequestButtonList,
+	getIncomingProjectRequests
+};

@@ -11,7 +11,7 @@ class ProjectUsersService {
 		projectId: string;
 		userId: string;
 	}) {
-		const hasProjectAccess = await UserModel.isProjectUser({
+		const hasProjectAccess = await UserModel.hasProjectAccess({
 			projectId,
 			userId
 		});
@@ -30,7 +30,7 @@ class ProjectUsersService {
 	}
 
 	static async leave({projectId, userId}: {projectId: string; userId: string}) {
-		const hasProjectAccess = await UserModel.isProjectUser({
+		const hasProjectAccess = await UserModel.hasProjectAccess({
 			projectId,
 			userId
 		});

@@ -167,7 +167,7 @@ class ProjectModel {
 		return rows.map(p => new ProjectDocument(p));
 	}
 
-	static async getContributed(userId: string): Promise<ProjectDocument[]> {
+	static async getByUserId(userId: string): Promise<ProjectDocument[]> {
 		const {rows} = await Db.query<ProjectFromDb>(
 			`
 			SELECT p.* FROM project p

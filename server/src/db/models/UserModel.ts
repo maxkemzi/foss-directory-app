@@ -76,7 +76,7 @@ class UserModel {
 		return rows[0].count > 0;
 	}
 
-	static async isProjectUser({
+	static async hasProjectAccess({
 		projectId,
 		userId
 	}: {

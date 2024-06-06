@@ -4,7 +4,7 @@ import {logOut} from "#src/shared/auth";
 import {
 	CreateProjectModal,
 	CreateProjectModalProps
-} from "#src/features/project/createProject";
+} from "#src/features/project/create";
 import {UserFromApi} from "#src/shared/api";
 import {Pathname} from "#src/shared/constants";
 import {useModal} from "#src/shared/modal";

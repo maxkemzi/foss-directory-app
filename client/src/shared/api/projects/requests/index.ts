@@ -8,7 +8,7 @@ import {
 
 const BASE_URL = "/projects/requests";
 
-const fetchCreateProjectRequest = async (
+const fetchSendProjectRequest = async (
 	body: ProjectRequestBody
 ): Promise<ProjectRequestResponse> => {
 	const response = await fetchApiWithAuth(BASE_URL, {
@@ -37,7 +37,7 @@ const fetchRejectProjectRequest = async (
 	return response.json();
 };
 
-const fetchProjectRequestsSentToMe =
+const fetchIncomingProjectRequests =
 	async (): Promise<FetchRoleRequestsResponse> => {
 		const response = await fetchApiWithAuth(BASE_URL, {
 			next: {tags: [CacheTag.REQUESTS]}
@@ -47,7 +47,7 @@ const fetchProjectRequestsSentToMe =
 
 export {
 	fetchAcceptProjectRequest,
-	fetchCreateProjectRequest,
-	fetchProjectRequestsSentToMe,
+	fetchSendProjectRequest,
+	fetchIncomingProjectRequests,
 	fetchRejectProjectRequest
 };

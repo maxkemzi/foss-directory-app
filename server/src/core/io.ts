@@ -29,7 +29,7 @@ io.on("connection", async socket => {
 			throw new Error();
 		}
 
-		const hasProjectAccess = await UserModel.isProjectUser({
+		const hasProjectAccess = await UserModel.hasProjectAccess({
 			projectId,
 			userId: userPayload.id
 		});

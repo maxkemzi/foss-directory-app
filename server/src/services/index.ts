@@ -5,17 +5,19 @@ import TagsService from "./TagsService";
 import UsersService from "./UsersService";
 import GithubService from "./integrations/github/GithubService";
 import ProjectsService from "./projects/ProjectsService";
-import ProjectMessagesService from "./projects/messages/ProjectMessagesService";
 import ProjectRequestsService from "./projects/requests/ProjectRequestsService";
 import ProjectUsersService from "./projects/users/ProjectUsersService";
+import ProjectChatsService from "./projects/chats/ProjectChatsService";
+import ProjectChatMessagesService from "./projects/chats/messages/ProjectChatMessagesService";
 
 export {
 	AuthService,
 	GithubService,
 	JwtTokensService,
-	ProjectMessagesService,
 	ProjectRequestsService,
 	ProjectUsersService,
+	ProjectChatsService,
+	ProjectChatMessagesService,
 	ProjectsService,
 	RolesService,
 	TagsService,

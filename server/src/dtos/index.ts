@@ -1,19 +1,21 @@
-import PopulatedProjectDto from "./project/PopulatedProjectDto";
-import UserDto from "./UserDto";
-import TagDto from "./TagDto";
 import GithubRepoDto from "./GithubRepoDto";
 import RoleDto from "./RoleDto";
-import PopulatedProjectRequestDto from "./project/request/PopulatedProjectRequestDto";
-import PopulatedProjectMessageDto from "./project/message/PopulatedProjectMessageDto";
+import TagDto from "./TagDto";
+import UserDto from "./UserDto";
+import ProjectDto from "./project/ProjectDto";
+import ProjectChatMessageDto from "./project/chat/message/ProjectChatMessageDto";
+import ProjectChatDto from "./project/chat/ProjectChatDto";
+import ProjectRequestDto from "./project/request/ProjectRequestDto";
 import PopulatedProjectUserDto from "./project/user/PopulatedProjectUserDto";
 
 export {
-	PopulatedProjectDto,
-	UserDto,
-	TagDto,
 	GithubRepoDto,
+	ProjectDto,
+	PopulatedProjectUserDto,
+	ProjectChatDto,
+	ProjectChatMessageDto,
+	ProjectRequestDto,
 	RoleDto,
-	PopulatedProjectRequestDto,
-	PopulatedProjectMessageDto,
-	PopulatedProjectUserDto
+	TagDto,
+	UserDto
 };

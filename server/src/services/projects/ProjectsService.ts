@@ -1,23 +1,23 @@
 /* eslint-disable no-await-in-loop */
 import {PopulateUtils} from "#src/db/documents";
 import {ProjectModel, UserModel} from "#src/db/models";
-import {PopulatedProjectDto} from "#src/dtos";
+import {ProjectDto} from "#src/dtos";
 import {ApiError} from "#src/lib";
 import {ProjectPayload, PaginationArgs} from "#src/types/db/models";
 
 class ProjectsService {
-	static async create(payload: ProjectPayload): Promise<PopulatedProjectDto> {
+	static async create(payload: ProjectPayload): Promise<ProjectDto> {
 		const project = await ProjectModel.create(payload);
 		const populatedProject = await PopulateUtils.populateProject(project);
 
-		return new PopulatedProjectDto(populatedProject);
+		return new ProjectDto(populatedProject);
 	}
 
 	static async getAll({
 		userId,
 		...args
 	}: PaginationArgs & {userId: string}): Promise<{
-		projects: PopulatedProjectDto[];
+		projects: ProjectDto[];
 		totalCount: number;
 	}> {
 		const {projects, totalCount} = await ProjectModel.getAll(args);
@@ -26,27 +26,18 @@ class ProjectsService {
 		);
 
 		return {
-			projects: populatedProjects.map(pp => new PopulatedProjectDto(pp)),
+			projects: populatedProjects.map(pp => new ProjectDto(pp)),
 			totalCount
 		};
 	}
 
-	static async getAllByUserId(id: string): Promise<PopulatedProjectDto[]> {
+	static async getAllByUserId(id: string): Promise<ProjectDto[]> {
 		const projects = await ProjectModel.getAllByUserId(id);
 		const populatedProjects = await Promise.all(
 			projects.map(p => PopulateUtils.populateProject(p, id))
 		);
 
-		return populatedProjects.map(pp => new PopulatedProjectDto(pp));
-	}
-
-	static async getContributed(userId: string): Promise<PopulatedProjectDto[]> {
-		const projects = await ProjectModel.getContributed(userId);
-		const populatedProjects = await Promise.all(
-			projects.map(p => PopulateUtils.populateProject(p, userId))
-		);
-
-		return populatedProjects.map(pp => new PopulatedProjectDto(pp));
+		return populatedProjects.map(pp => new ProjectDto(pp));
 	}
 
 	static async deleteById({
@@ -71,8 +62,8 @@ class ProjectsService {
 	}: {
 		projectId: string;
 		userId: string;
-	}): Promise<PopulatedProjectDto> {
-		const hasProjectAccess = await UserModel.isProjectUser({
+	}): Promise<ProjectDto> {
+		const hasProjectAccess = await UserModel.hasProjectAccess({
 			projectId,
 			userId
 		});
@@ -93,7 +84,7 @@ class ProjectsService {
 			userId
 		);
 
-		return new PopulatedProjectDto(populatedProject);
+		return new ProjectDto(populatedProject);
 	}
 }
 

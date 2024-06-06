@@ -1,5 +1,6 @@
-import ProjectCard from "./ProjectCard/ProjectCard";
+import Project from "./components/Project";
+import ProjectList from "./components/ProjectList";
 import {parseProjectUserCount} from "./helpers";
 
 export * from "./actions";
-export {ProjectCard, parseProjectUserCount};
+export {Project, ProjectList, parseProjectUserCount};

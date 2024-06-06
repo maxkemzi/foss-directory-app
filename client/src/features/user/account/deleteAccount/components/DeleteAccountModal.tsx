@@ -23,6 +23,7 @@ const DeleteAccountModal: FC<Props> = ({onClose}) => {
 		onSuccess: async () => {
 			await logOut();
 			showToast({variant: "success", message: "Account has been deleted"});
+			onClose();
 		},
 		onError: () => {
 			showToast({variant: "error", message: "Error deleting account"});

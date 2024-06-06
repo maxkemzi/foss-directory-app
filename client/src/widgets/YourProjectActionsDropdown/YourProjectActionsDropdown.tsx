@@ -1,6 +1,6 @@
 "use client";
 
-import {useDeleteProjectDropdownItem} from "#src/features/project/deleteProject";
+import {useDeleteProjectDropdownItem} from "#src/features/project/delete";
 import {EllipsisDropdown} from "#src/shared/ui";
 import {FC, useMemo} from "react";
 
