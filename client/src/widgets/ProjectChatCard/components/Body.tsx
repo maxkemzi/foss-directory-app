@@ -31,7 +31,7 @@ const Body: FC<Props> = ({chat, initialMessages, session}) => {
 	);
 	const {socket} = useProjectChatSocketConnection({
 		projectId: chat.projectId,
-		session,
+		accessToken: session.tokens.access,
 		onChatMessage: handleChatMessage
 	});
 

@@ -1,3 +1,3 @@
-import AppError from "./components/AppError";
+import AppError from "./AppError";
 
 export {AppError};

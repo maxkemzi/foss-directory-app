@@ -1,4 +1,8 @@
+"use client";
+
 import {ProjectRequestFromApi} from "#src/shared/api";
+import {useFormAction} from "#src/shared/hooks";
+import {useToast} from "#src/shared/toast";
 import {Button} from "@nextui-org/react";
 import {FC} from "react";
 import {rejectProjectRequest} from "./actions";
@@ -8,13 +12,22 @@ interface Props {
 }
 
 const RejectProjectRequestButton: FC<Props> = ({requestId}) => {
-	const rejectActionWithId = rejectProjectRequest.bind(null, requestId);
+	const {showToast} = useToast();
+	const {formAction, isPending} = useFormAction(rejectProjectRequest, {
+		onSuccess: () => {
+			showToast({variant: "success", message: "Request has been rejected"});
+		},
+		onError: () => {
+			showToast({variant: "error", message: "Error rejecting request"});
+		}
+	});
 
 	return (
-		<form action={rejectActionWithId}>
-			<Button color="danger" type="submit">
+		<form action={formAction}>
+			<Button color="danger" type="submit" disabled={isPending}>
 				Reject
 			</Button>
+			<input type="hidden" name="projectRequestId" defaultValue={requestId} />
 		</form>
 	);
 };
