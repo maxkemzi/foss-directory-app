@@ -2,6 +2,7 @@
 
 import {Button, Input} from "@nextui-org/react";
 import {ChangeEvent, FC, FormEvent, useRef, useState} from "react";
+import {VALIDATION_SCHEMA} from "./constants";
 
 interface Props {
 	onSend: (message: string) => void;
@@ -10,9 +11,17 @@ interface Props {
 const SendProjectChatMessageForm: FC<Props> = ({onSend}) => {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [newMessage, setNewMessage] = useState("");
+	const [isInvalid, setIsInvalid] = useState<boolean>(false);
 
 	const sendMessage = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+
+		const validationResult = VALIDATION_SCHEMA.safeParse(newMessage);
+		if (!validationResult.success) {
+			setIsInvalid(true);
+			return;
+		}
+		setIsInvalid(false);
 
 		onSend?.(newMessage);
 		setNewMessage("");
@@ -31,6 +40,7 @@ const SendProjectChatMessageForm: FC<Props> = ({onSend}) => {
 					onChange={handleChange}
 					label="Message"
 					value={newMessage}
+					isInvalid={isInvalid}
 				/>
 			</div>
 			<Button className="flex-shrink-0 h-auto" color="primary" type="submit">
