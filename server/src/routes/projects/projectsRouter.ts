@@ -1,19 +1,21 @@
-import {ProjectsController} from "#src/controllers";
 import {authChecker} from "#src/middlewares";
 import {Router} from "express";
-import chatsRouter from "./chats/chatsRouter";
+import chatRouter from "./chat/chatRouter";
+import controller from "./controller";
 import requestsRouter from "./requests/requestsRouter";
 import usersRouter from "./users/usersRouter";
 
 const projectsRouter = Router();
 
-projectsRouter.post("/", authChecker, ProjectsController.create);
-projectsRouter.get("/", authChecker, ProjectsController.getAll);
-projectsRouter.get("/auth", authChecker, ProjectsController.getAllAuth);
+projectsRouter.use("/:id/chat", chatRouter);
 projectsRouter.use("/requests", requestsRouter);
-projectsRouter.use("/chats", chatsRouter);
-projectsRouter.get("/:id", authChecker, ProjectsController.getById);
-projectsRouter.delete("/:id", authChecker, ProjectsController.delete);
-projectsRouter.use("/:projectId/users", usersRouter);
+projectsRouter.use("/:id/users", usersRouter);
+projectsRouter.post("/", authChecker, controller.create);
+projectsRouter.get("/", authChecker, controller.getAll);
+projectsRouter.get("/owned", authChecker, controller.getOwned);
+projectsRouter.get("/chats", authChecker, controller.getChats);
+projectsRouter.get("/:id", authChecker, controller.getById);
+projectsRouter.delete("/:id", authChecker, controller.deleteById);
+projectsRouter.delete("/:id/leave", authChecker, controller.leaveById);
 
 export default projectsRouter;

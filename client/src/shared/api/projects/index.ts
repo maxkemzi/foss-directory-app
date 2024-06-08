@@ -28,14 +28,7 @@ const fetchAllProjects = async (): Promise<FetchProjectsResponse> => {
 };
 
 const fetchYourProjects = async (): Promise<FetchProjectsResponse> => {
-	const response = await fetchApiWithAuth(`${BASE_URL}/auth`, {
-		next: {tags: [CacheTag.PROJECTS]}
-	});
-	return response.json();
-};
-
-const fetchContributedProjects = async (): Promise<FetchProjectsResponse> => {
-	const response = await fetchApiWithAuth(`${BASE_URL}/contributed`, {
+	const response = await fetchApiWithAuth(`${BASE_URL}/owned`, {
 		next: {tags: [CacheTag.PROJECTS]}
 	});
 	return response.json();
@@ -55,11 +48,18 @@ const fetchDeleteProjectById = async (
 	return response.json();
 };
 
+const fetchLeaveProject = async (projectId: string): Promise<void> => {
+	const response = await fetchApiWithAuth(`${BASE_URL}/${projectId}/leave`, {
+		method: "DELETE"
+	});
+	return response.json();
+};
+
 export {
 	fetchAllProjects,
-	fetchContributedProjects,
 	fetchCreateProject,
 	fetchYourProjects,
 	fetchProjectById,
-	fetchDeleteProjectById
+	fetchDeleteProjectById,
+	fetchLeaveProject
 };

@@ -1,4 +1,4 @@
-import {RoleDocument} from "#src/types/db/documents";
+import {RoleDocument} from "#src/db";
 
 class RoleDto {
 	id: RoleDocument["id"];

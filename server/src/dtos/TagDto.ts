@@ -1,4 +1,4 @@
-import {TagDocument} from "#src/types/db/documents";
+import {TagDocument} from "#src/db";
 
 class TagDto {
 	id: TagDocument["id"];

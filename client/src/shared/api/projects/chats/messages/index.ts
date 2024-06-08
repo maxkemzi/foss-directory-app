@@ -1,14 +1,14 @@
 import {fetchApiWithAuth} from "#src/shared/auth";
 import {FetchChatMessagesResponse} from "./types";
 
-const BASE_URL = "/projects/chats";
+const BASE_URL = "/projects";
 
 const fetchProjectChatMessages = async (
 	projectId: string,
 	options: RequestInit = {}
 ): Promise<FetchChatMessagesResponse> => {
 	const response = await fetchApiWithAuth(
-		`${BASE_URL}/${projectId}/messages`,
+		`${BASE_URL}/${projectId}/chat/messages`,
 		options
 	);
 	return response.json();

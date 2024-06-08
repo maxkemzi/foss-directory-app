@@ -15,7 +15,7 @@ const Header: FC<Props> = ({chat, userId, onBurgerButtonClick}) => {
 	return (
 		<ProjectChatHeader
 			name={chat.name}
-			userCount={chat.userCount}
+			memberCount={chat.memberCount}
 			endSlot={
 				userId !== chat.ownerUser.id ? (
 					<ActionsDropdown projectId={chat.projectId} />

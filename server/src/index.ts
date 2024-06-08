@@ -1,8 +1,6 @@
 import "dotenv/config";
-import {Db} from "#src/db";
+import {projectMessageModel, db} from "#src/db";
 import {io, server} from "./core";
-import {PopulateUtils} from "./db/documents";
-import {ProjectMessageModel} from "./db/models";
 import {ProjectChatMessageDto} from "./dtos";
 
 const {
@@ -43,18 +41,17 @@ const PORT = process.env.PORT || 5000;
 
 const start = async () => {
 	try {
-		await Db.init();
+		const client = await db.getClient();
 
-		await Db.listenNotifications({
+		await db.listenNotifications(client, {
 			onProjectMessageInsert: async (id: string) => {
 				try {
-					const message = await ProjectMessageModel.getById(id);
+					const message = await projectMessageModel.findById(client, id);
 					if (!message) {
 						return;
 					}
 
-					const populatedMessage =
-						await PopulateUtils.populateProjectMessage(message);
+					const populatedMessage = await message.populate(client);
 
 					io.to(`room${message.projectId}`).emit(
 						"chat message",

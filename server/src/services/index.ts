@@ -1,25 +1,25 @@
-import AuthService from "./AuthService";
-import JwtTokensService from "./JwtTokensService";
-import RolesService from "./RolesService";
-import TagsService from "./TagsService";
-import UsersService from "./UsersService";
-import GithubService from "./integrations/github/GithubService";
-import ProjectsService from "./projects/ProjectsService";
-import ProjectRequestsService from "./projects/requests/ProjectRequestsService";
-import ProjectUsersService from "./projects/users/ProjectUsersService";
-import ProjectChatsService from "./projects/chats/ProjectChatsService";
-import ProjectChatMessagesService from "./projects/chats/messages/ProjectChatMessagesService";
+import authService from "./authService";
+import githubService from "./githubService";
+import projectService from "./project/projectService";
+import projectChatMessageService from "./projectChatMessageService";
+import projectChatService from "./projectChatService";
+import projectUserService from "./projectUserService";
+import projectRequestService from "./projectRequestService";
+import userService from "./userService";
+import roleService from "./roleService";
+import tagService from "./tagService";
+import jwtService from "./jwtService";
 
 export {
-	AuthService,
-	GithubService,
-	JwtTokensService,
-	ProjectRequestsService,
-	ProjectUsersService,
-	ProjectChatsService,
-	ProjectChatMessagesService,
-	ProjectsService,
-	RolesService,
-	TagsService,
-	UsersService
+	authService,
+	projectService,
+	githubService,
+	projectChatMessageService,
+	projectChatService,
+	projectUserService,
+	projectRequestService,
+	userService,
+	roleService,
+	tagService,
+	jwtService
 };

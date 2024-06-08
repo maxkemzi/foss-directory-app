@@ -16,7 +16,7 @@ interface Props {
 }
 
 const ProjectCard: FC<Props> = ({project}) => {
-	const {id, roles, tags, requestable} = project;
+	const {id, roles, tags, isOwner, isMember} = project;
 	const {openModal} = useModal();
 
 	const handleClick = useCallback(
@@ -40,7 +40,7 @@ const ProjectCard: FC<Props> = ({project}) => {
 								aria-label="request project role"
 								type="button"
 								onClick={() => handleClick(r.id)}
-								disabled={!requestable}
+								disabled={isOwner || isMember}
 							>
 								<ProjectRole role={r} />
 							</button>

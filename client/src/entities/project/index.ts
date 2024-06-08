@@ -1,6 +1,6 @@
 import Project from "./components/Project";
 import ProjectList from "./components/ProjectList";
-import {parseProjectUserCount} from "./helpers";
+import {parseProjectMemberCount} from "./helpers";
 
 export * from "./actions";
-export {Project, ProjectList, parseProjectUserCount};
+export {Project, ProjectList, parseProjectMemberCount};

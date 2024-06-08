@@ -6,7 +6,9 @@
 	"scripts": {
 		"start": "ts-node -r tsconfig-paths/register ./src/index.ts",
 		"dev": "nodemon",
-		"lint": "eslint src/ --ext .ts"
+		"lint": "eslint src/ --ext .ts",
+		"db:init": "ts-node ./scripts/db:init/index.ts",
+		"db:populate": "ts-node ./scripts/db:populate/index.ts"
 	},
 	"keywords": [],
 	"author": "Max Kyrychenko <iam.maxkyrychenko@gmail.com>",

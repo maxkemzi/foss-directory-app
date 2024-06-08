@@ -1,6 +1,5 @@
-import {ProjectMessageModel, UserModel} from "#src/db/models";
 import {UserDto} from "#src/dtos";
-import {JwtTokensService} from "#src/services";
+import {jwtService, projectChatMessageService} from "#src/services";
 import {Server} from "socket.io";
 import server from "./server";
 
@@ -24,16 +23,8 @@ io.on("connection", async socket => {
 			throw new Error();
 		}
 
-		const userPayload = JwtTokensService.verifyAccess<UserDto>(accessToken);
+		const userPayload = jwtService.verifyAccessToken<UserDto>(accessToken);
 		if (!userPayload) {
-			throw new Error();
-		}
-
-		const hasProjectAccess = await UserModel.hasProjectAccess({
-			projectId,
-			userId: userPayload.id
-		});
-		if (!hasProjectAccess) {
 			throw new Error();
 		}
 
@@ -43,12 +34,15 @@ io.on("connection", async socket => {
 
 		socket.on("chat message", async message => {
 			try {
-				await ProjectMessageModel.create({
-					projectId: message.projectId,
-					userId: userPayload.id,
-					text: message.text,
-					type: message.type
-				});
+				await projectChatMessageService.create(
+					{
+						projectId: message.projectId,
+						userId: userPayload.id,
+						text: message.text,
+						type: message.type
+					},
+					userPayload.id
+				);
 			} catch (e) {
 				console.log(e);
 				socket.emit("sendingMessageFailed");

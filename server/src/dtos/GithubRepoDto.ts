@@ -1,4 +1,4 @@
-import {GithubRepo} from "#src/types";
+import {GithubRepo} from "#src/apis";
 
 class GithubRepoDto {
 	id: GithubRepo["id"];

@@ -6,8 +6,9 @@ interface ProjectFromApi {
 	ownerUser: {id: string; username: string};
 	tags: {id: string; name: string}[];
 	roles: {id: string; name: string; placesAvailable: number}[];
-	requestable: boolean;
-	userCount: number;
+	memberCount: number;
+	isOwner: boolean;
+	isMember: boolean;
 }
 
 interface TagFromApi {
@@ -66,8 +67,8 @@ interface ProjectUserFromApi {
 interface ProjectChatFromApi {
 	projectId: string;
 	name: string;
-	userCount: number;
 	ownerUser: {id: string};
+	memberCount: number;
 }
 
 interface ProjectChatMessageFromApi {

@@ -1,6 +1,6 @@
 "use client";
 
-import {parseProjectUserCount} from "#src/entities/project";
+import {parseProjectMemberCount} from "#src/entities/project";
 import {ProjectUserFromApi} from "#src/shared/api";
 import {ModalProps} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
@@ -63,7 +63,7 @@ const ShowProjectChatInfoModal: FC<Props> = ({onClose, projectId}) => {
 							Project info
 						</ModalHeader>
 						<ModalBody>
-							<h3>{parseProjectUserCount(projectUsers.length)}</h3>
+							<h3>{parseProjectMemberCount(projectUsers.length)}</h3>
 							<ul className="flex flex-col gap-2">
 								{projectUsers.map(pu => {
 									const avatarJsx = (

@@ -32,14 +32,14 @@ const fetchRejectProjectRequest = async (
 	id: string
 ): Promise<ProjectRequestResponse> => {
 	const response = await fetchApiWithAuth(`${BASE_URL}/${id}/reject`, {
-		method: "POST"
+		method: "DELETE"
 	});
 	return response.json();
 };
 
 const fetchIncomingProjectRequests =
 	async (): Promise<FetchRoleRequestsResponse> => {
-		const response = await fetchApiWithAuth(BASE_URL, {
+		const response = await fetchApiWithAuth(`${BASE_URL}/received`, {
 			next: {tags: [CacheTag.REQUESTS]}
 		});
 		return response.json();

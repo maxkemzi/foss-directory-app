@@ -1,4 +1,4 @@
-import {UserDocument} from "#src/types/db/documents";
+import {UserDocument} from "#src/db";
 
 class UserDto {
 	id: UserDocument["id"];

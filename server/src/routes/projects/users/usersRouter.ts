@@ -1,10 +1,9 @@
-import {ProjectUsersController} from "#src/controllers";
 import {authChecker} from "#src/middlewares";
 import {Router} from "express";
+import controller from "./controller";
 
 const usersRouter = Router({mergeParams: true});
 
-usersRouter.get("/", authChecker, ProjectUsersController.getByProjectId);
-usersRouter.delete("/leave", authChecker, ProjectUsersController.leave);
+usersRouter.get("/", authChecker, controller.getByProjectId);
 
 export default usersRouter;
