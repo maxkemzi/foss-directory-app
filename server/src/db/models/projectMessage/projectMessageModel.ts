@@ -2,6 +2,7 @@ import {PoolClient} from "pg";
 import {ProjectMessagePayload} from "../../types/payloads";
 import {ProjectMessageFromDb} from "../../types/rows";
 import ProjectMessageDocument from "./ProjectMessageDocument";
+import {FindByProjectIdOptions} from "./types";
 
 const insert = async (
 	client: PoolClient,
@@ -21,14 +22,38 @@ const insert = async (
 
 const findByProjectId = async (
 	client: PoolClient,
-	id: string
+	id: string,
+	opts: FindByProjectIdOptions = {}
 ): Promise<ProjectMessageDocument[]> => {
-	const {rows} = await client.query<ProjectMessageFromDb>(
-		"SELECT * FROM project_messages WHERE project_id = $1;",
+	const {limit, offset} = opts;
+
+	let query = "SELECT * FROM project_messages WHERE project_id = $1";
+
+	if (limit) {
+		query += ` LIMIT ${limit}`;
+	}
+
+	if (offset) {
+		query += ` OFFSET ${offset}`;
+	}
+
+	const {rows} = await client.query<ProjectMessageFromDb>(`${query};`, [id]);
+
+	return rows.map(r => new ProjectMessageDocument(r));
+};
+
+const countByProjectId = async (
+	client: PoolClient,
+	id: string
+): Promise<number> => {
+	const {
+		rows: [{count}]
+	} = await client.query<{count: string}>(
+		"SELECT COUNT(*) FROM project_messages WHERE project_id = $1;",
 		[id]
 	);
 
-	return rows.map(r => new ProjectMessageDocument(r));
+	return Number(count);
 };
 
 const findById = async (
@@ -45,4 +70,4 @@ const findById = async (
 	return message ? new ProjectMessageDocument(message) : null;
 };
 
-export default {findById, findByProjectId, insert};
+export default {findById, findByProjectId, countByProjectId, insert};

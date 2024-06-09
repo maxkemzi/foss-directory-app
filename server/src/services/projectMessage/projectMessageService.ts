@@ -7,6 +7,7 @@ import {
 } from "#src/db";
 import {ProjectMessageDto} from "#src/dtos";
 import {ApiError} from "#src/lib";
+import {GetByProjectIdOptions, GetByProjectIdReturn} from "./types";
 
 const create = async (
 	payload: ProjectMessagePayload,
@@ -35,8 +36,11 @@ const create = async (
 
 const getByProjectId = async (
 	id: string,
-	userId: string
-): Promise<ProjectMessageDto[]> => {
+	userId: string,
+	opts: GetByProjectIdOptions
+): Promise<GetByProjectIdReturn> => {
+	const {limit, offset} = opts;
+
 	const client = await db.getClient();
 
 	try {
@@ -48,11 +52,17 @@ const getByProjectId = async (
 			throw new ApiError(403, "You are not the member of this project");
 		}
 
-		const messages = await projectMessageModel.findByProjectId(client, id);
+		const [messages, totalCount] = await Promise.all([
+			projectMessageModel.findByProjectId(client, id, {limit, offset}),
+			projectMessageModel.countByProjectId(client, id)
+		]);
 
 		const populatedMessages = await dbHelpers.populateMany(client, messages);
 
-		return populatedMessages.map(m => new ProjectMessageDto(m));
+		return {
+			messages: populatedMessages.map(m => new ProjectMessageDto(m)),
+			totalCount
+		};
 	} finally {
 		client.release();
 	}

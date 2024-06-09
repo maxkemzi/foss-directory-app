@@ -1,6 +1,13 @@
 import {ApiError} from "#src/lib";
 import {projectService} from "#src/services";
-import {Header} from "#src/utils/constants";
+import {
+	Header,
+	calcOffset,
+	calcTotalPages,
+	parseLimitString,
+	parsePageString,
+	parseSearchString
+} from "#src/utils";
 import {NextFunction, Request, Response} from "express";
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
@@ -39,21 +46,37 @@ const getAll = async (
 			throw new ApiError(401, "Unauthorized");
 		}
 
-		const {search, limit, page} = req.query;
+		const {page, limit, search} = req.query;
 
-		const parsedLimit = limit ? parseInt(limit, 10) : 10;
-		const parsedPage = page ? parseInt(page, 10) : 1;
+		if (page && typeof page !== "string") {
+			throw new ApiError(400, '"page" param must be a string');
+		}
 
-		const offset = (parsedPage - 1) * parsedLimit;
+		if (limit && typeof limit !== "string") {
+			throw new ApiError(400, '"limit" param must be a string');
+		}
 
-		const {projects, totalCount} = await projectService.getAll({
-			search,
+		if (search && typeof search !== "string") {
+			throw new ApiError(400, '"search" param must be a string');
+		}
+
+		const parsedPage = parsePageString(page);
+		const parsedLimit = parseLimitString(limit);
+		const parsedSearch = parseSearchString(search);
+
+		const offset = calcOffset(parsedPage, parsedLimit);
+
+		const {projects, totalCount} = await projectService.getAll(userId, {
 			limit: parsedLimit,
-			offset,
-			userId
+			search: parsedSearch,
+			offset
 		});
 
-		res.set({[Header.TOTAL_COUNT]: totalCount});
+		res.set({
+			[Header.TOTAL_COUNT]: totalCount,
+			[Header.PAGE]: parsedPage,
+			[Header.TOTAL_PAGES]: calcTotalPages(totalCount, parsedLimit)
+		});
 		res.json(projects);
 	} catch (e) {
 		next(e);
@@ -67,8 +90,83 @@ const getOwned = async (req: Request, res: Response, next: NextFunction) => {
 			throw new ApiError(401, "Unauthorized");
 		}
 
-		const projects = await projectService.getByOwnerUserId(userId);
+		const {page, limit, search} = req.query;
 
+		if (page && typeof page !== "string") {
+			throw new ApiError(400, '"page" param must be a string');
+		}
+
+		if (limit && typeof limit !== "string") {
+			throw new ApiError(400, '"limit" param must be a string');
+		}
+
+		if (search && typeof search !== "string") {
+			throw new ApiError(400, '"search" param must be a string');
+		}
+
+		const parsedPage = parsePageString(page);
+		const parsedLimit = parseLimitString(limit);
+		const parsedSearch = parseSearchString(search);
+
+		const offset = calcOffset(parsedPage, parsedLimit);
+
+		const {projects, totalCount} = await projectService.getByOwnerUserId(
+			userId,
+			{limit: parsedLimit, search: parsedSearch, offset}
+		);
+
+		res.set({
+			[Header.TOTAL_COUNT]: totalCount,
+			[Header.PAGE]: parsedPage,
+			[Header.TOTAL_PAGES]: calcTotalPages(totalCount, parsedLimit)
+		});
+		res.json(projects);
+	} catch (e) {
+		next(e);
+	}
+};
+
+const getByMembership = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const userId = res.locals.user?.id;
+		if (!userId) {
+			throw new ApiError(401, "Unauthorized");
+		}
+
+		const {page, limit, search} = req.query;
+
+		if (page && typeof page !== "string") {
+			throw new ApiError(400, '"page" param must be a string');
+		}
+
+		if (limit && typeof limit !== "string") {
+			throw new ApiError(400, '"limit" param must be a string');
+		}
+
+		if (search && typeof search !== "string") {
+			throw new ApiError(400, '"search" param must be a string');
+		}
+
+		const parsedPage = parsePageString(page);
+		const parsedLimit = parseLimitString(limit);
+		const parsedSearch = parseSearchString(search);
+
+		const offset = calcOffset(parsedPage, parsedLimit);
+
+		const {projects, totalCount} = await projectService.getByMemberUserId(
+			userId,
+			{limit: parsedLimit, search: parsedSearch, offset}
+		);
+
+		res.set({
+			[Header.TOTAL_COUNT]: totalCount,
+			[Header.PAGE]: parsedPage,
+			[Header.TOTAL_PAGES]: calcTotalPages(totalCount, parsedLimit)
+		});
 		res.json(projects);
 	} catch (e) {
 		next(e);
@@ -126,25 +224,6 @@ const leaveById = async (req: Request, res: Response, next: NextFunction) => {
 	}
 };
 
-const getByUserMembership = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	try {
-		const userId = res.locals.user?.id;
-		if (!userId) {
-			throw new ApiError(401, "Unauthorized");
-		}
-
-		const projects = await projectService.getByMemberUserId(userId);
-
-		res.json(projects);
-	} catch (e) {
-		next(e);
-	}
-};
-
 export default {
 	create,
 	getAll,
@@ -152,5 +231,5 @@ export default {
 	deleteById,
 	getById,
 	leaveById,
-	getByUserMembership
+	getByMembership
 };

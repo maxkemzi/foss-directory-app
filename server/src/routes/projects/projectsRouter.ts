@@ -13,7 +13,7 @@ projectsRouter.use("/:id/users", usersRouter);
 projectsRouter.post("/", authChecker, controller.create);
 projectsRouter.get("/", authChecker, controller.getAll);
 projectsRouter.get("/owned", authChecker, controller.getOwned);
-projectsRouter.get("/membership", authChecker, controller.getByUserMembership);
+projectsRouter.get("/membership", authChecker, controller.getByMembership);
 projectsRouter.get("/:id", authChecker, controller.getById);
 projectsRouter.delete("/:id", authChecker, controller.deleteById);
 projectsRouter.delete("/:id/leave", authChecker, controller.leaveById);

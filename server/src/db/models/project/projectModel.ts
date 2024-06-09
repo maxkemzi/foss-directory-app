@@ -1,8 +1,17 @@
 /* eslint-disable no-await-in-loop */
 import {PoolClient} from "pg";
-import {PaginationArgs, ProjectPayload} from "../../types/payloads";
+import {ProjectPayload} from "../../types/payloads";
 import {ProjectFromDb} from "../../types/rows";
 import ProjectDocument from "./ProjectDocument";
+import {
+	CountAllOptions,
+	CountByMemberUserIdOptions,
+	CountByOwnerUserIdOptions,
+	FindAllOptions,
+	FindByMemberUserIdOptions,
+	FindByOwnerUserIdOptions
+} from "./types";
+import {createSearchCondition} from "./helpers";
 
 const insert = async (
 	client: PoolClient,
@@ -26,64 +35,152 @@ const deleteById = async (client: PoolClient, id: string) => {
 
 const findAll = async (
 	client: PoolClient,
-	{search, limit, offset}: PaginationArgs
-): Promise<{
-	projects: ProjectDocument[];
-	totalCount: number;
-}> => {
-	let query = `SELECT DISTINCT p.* FROM project p LEFT JOIN project_tags pt ON p.id = pt.project_id ORDER BY p.created_at DESC`;
+	opts: FindAllOptions = {}
+): Promise<ProjectDocument[]> => {
+	const {search, limit, offset} = opts;
+
+	let query = "SELECT * FROM project";
 
 	if (search) {
-		const sanitizedSearch = search.replace(/'/g, "''");
-		query += ` WHERE p.name ILIKE '%${sanitizedSearch}%' OR p.description ILIKE '%${sanitizedSearch}%' OR pt.tag_id IN (SELECT id FROM tag WHERE name ILIKE '%${sanitizedSearch}%')`;
-	}
-
-	if (offset) {
-		query += ` OFFSET ${offset}`;
+		query += ` WHERE ${createSearchCondition(search, ["name", "description"])}`;
 	}
 
 	if (limit) {
 		query += ` LIMIT ${limit}`;
 	}
 
-	const [selectResult, countResult] = await Promise.all([
-		client.query<ProjectFromDb>(`${query};`),
-		client.query<{count: string}>("SELECT COUNT(*) FROM project;")
-	]);
+	if (offset) {
+		query += ` OFFSET ${offset}`;
+	}
 
-	const projects = selectResult.rows.map(p => new ProjectDocument(p));
-	const totalCount = Number(countResult.rows[0].count);
+	const {rows} = await client.query<ProjectFromDb>(`${query};`);
 
-	return {projects, totalCount};
+	return rows.map(p => new ProjectDocument(p));
+};
+
+const countAll = async (
+	client: PoolClient,
+	opts: CountAllOptions = {}
+): Promise<number> => {
+	const {search} = opts;
+
+	let query = `SELECT COUNT(*) FROM project`;
+
+	if (search) {
+		query += ` WHERE ${createSearchCondition(search, ["name", "description"])}`;
+	}
+
+	const {
+		rows: [{count}]
+	} = await client.query<{count: string}>(`${query};`);
+
+	return Number(count);
 };
 
 const findByOwnerUserId = async (
 	client: PoolClient,
-	id: string
+	id: string,
+	opts: FindByOwnerUserIdOptions = {}
 ): Promise<ProjectDocument[]> => {
-	const {rows} = await client.query<ProjectFromDb>(
-		"SELECT * FROM project WHERE owner_user_account_id=$1 ORDER BY created_at DESC;",
-		[id]
-	);
+	const {search, limit, offset} = opts;
+
+	let query = "SELECT * FROM project WHERE owner_user_account_id = $1";
+
+	if (search) {
+		query += ` AND ${createSearchCondition(search, ["name", "description"])}`;
+	}
+
+	if (limit) {
+		query += ` LIMIT ${limit}`;
+	}
+
+	if (offset) {
+		query += ` OFFSET ${offset}`;
+	}
+
+	const {rows} = await client.query<ProjectFromDb>(`${query};`, [id]);
 
 	return rows.map(r => new ProjectDocument(r));
 };
 
+const countByOwnerUserId = async (
+	client: PoolClient,
+	id: string,
+	opts: CountByOwnerUserIdOptions = {}
+): Promise<number> => {
+	const {search} = opts;
+
+	let query = `SELECT COUNT(*) FROM project WHERE owner_user_account_id = $1`;
+
+	if (search) {
+		query += ` AND ${createSearchCondition(search, ["name", "description"])}`;
+	}
+
+	const {
+		rows: [{count}]
+	} = await client.query<{count: string}>(`${query};`, [id]);
+
+	return Number(count);
+};
+
 const findByMemberUserId = async (
 	client: PoolClient,
-	id: string
+	id: string,
+	opts: FindByMemberUserIdOptions = {}
 ): Promise<ProjectDocument[]> => {
-	const {rows} = await client.query<ProjectFromDb>(
-		`
+	const {search, limit, offset} = opts;
+
+	let query = `
 		SELECT p.* FROM project p
 		JOIN project_user_accounts pua ON p.id = pua.project_id
 		WHERE pua.user_account_id = $1
-		ORDER BY created_at DESC;
-		`,
-		[id]
-	);
+	`;
+
+	if (search) {
+		query += ` AND ${createSearchCondition(search, [
+			"p.name",
+			"p.description"
+		])}`;
+	}
+
+	if (limit) {
+		query += ` LIMIT ${limit}`;
+	}
+
+	if (offset) {
+		query += ` OFFSET ${offset}`;
+	}
+
+	const {rows} = await client.query<ProjectFromDb>(`${query};`, [id]);
 
 	return rows.map(r => new ProjectDocument(r));
+};
+
+const countByMemberUserId = async (
+	client: PoolClient,
+	id: string,
+	opts: CountByMemberUserIdOptions = {}
+): Promise<number> => {
+	const {search} = opts;
+
+	let query = `
+		SELECT COUNT(*) FROM project p
+		JOIN project_user_accounts pua ON p.id = pua.project_id
+		WHERE pua.user_account_id = $1
+	`;
+
+	if (search) {
+		query += ` AND ${createSearchCondition(search, [
+			"p.name",
+			"p.description"
+		])}`;
+	}
+
+	const {
+		rows: [{count}]
+	} = await client.query<{count: string}>(`${query};`, [id]);
+
+	return Number(count);
 };
 
 const findById = async (
@@ -103,8 +200,11 @@ const findById = async (
 export default {
 	deleteById,
 	findAll,
+	countAll,
 	findById,
 	findByMemberUserId,
 	findByOwnerUserId,
+	countByOwnerUserId,
+	countByMemberUserId,
 	insert
 };

@@ -2,6 +2,7 @@ import {PoolClient} from "pg";
 import {ProjectUserPayload} from "../../types/payloads";
 import {ProjectUserFromDb} from "../../types/rows";
 import ProjectUserDocument from "./ProjectUserDocument";
+import {FindByProjectIdOptions} from "./types";
 
 const insert = async (
 	client: PoolClient,
@@ -19,13 +20,42 @@ const insert = async (
 	return new ProjectUserDocument(user);
 };
 
-const findByProjectId = async (client: PoolClient, id: string) => {
-	const {rows: users} = await client.query<ProjectUserFromDb>(
-		"SELECT * FROM project_user_accounts WHERE project_id = $1;",
+const findByProjectId = async (
+	client: PoolClient,
+	id: string,
+	opts: FindByProjectIdOptions = {}
+) => {
+	const {limit, offset} = opts;
+
+	let query = "SELECT * FROM project_user_accounts WHERE project_id = $1";
+
+	if (limit) {
+		query += ` LIMIT ${limit}`;
+	}
+
+	if (offset) {
+		query += ` OFFSET ${offset}`;
+	}
+
+	const {rows: users} = await client.query<ProjectUserFromDb>(`${query};`, [
+		id
+	]);
+
+	return users.map(u => new ProjectUserDocument(u));
+};
+
+const countByProjectId = async (
+	client: PoolClient,
+	id: string
+): Promise<number> => {
+	const {
+		rows: [{count}]
+	} = await client.query<{count: string}>(
+		"SELECT COUNT(*) FROM project_user_accounts WHERE project_id = $1;",
 		[id]
 	);
 
-	return users.map(u => new ProjectUserDocument(u));
+	return Number(count);
 };
 
 const findByProjectAndUserIds = async (
@@ -54,20 +84,6 @@ const deleteByProjectAndUserIds = async (
 		"DELETE FROM project_user_accounts WHERE project_id = $1 AND user_account_id = $2;",
 		[projectId, userId]
 	);
-};
-
-const countByProjectId = async (
-	client: PoolClient,
-	id: string
-): Promise<number> => {
-	const {
-		rows: [{count}]
-	} = await client.query<{count: string}>(
-		"SELECT COUNT(*) FROM project_user_accounts WHERE project_id = $1;",
-		[id]
-	);
-
-	return Number(count);
 };
 
 export default {

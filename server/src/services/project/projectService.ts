@@ -10,11 +10,18 @@ import {
 	tagModel,
 	userModel
 } from "#src/db";
-import {PaginationArgs} from "#src/db/types/payloads";
 import {ProjectDto, ProjectWithDetailsDto} from "#src/dtos";
 import {ApiError} from "#src/lib";
 import {PoolClient} from "pg";
-import {CreateProjectPayload} from "./types";
+import {
+	CreateProjectPayload,
+	GetAllOptions,
+	GetAllReturn,
+	GetByMemberUserIdOptions,
+	GetByMemberUserIdReturn,
+	GetByOwnerUserIdOptions,
+	GetByOwnerUserIdReturn
+} from "./types";
 
 const getDetailsById = async (
 	client: PoolClient,
@@ -105,17 +112,19 @@ const create = async ({
 	}
 };
 
-const getAll = async ({
-	userId,
-	...args
-}: PaginationArgs & {userId: string}): Promise<{
-	projects: ProjectWithDetailsDto[];
-	totalCount: number;
-}> => {
+const getAll = async (
+	userId: string,
+	opts: GetAllOptions
+): Promise<GetAllReturn> => {
+	const {search, limit, offset} = opts;
+
 	const client = await db.getClient();
 
 	try {
-		const {projects, totalCount} = await projectModel.findAll(client, args);
+		const [projects, totalCount] = await Promise.all([
+			projectModel.findAll(client, {search, limit, offset}),
+			projectModel.countAll(client, {search})
+		]);
 
 		const populatedProjects = await dbHelpers.populateMany(client, projects);
 
@@ -136,12 +145,18 @@ const getAll = async ({
 };
 
 const getByOwnerUserId = async (
-	id: string
-): Promise<ProjectWithDetailsDto[]> => {
+	id: string,
+	opts: GetByOwnerUserIdOptions
+): Promise<GetByOwnerUserIdReturn> => {
+	const {search, limit, offset} = opts;
+
 	const client = await db.getClient();
 
 	try {
-		const projects = await projectModel.findByOwnerUserId(client, id);
+		const [projects, totalCount] = await Promise.all([
+			projectModel.findByOwnerUserId(client, id, {search, limit, offset}),
+			projectModel.countByOwnerUserId(client, id, {search})
+		]);
 
 		const populatedProjects = await dbHelpers.populateMany(client, projects);
 
@@ -152,19 +167,28 @@ const getByOwnerUserId = async (
 			}))
 		);
 
-		return projectsWithDetails.map(pwd => new ProjectWithDetailsDto(pwd));
+		return {
+			projects: projectsWithDetails.map(pwd => new ProjectWithDetailsDto(pwd)),
+			totalCount
+		};
 	} finally {
 		client.release();
 	}
 };
 
 const getByMemberUserId = async (
-	id: string
-): Promise<ProjectWithDetailsDto[]> => {
+	id: string,
+	opts: GetByMemberUserIdOptions
+): Promise<GetByMemberUserIdReturn> => {
+	const {search, limit, offset} = opts;
+
 	const client = await db.getClient();
 
 	try {
-		const projects = await projectModel.findByMemberUserId(client, id);
+		const [projects, totalCount] = await Promise.all([
+			projectModel.findByMemberUserId(client, id, {search, limit, offset}),
+			projectModel.countByMemberUserId(client, id, {search})
+		]);
 
 		const populatedProjects = await dbHelpers.populateMany(client, projects);
 
@@ -175,7 +199,10 @@ const getByMemberUserId = async (
 			}))
 		);
 
-		return projectsWithDetails.map(pwd => new ProjectWithDetailsDto(pwd));
+		return {
+			projects: projectsWithDetails.map(pwd => new ProjectWithDetailsDto(pwd)),
+			totalCount
+		};
 	} finally {
 		client.release();
 	}
