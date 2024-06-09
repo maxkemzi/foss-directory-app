@@ -1,6 +1,6 @@
 import {
 	ProjectRequestList,
-	getIncomingProjectRequests
+	getReceivedProjectRequests
 } from "#src/entities/projectRequest";
 import {
 	PageContainer,
@@ -11,7 +11,7 @@ import {
 import {ProjectRequestCard} from "#src/widgets/ProjectRequestCard";
 
 const Requests = async () => {
-	const requests = await getIncomingProjectRequests();
+	const requests = await getReceivedProjectRequests();
 
 	return (
 		<PageSection>

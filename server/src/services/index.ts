@@ -1,8 +1,7 @@
 import authService from "./authService";
 import githubService from "./githubService";
 import projectService from "./project/projectService";
-import projectChatMessageService from "./projectChatMessageService";
-import projectChatService from "./projectChatService";
+import projectMessageService from "./projectMessageService";
 import projectUserService from "./projectUserService";
 import projectRequestService from "./projectRequestService";
 import userService from "./userService";
@@ -14,8 +13,7 @@ export {
 	authService,
 	projectService,
 	githubService,
-	projectChatMessageService,
-	projectChatService,
+	projectMessageService,
 	projectUserService,
 	projectRequestService,
 	userService,

@@ -1,4 +1,9 @@
-import {fetchAllProjects, fetchYourProjects} from "#src/shared/api/projects";
+import {
+	fetchAllProjects,
+	fetchOwnedProjects,
+	fetchProjectById,
+	fetchProjectsByMembership
+} from "#src/shared/api/projects";
 import {getServerSession, logOut} from "#src/shared/auth";
 
 const getAllProjects = async () => {
@@ -15,18 +20,51 @@ const getAllProjects = async () => {
 	}
 };
 
-const getYourProjects = async () => {
+const getOwnedProjects = async () => {
 	const session = await getServerSession();
 	if (!session) {
 		return logOut();
 	}
 
 	try {
-		const projects = await fetchYourProjects();
+		const projects = await fetchOwnedProjects();
 		return projects;
 	} catch (e) {
-		throw new Error("Error fetching your projects");
+		throw new Error("Error fetching projects");
 	}
 };
 
-export {getAllProjects, getYourProjects};
+const getProjectsByMembership = async () => {
+	const session = await getServerSession();
+	if (!session) {
+		return logOut();
+	}
+
+	try {
+		const projects = await fetchProjectsByMembership();
+		return projects;
+	} catch (e) {
+		throw new Error("Error fetching projects");
+	}
+};
+
+const getProjectById = async (id: string) => {
+	const session = await getServerSession();
+	if (!session) {
+		return logOut();
+	}
+
+	try {
+		const project = await fetchProjectById(id);
+		return project;
+	} catch (e) {
+		throw new Error("Error fetching project");
+	}
+};
+
+export {
+	getAllProjects,
+	getOwnedProjects,
+	getProjectsByMembership,
+	getProjectById
+};

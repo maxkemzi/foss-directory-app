@@ -1,5 +1,5 @@
 import {UserDto} from "#src/dtos";
-import {jwtService, projectChatMessageService} from "#src/services";
+import {jwtService, projectMessageService} from "#src/services";
 import {Server} from "socket.io";
 import server from "./server";
 
@@ -34,7 +34,7 @@ io.on("connection", async socket => {
 
 		socket.on("chat message", async message => {
 			try {
-				await projectChatMessageService.create(
+				await projectMessageService.create(
 					{
 						projectId: message.projectId,
 						userId: userPayload.id,

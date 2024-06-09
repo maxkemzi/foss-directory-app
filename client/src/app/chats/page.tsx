@@ -1,13 +1,13 @@
-import {getProjectChats} from "#src/entities/projectChat";
+import {getProjectsByMembership} from "#src/entities/project";
 import {Pathname} from "#src/shared/constants";
 import {redirect} from "next/navigation";
 
 const Chats = async () => {
-	const chats = await getProjectChats();
+	const projects = await getProjectsByMembership();
 
-	const firstChat = chats[0];
-	if (firstChat) {
-		redirect(`${Pathname.CHATS}/${firstChat.projectId}`);
+	const firstProject = projects[0];
+	if (firstProject) {
+		redirect(`${Pathname.CHATS}/${firstProject.id}`);
 	}
 
 	return <p>There are no chats</p>;

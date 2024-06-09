@@ -4,20 +4,20 @@ import {
 	ProjectChat,
 	ProjectChatList,
 	ProjectChatSidebar
-} from "#src/entities/projectChat";
-import {ProjectChatFromApi} from "#src/shared/api";
+} from "#src/entities/project";
+import {ProjectFromApi} from "#src/shared/api";
 import {FC} from "react";
 
 interface Props {
-	chats: ProjectChatFromApi[];
+	projects: ProjectFromApi[];
 	isOpen: boolean;
 	onClose: () => void;
-	isChatActive?: (projectId: ProjectChatFromApi["projectId"]) => boolean;
-	onChatClick?: (projectId: ProjectChatFromApi["projectId"]) => void;
+	isChatActive?: (projectId: ProjectFromApi["id"]) => boolean;
+	onChatClick?: (projectId: ProjectFromApi["id"]) => void;
 }
 
 const Sidebar: FC<Props> = ({
-	chats,
+	projects,
 	isOpen,
 	onClose,
 	isChatActive,
@@ -29,18 +29,18 @@ const Sidebar: FC<Props> = ({
 			onClose={onClose}
 			contentSlot={
 				<ProjectChatList>
-					{chats.map(c => {
+					{projects.map(p => {
 						return (
-							<li key={c.projectId}>
+							<li key={p.id}>
 								<button
 									aria-label="select chat"
 									className="w-full"
-									onClick={() => onChatClick?.(c.projectId)}
+									onClick={() => onChatClick?.(p.id)}
 									type="button"
 								>
 									<ProjectChat
-										chat={c}
-										isActive={isChatActive?.(c.projectId) || false}
+										project={p}
+										isActive={isChatActive?.(p.id) || false}
 									/>
 								</button>
 							</li>

@@ -1,36 +1,33 @@
 "use client";
 
-import {ProjectChatBody} from "#src/entities/projectChat";
+import {ProjectChatBody} from "#src/entities/project";
 import {
-	ProjectChatMessage,
-	ProjectChatMessageList,
-	ProjectChatMessageListRef
-} from "#src/entities/projectChatMessage";
-import {useProjectChatSocketConnection} from "#src/features/projectChat/connectToSocket";
-import {SendProjectChatMessageForm} from "#src/features/projectChatMessage/send";
-import {ProjectChatFromApi, ProjectChatMessageFromApi} from "#src/shared/api";
+	ProjectMessage,
+	ProjectMessageList,
+	ProjectMessageListRef
+} from "#src/entities/projectMessage";
+import {useSocketConnection} from "#src/features/socket/connect";
+import {SendProjectMessageForm} from "#src/features/projectMessage/send";
+import {ProjectFromApi, ProjectMessageFromApi} from "#src/shared/api";
 import {Session} from "#src/shared/auth";
 import {useEffectUpdateOnly} from "#src/shared/hooks";
 import {FC, useCallback, useRef, useState} from "react";
 
 interface Props {
-	chat: ProjectChatFromApi;
-	initialMessages: ProjectChatMessageFromApi[];
+	project: ProjectFromApi;
+	initialMessages: ProjectMessageFromApi[];
 	session: Session;
 }
 
-const Body: FC<Props> = ({chat, initialMessages, session}) => {
-	const messageListRef = useRef<ProjectChatMessageListRef>(null);
+const Body: FC<Props> = ({project, initialMessages, session}) => {
+	const messageListRef = useRef<ProjectMessageListRef>(null);
 	const [messages, setMessages] = useState(initialMessages);
 
-	const handleChatMessage = useCallback(
-		(message: ProjectChatMessageFromApi) => {
-			setMessages(prev => [message, ...prev]);
-		},
-		[]
-	);
-	const {socket} = useProjectChatSocketConnection({
-		projectId: chat.projectId,
+	const handleChatMessage = useCallback((message: ProjectMessageFromApi) => {
+		setMessages(prev => [message, ...prev]);
+	}, []);
+	const {socket} = useSocketConnection({
+		projectId: project.id,
 		accessToken: session.tokens.access,
 		onChatMessage: handleChatMessage
 	});
@@ -42,18 +39,18 @@ const Body: FC<Props> = ({chat, initialMessages, session}) => {
 	const handleMessageSend = useCallback(
 		(message: string) => {
 			socket?.emit("chat message", {
-				projectId: chat.projectId,
+				projectId: project.id,
 				text: message,
 				type: "regular"
 			});
 		},
-		[chat.projectId, socket]
+		[project.id, socket]
 	);
 
 	return (
 		<ProjectChatBody
 			contentSlot={
-				<ProjectChatMessageList ref={messageListRef}>
+				<ProjectMessageList ref={messageListRef}>
 					{messages.map((message, index, arr) => {
 						const isMine =
 							message.sender != null
@@ -68,7 +65,7 @@ const Body: FC<Props> = ({chat, initialMessages, session}) => {
 							prevMessage.type === "regular";
 
 						return (
-							<ProjectChatMessage
+							<ProjectMessage
 								key={message.id}
 								message={message}
 								isMine={isMine}
@@ -76,9 +73,9 @@ const Body: FC<Props> = ({chat, initialMessages, session}) => {
 							/>
 						);
 					})}
-				</ProjectChatMessageList>
+				</ProjectMessageList>
 			}
-			bottomSlot={<SendProjectChatMessageForm onSend={handleMessageSend} />}
+			bottomSlot={<SendProjectMessageForm onSend={handleMessageSend} />}
 		/>
 	);
 };

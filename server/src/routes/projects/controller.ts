@@ -1,5 +1,5 @@
 import {ApiError} from "#src/lib";
-import {projectChatService, projectService} from "#src/services";
+import {projectService} from "#src/services";
 import {Header} from "#src/utils/constants";
 import {NextFunction, Request, Response} from "express";
 
@@ -126,16 +126,20 @@ const leaveById = async (req: Request, res: Response, next: NextFunction) => {
 	}
 };
 
-const getChats = async (req: Request, res: Response, next: NextFunction) => {
+const getByUserMembership = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
 		const userId = res.locals.user?.id;
 		if (!userId) {
 			throw new ApiError(401, "Unauthorized");
 		}
 
-		const chats = await projectChatService.getByMemberUserId(userId);
+		const projects = await projectService.getByMemberUserId(userId);
 
-		res.json(chats);
+		res.json(projects);
 	} catch (e) {
 		next(e);
 	}
@@ -148,5 +152,5 @@ export default {
 	deleteById,
 	getById,
 	leaveById,
-	getChats
+	getByUserMembership
 };

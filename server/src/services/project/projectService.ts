@@ -158,6 +158,29 @@ const getByOwnerUserId = async (
 	}
 };
 
+const getByMemberUserId = async (
+	id: string
+): Promise<ProjectWithDetailsDto[]> => {
+	const client = await db.getClient();
+
+	try {
+		const projects = await projectModel.findByMemberUserId(client, id);
+
+		const populatedProjects = await dbHelpers.populateMany(client, projects);
+
+		const projectsWithDetails = await Promise.all(
+			populatedProjects.map(async pp => ({
+				...pp,
+				...(await getDetailsById(client, pp.id, id))
+			}))
+		);
+
+		return projectsWithDetails.map(pwd => new ProjectWithDetailsDto(pwd));
+	} finally {
+		client.release();
+	}
+};
+
 const deleteById = async (id: string, userId: string) => {
 	const client = await db.getClient();
 
@@ -230,6 +253,7 @@ export default {
 	create,
 	deleteById,
 	getByOwnerUserId,
+	getByMemberUserId,
 	getById,
 	getAll,
 	leaveById

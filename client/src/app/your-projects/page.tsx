@@ -1,4 +1,4 @@
-import {getYourProjects} from "#src/entities/project";
+import {getOwnedProjects} from "#src/entities/project";
 import {
 	PageContainer,
 	PageContent,
@@ -8,7 +8,7 @@ import {
 import Table from "./Table";
 
 const YourProjects = async () => {
-	const projects = await getYourProjects();
+	const projects = await getOwnedProjects();
 
 	return (
 		<PageSection>

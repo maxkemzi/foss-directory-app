@@ -1,23 +1,21 @@
 "use server";
 
 import {isApiError} from "#src/shared/api/lib";
-import {fetchIncomingProjectRequests} from "#src/shared/api/projects/requests";
+import {fetchReceivedProjectRequests} from "#src/shared/api/projects/requests";
 import {getServerSession, logOut} from "#src/shared/auth";
 
-const getIncomingProjectRequests = async () => {
+const getReceivedProjectRequests = async () => {
 	const session = await getServerSession();
 	if (!session) {
 		return logOut();
 	}
 
 	try {
-		const requests = await fetchIncomingProjectRequests();
+		const requests = await fetchReceivedProjectRequests();
 		return requests;
 	} catch (e) {
-		throw new Error(
-			isApiError(e) ? e.message : "Error fetching project requests"
-		);
+		throw new Error(isApiError(e) ? e.message : "Error fetching requests");
 	}
 };
 
-export {getIncomingProjectRequests};
+export {getReceivedProjectRequests};

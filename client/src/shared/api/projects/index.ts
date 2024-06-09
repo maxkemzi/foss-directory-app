@@ -27,8 +27,15 @@ const fetchAllProjects = async (): Promise<FetchProjectsResponse> => {
 	return response.json();
 };
 
-const fetchYourProjects = async (): Promise<FetchProjectsResponse> => {
+const fetchOwnedProjects = async (): Promise<FetchProjectsResponse> => {
 	const response = await fetchApiWithAuth(`${BASE_URL}/owned`, {
+		next: {tags: [CacheTag.PROJECTS]}
+	});
+	return response.json();
+};
+
+const fetchProjectsByMembership = async (): Promise<FetchProjectsResponse> => {
+	const response = await fetchApiWithAuth(`${BASE_URL}/membership`, {
 		next: {tags: [CacheTag.PROJECTS]}
 	});
 	return response.json();
@@ -58,7 +65,8 @@ const fetchLeaveProject = async (projectId: string): Promise<void> => {
 export {
 	fetchAllProjects,
 	fetchCreateProject,
-	fetchYourProjects,
+	fetchOwnedProjects,
+	fetchProjectsByMembership,
 	fetchProjectById,
 	fetchDeleteProjectById,
 	fetchLeaveProject

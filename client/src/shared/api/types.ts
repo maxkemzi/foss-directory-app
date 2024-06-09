@@ -64,14 +64,7 @@ interface ProjectUserFromApi {
 	isOwner: boolean;
 }
 
-interface ProjectChatFromApi {
-	projectId: string;
-	name: string;
-	ownerUser: {id: string};
-	memberCount: number;
-}
-
-interface ProjectChatMessageFromApi {
+interface ProjectMessageFromApi {
 	id: string;
 	sender: {
 		user: {
@@ -94,7 +87,6 @@ export type {
 	RepoFromApi,
 	RoleFromApi,
 	ProjectRequestFromApi,
-	ProjectChatMessageFromApi,
-	ProjectUserFromApi,
-	ProjectChatFromApi
+	ProjectMessageFromApi,
+	ProjectUserFromApi
 };

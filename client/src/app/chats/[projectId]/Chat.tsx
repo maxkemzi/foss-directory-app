@@ -1,6 +1,6 @@
 "use client";
 
-import {ProjectChatFromApi, ProjectChatMessageFromApi} from "#src/shared/api";
+import {ProjectFromApi, ProjectMessageFromApi} from "#src/shared/api";
 import {Session} from "#src/shared/auth";
 import {Pathname} from "#src/shared/constants";
 import {ProjectChatCard} from "#src/widgets/ProjectChatCard";
@@ -9,13 +9,13 @@ import {FC} from "react";
 import {revalidateChatPath} from "./actions";
 
 interface Props {
-	chats: ProjectChatFromApi[];
-	chat: ProjectChatFromApi;
-	initialMessages: ProjectChatMessageFromApi[];
+	projects: ProjectFromApi[];
+	project: ProjectFromApi;
+	initialMessages: ProjectMessageFromApi[];
 	session: Session;
 }
 
-const Chat: FC<Props> = ({chats, chat, initialMessages, session}) => {
+const Chat: FC<Props> = ({projects, project, initialMessages, session}) => {
 	const pathname = usePathname();
 	const router = useRouter();
 
@@ -33,8 +33,8 @@ const Chat: FC<Props> = ({chats, chat, initialMessages, session}) => {
 
 	return (
 		<ProjectChatCard
-			chats={chats}
-			chat={chat}
+			projects={projects}
+			project={project}
 			initialMessages={initialMessages}
 			session={session}
 			isChatActive={handleIsChatActive}

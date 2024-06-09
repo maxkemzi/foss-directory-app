@@ -8,9 +8,9 @@ const fetchGithubConnectionUrl = async (): Promise<FetchUrlResponse> => {
 	return response.json();
 };
 
-const fetchYourGithubRepos = async (): Promise<FetchReposResponse> => {
+const fetchGithubRepos = async (): Promise<FetchReposResponse> => {
 	const response = await fetchApiWithAuth(`${BASE_URL}/repos`);
 	return response.json();
 };
 
-export {fetchGithubConnectionUrl, fetchYourGithubRepos};
+export {fetchGithubConnectionUrl, fetchGithubRepos};

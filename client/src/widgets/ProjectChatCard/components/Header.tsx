@@ -1,29 +1,26 @@
-import {ProjectChatHeader} from "#src/entities/projectChat";
-import {ShowProjectChatInfoClickArea} from "#src/features/projectChat/showInfo";
-import {ProjectChatFromApi} from "#src/shared/api";
+import {ProjectChatHeader} from "#src/entities/project";
+import {ShowProjectChatInfoClickArea} from "#src/features/project/showChatInfo";
+import {ProjectFromApi} from "#src/shared/api";
 import {Session} from "#src/shared/auth";
 import {FC} from "react";
 import ActionsDropdown from "./ActionsDropdown";
 
 interface Props {
-	chat: ProjectChatFromApi;
+	project: ProjectFromApi;
 	userId: Session["user"]["id"];
 	onBurgerButtonClick: () => void;
 }
 
-const Header: FC<Props> = ({chat, userId, onBurgerButtonClick}) => {
+const Header: FC<Props> = ({project, userId, onBurgerButtonClick}) => {
+	const {name, memberCount, id, ownerUser} = project;
 	return (
 		<ProjectChatHeader
-			name={chat.name}
-			memberCount={chat.memberCount}
+			name={name}
+			memberCount={memberCount}
 			endSlot={
-				userId !== chat.ownerUser.id ? (
-					<ActionsDropdown projectId={chat.projectId} />
-				) : null
+				userId !== ownerUser.id ? <ActionsDropdown projectId={id} /> : null
 			}
-			clickAreaSlot={
-				<ShowProjectChatInfoClickArea projectId={chat.projectId} />
-			}
+			clickAreaSlot={<ShowProjectChatInfoClickArea projectId={id} />}
 			onBurgerButtonClick={onBurgerButtonClick}
 		/>
 	);

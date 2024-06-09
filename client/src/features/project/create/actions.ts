@@ -1,6 +1,6 @@
 "use server";
 
-import {fetchYourGithubRepos} from "#src/shared/api/integrations/github";
+import {fetchGithubRepos} from "#src/shared/api/integrations/github";
 import {fetchCreateProject} from "#src/shared/api/projects";
 import {fetchAllRoles} from "#src/shared/api/roles";
 import {fetchAllTags} from "#src/shared/api/tags";
@@ -33,9 +33,9 @@ const getAllRoles = async () => {
 	}
 };
 
-const getYourGithubRepos = async () => {
+const getGithubRepos = async () => {
 	try {
-		const repos = await fetchYourGithubRepos();
+		const repos = await fetchGithubRepos();
 		return repos;
 	} catch (e) {
 		console.error(e);
@@ -43,4 +43,4 @@ const getYourGithubRepos = async () => {
 	}
 };
 
-export {createProjectWithData, getAllRoles, getAllTags, getYourGithubRepos};
+export {createProjectWithData, getAllRoles, getAllTags, getGithubRepos};

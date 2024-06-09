@@ -1,7 +1,7 @@
 import "dotenv/config";
 import {projectMessageModel, db} from "#src/db";
 import {io, server} from "./core";
-import {ProjectChatMessageDto} from "./dtos";
+import {ProjectMessageDto} from "./dtos";
 
 const {
 	POSTGRES_HOST,
@@ -55,7 +55,7 @@ const start = async () => {
 
 					io.to(`room${message.projectId}`).emit(
 						"chat message",
-						new ProjectChatMessageDto(populatedMessage)
+						new ProjectMessageDto(populatedMessage)
 					);
 				} catch (e) {
 					console.log(e);

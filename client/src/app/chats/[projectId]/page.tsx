@@ -1,5 +1,5 @@
-import {getProjectChat, getProjectChats} from "#src/entities/projectChat";
-import {getProjectChatMessages} from "#src/entities/projectChatMessage";
+import {getProjectsByMembership, getProjectById} from "#src/entities/project";
+import {getProjectMessagesByProjectId} from "#src/entities/projectMessage";
 import {getServerSession, logOut} from "#src/shared/auth";
 import Chat from "./Chat";
 
@@ -11,16 +11,16 @@ const ChatsChat = async ({params}: {params: {projectId: string}}) => {
 		return logOut();
 	}
 
-	const [chats, chat, messages] = await Promise.all([
-		getProjectChats(),
-		getProjectChat(projectId),
-		getProjectChatMessages(projectId)
+	const [projects, project, messages] = await Promise.all([
+		getProjectsByMembership(),
+		getProjectById(projectId),
+		getProjectMessagesByProjectId(projectId)
 	]);
 
 	return (
 		<Chat
-			chats={chats}
-			chat={chat}
+			projects={projects}
+			project={project}
 			initialMessages={messages.reverse()}
 			session={session}
 		/>

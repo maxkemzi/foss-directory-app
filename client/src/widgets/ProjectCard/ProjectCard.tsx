@@ -4,9 +4,9 @@ import {Project} from "#src/entities/project";
 import {ProjectRole, ProjectRoleList} from "#src/entities/projectRole";
 import {ProjectTag, ProjectTagList} from "#src/entities/projectTag";
 import {
-	SendProjectRequestModal,
-	SendProjectRequestModalProps
-} from "#src/features/projectRequest/send";
+	CreateProjectRequestModal,
+	CreateProjectRequestModalProps
+} from "#src/features/projectRequest/create";
 import {ProjectFromApi} from "#src/shared/api";
 import {useModal} from "#src/shared/modal";
 import {FC, useCallback} from "react";
@@ -21,8 +21,8 @@ const ProjectCard: FC<Props> = ({project}) => {
 
 	const handleClick = useCallback(
 		(projectRoleId: string) => {
-			openModal<SendProjectRequestModalProps>({
-				component: SendProjectRequestModal,
+			openModal<CreateProjectRequestModalProps>({
+				component: CreateProjectRequestModal,
 				props: {projectId: id, projectRoleId}
 			});
 		},

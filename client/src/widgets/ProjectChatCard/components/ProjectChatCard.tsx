@@ -1,7 +1,7 @@
 "use client";
 
-import {ProjectChatLayout} from "#src/entities/projectChat";
-import {ProjectChatFromApi, ProjectChatMessageFromApi} from "#src/shared/api";
+import {ProjectChatLayout} from "#src/entities/project";
+import {ProjectFromApi, ProjectMessageFromApi} from "#src/shared/api";
 import {Session} from "#src/shared/auth";
 import {FC, useState} from "react";
 import Body from "./Body";
@@ -9,17 +9,17 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 
 interface Props {
-	chat: ProjectChatFromApi;
-	chats: ProjectChatFromApi[];
-	initialMessages: ProjectChatMessageFromApi[];
+	projects: ProjectFromApi[];
+	project: ProjectFromApi;
+	initialMessages: ProjectMessageFromApi[];
 	session: Session;
-	isChatActive?: (projectId: ProjectChatFromApi["projectId"]) => boolean;
-	onChatClick?: (projectId: ProjectChatFromApi["projectId"]) => void;
+	isChatActive?: (projectId: ProjectFromApi["id"]) => boolean;
+	onChatClick?: (projectId: ProjectFromApi["id"]) => void;
 }
 
 const ProjectChatCard: FC<Props> = ({
-	chat,
-	chats,
+	projects,
+	project,
 	initialMessages,
 	session,
 	isChatActive,
@@ -34,7 +34,7 @@ const ProjectChatCard: FC<Props> = ({
 		<ProjectChatLayout
 			sidebarSlot={
 				<Sidebar
-					chats={chats}
+					projects={projects}
 					isOpen={sidebarIsOpen}
 					onClose={closeSidebar}
 					isChatActive={isChatActive}
@@ -43,13 +43,17 @@ const ProjectChatCard: FC<Props> = ({
 			}
 			headerSlot={
 				<Header
-					chat={chat}
+					project={project}
 					userId={session.user.id}
 					onBurgerButtonClick={toggleSidebarIsOpen}
 				/>
 			}
 			bodySlot={
-				<Body chat={chat} initialMessages={initialMessages} session={session} />
+				<Body
+					project={project}
+					initialMessages={initialMessages}
+					session={session}
+				/>
 			}
 		/>
 	);
