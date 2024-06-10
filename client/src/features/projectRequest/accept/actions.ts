@@ -5,28 +5,26 @@ import {fetchAcceptProjectRequest} from "#src/shared/api/projects/requests";
 import {getServerSession, logOut} from "#src/shared/auth";
 import {CacheTag} from "#src/shared/constants";
 import {revalidateTag} from "next/cache";
-import {FormFields} from "./types";
 
-const acceptProjectRequest = async ({
-	projectRequestId
-}: Partial<FormFields>) => {
+const acceptProjectRequestById = async (id: string) => {
 	const session = await getServerSession();
 	if (!session) {
 		return logOut();
 	}
 
 	try {
-		if (!projectRequestId) {
+		if (!id) {
 			throw new Error();
 		}
 
-		await fetchAcceptProjectRequest(projectRequestId);
-		return revalidateTag(CacheTag.REQUESTS);
+		await fetchAcceptProjectRequest(id);
+		revalidateTag(CacheTag.REQUESTS);
+
+		return {success: "Request has been accepted"};
 	} catch (e) {
-		throw new Error(
-			isApiError(e) ? e.message : "Error acceping project request"
-		);
+		const error = isApiError(e) ? e.message : "Error acceping request";
+		return {error};
 	}
 };
 
-export {acceptProjectRequest};
+export {acceptProjectRequestById};

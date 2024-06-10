@@ -1,25 +1,33 @@
-import {useToast} from "#src/shared/toast";
 import {RepoFromApi} from "#src/shared/api";
+import {useAction} from "#src/shared/hooks";
+import {useToast} from "#src/shared/toast";
 import {Autocomplete, AutocompleteItem} from "@nextui-org/react";
 import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
 import {FC, Key, KeyboardEventHandler, useEffect, useState} from "react";
+import {useFormContext} from "react-hook-form";
 import {getGithubRepos} from "../../../actions";
 
 interface Props {
-	onSelectionChange: (repo?: RepoFromApi) => void;
 	onKeyDown: KeyboardEventHandler<HTMLInputElement>;
 }
 
-const ReposField: FC<Props> = ({onSelectionChange, onKeyDown}) => {
-	const [autocompleteIsOpen, setAutocompleteIsOpen] = useState(false);
-
-	const [repos, setRepos] = useState<RepoFromApi[]>([]);
-	const [reposAreFetching, setReposAreFetching] = useState(false);
-
-	const [inputValue, setInputValue] = useState<string>("");
-
+const ReposField: FC<Props> = ({onKeyDown}) => {
 	const {showToast} = useToast();
 
+	const form = useFormContext();
+
+	const [repos, setRepos] = useState<RepoFromApi[]>([]);
+	const {execute, isPending} = useAction(getGithubRepos, {
+		onSuccess: data => {
+			setRepos(data.repos);
+		},
+		onError: data => {
+			showToast({variant: "error", message: data.error});
+		}
+	});
+
+	const [autocompleteIsOpen, setAutocompleteIsOpen] = useState(false);
+	const [autocompleteValue, setAutocompleteValue] = useState("");
 	// todo: implement infinite scroll
 	const [, scrollRef] = useInfiniteScroll({
 		hasMore: false,
@@ -28,38 +36,34 @@ const ReposField: FC<Props> = ({onSelectionChange, onKeyDown}) => {
 	});
 
 	useEffect(() => {
-		const fetchTags = async () => {
-			setReposAreFetching(true);
-			try {
-				setRepos(await getGithubRepos());
-			} catch (e) {
-				showToast({
-					variant: "error",
-					message: e instanceof Error ? e.message : "Something went wrong"
-				});
-			} finally {
-				setReposAreFetching(false);
-			}
-		};
-		fetchTags();
-	}, [showToast]);
+		execute();
+	}, [execute]);
 
 	const handleSelectionChange = (id: Key) => {
-		const repo = repos.find(el => el.id === Number(id));
-		onSelectionChange?.(repo);
+		form.reset();
+
+		const repo = repos.find(r => r.id === Number(id));
+		if (!repo) {
+			return;
+		}
+
+		form.setValue("name", repo.name);
+		form.setValue("description", repo.description);
+		form.setValue("repoUrl", repo.url);
+		form.setValue("tags", repo.topics);
 	};
 
 	return (
 		<Autocomplete
 			label="Repos"
 			placeholder="Select repo"
-			isLoading={reposAreFetching}
+			isLoading={isPending}
 			defaultItems={repos}
 			allowsCustomValue
 			scrollRef={scrollRef}
 			onOpenChange={setAutocompleteIsOpen}
-			inputValue={inputValue}
-			onInputChange={setInputValue}
+			inputValue={autocompleteValue}
+			onInputChange={setAutocompleteValue}
 			onSelectionChange={handleSelectionChange}
 			onKeyDown={onKeyDown}
 			// The following prop fixes the bug in nextui library

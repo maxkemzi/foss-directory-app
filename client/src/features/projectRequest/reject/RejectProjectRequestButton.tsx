@@ -1,11 +1,11 @@
 "use client";
 
 import {ProjectRequestFromApi} from "#src/shared/api";
-import {useFormAction} from "#src/shared/hooks";
+import {useAction} from "#src/shared/hooks";
 import {useToast} from "#src/shared/toast";
 import {Button} from "@nextui-org/react";
-import {FC} from "react";
-import {rejectProjectRequest} from "./actions";
+import {FC, FormEvent} from "react";
+import {rejectProjectRequestById} from "./actions";
 
 interface Props {
 	requestId: ProjectRequestFromApi["id"];
@@ -13,21 +13,26 @@ interface Props {
 
 const RejectProjectRequestButton: FC<Props> = ({requestId}) => {
 	const {showToast} = useToast();
-	const {formAction, isPending} = useFormAction(rejectProjectRequest, {
-		onSuccess: () => {
-			showToast({variant: "success", message: "Request has been rejected"});
+	const {execute, isPending} = useAction(rejectProjectRequestById, {
+		onSuccess: data => {
+			showToast({variant: "success", message: data.success});
 		},
-		onError: () => {
-			showToast({variant: "error", message: "Error rejecting request"});
+		onError: data => {
+			showToast({variant: "error", message: data.error});
 		}
 	});
 
+	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		execute(requestId);
+	};
+
 	return (
-		<form action={formAction}>
-			<Button color="danger" type="submit" disabled={isPending}>
+		<form onSubmit={handleSubmit}>
+			<Button color="danger" isDisabled={isPending} type="submit">
 				Reject
 			</Button>
-			<input type="hidden" name="projectRequestId" defaultValue={requestId} />
 		</form>
 	);
 };

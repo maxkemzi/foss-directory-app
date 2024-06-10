@@ -1,37 +1,13 @@
 "use client";
 
-import {useFormAction} from "#src/shared/hooks";
 import {useModal} from "#src/shared/modal";
-import {useToast} from "#src/shared/toast";
 import {AlertModal, AlertModalProps, DropdownItemData} from "#src/shared/ui";
-import {useRouter} from "next/navigation";
-import {useCallback, useId} from "react";
-import {deleteProject} from "./actions";
+import {useId} from "react";
 import DeleteProjectButton from "./DeleteProjectButton";
-import {VALIDATION_SCHEMA} from "./constants";
-import {FormFields} from "./types";
 
 const useDeleteProjectDropdownItem = (projectId: string): DropdownItemData => {
 	const id = useId();
-	const router = useRouter();
-	const {showToast} = useToast();
-	const {openModal, closeModal} = useModal();
-
-	const handleError = useCallback(
-		() => showToast({variant: "error", message: "Error deleting the project"}),
-		[showToast]
-	);
-
-	const {formAction} = useFormAction<FormFields>(deleteProject, {
-		onSuccess: () => {
-			closeModal();
-			showToast({variant: "success", message: "You've deleted the project"});
-			router.refresh();
-		},
-		onError: handleError,
-		onValidationError: handleError,
-		validationSchema: VALIDATION_SCHEMA
-	});
+	const {openModal} = useModal();
 
 	const action = () => {
 		openModal<AlertModalProps>({
@@ -39,9 +15,7 @@ const useDeleteProjectDropdownItem = (projectId: string): DropdownItemData => {
 			props: {
 				title: "Delete project",
 				text: "Are you sure you want to delete the project?",
-				submitButtonSlot: (
-					<DeleteProjectButton projectId={projectId} action={formAction} />
-				)
+				submitButtonSlot: <DeleteProjectButton projectId={projectId} />
 			}
 		});
 	};

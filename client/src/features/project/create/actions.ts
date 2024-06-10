@@ -1,46 +1,60 @@
 "use server";
 
 import {fetchGithubRepos} from "#src/shared/api/integrations/github";
+import {isApiError} from "#src/shared/api/lib";
 import {fetchCreateProject} from "#src/shared/api/projects";
 import {fetchAllRoles} from "#src/shared/api/roles";
 import {fetchAllTags} from "#src/shared/api/tags";
 import {CacheTag} from "#src/shared/constants";
 import {revalidateTag} from "next/cache";
-import {FormFields} from "./types";
+import {z} from "zod";
+import {VALIDATION_SCHEMA} from "./constants";
 
-const createProjectWithData = async (data: FormFields) => {
-	await fetchCreateProject(data);
-	revalidateTag(CacheTag.PROJECTS);
+const createProject = async (data: z.infer<typeof VALIDATION_SCHEMA>) => {
+	try {
+		const roles = data.roles.reduce((prev, curr) => {
+			const [key, value] = curr;
+			return {...prev, [key]: value};
+		}, {});
+
+		await fetchCreateProject({...data, roles});
+		revalidateTag(CacheTag.PROJECTS);
+
+		return {success: "Project has been created"};
+	} catch (e) {
+		const error = isApiError(e) ? e.message : "Error creating project";
+		return {error};
+	}
 };
 
 const getAllTags = async () => {
 	try {
 		const tags = await fetchAllTags();
-		return tags;
+		return {success: "Tags has been fetched", tags};
 	} catch (e) {
-		console.error(e);
-		throw new Error("Error fetching tags");
+		const error = isApiError(e) ? e.message : "Error fetching tags";
+		return {error};
 	}
 };
 
 const getAllRoles = async () => {
 	try {
 		const roles = await fetchAllRoles();
-		return roles;
+		return {success: "Roles has been fetched", roles};
 	} catch (e) {
-		console.error(e);
-		throw new Error("Error fetching roles");
+		const error = isApiError(e) ? e.message : "Error fetching roles";
+		return {error};
 	}
 };
 
 const getGithubRepos = async () => {
 	try {
 		const repos = await fetchGithubRepos();
-		return repos;
+		return {success: "Repos has been fetched", repos};
 	} catch (e) {
-		console.error(e);
-		throw new Error("Error fetching repos");
+		const error = isApiError(e) ? e.message : "Error fetching repos";
+		return {error};
 	}
 };
 
-export {createProjectWithData, getAllRoles, getAllTags, getGithubRepos};
+export {createProject, getAllRoles, getAllTags, getGithubRepos};

@@ -1,5 +1,4 @@
-import useFormAction from "./useFormAction/useFormAction";
 import useEffectUpdateOnly from "./useEffectUpdateOnly";
+import useAction from "./useAction/useAction";
 
-export type {FieldErrors} from "./useFormAction/types";
-export {useFormAction, useEffectUpdateOnly};
+export {useEffectUpdateOnly, useAction};

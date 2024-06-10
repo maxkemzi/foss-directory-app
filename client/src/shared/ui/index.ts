@@ -9,7 +9,6 @@ import PageContent from "./components/PageContent/PageContent";
 import PageSection from "./components/PageSection/PageSection";
 import PageTitle from "./components/PageTitle/PageTitle";
 import PasswordInput from "./components/PasswordInput/PasswordInput";
-import SubmitButton from "./components/SubmitButton/SubmitButton";
 import Toast from "./components/Toast/Toast";
 import {ToastVariant} from "./components/Toast/constants";
 import {ToastOptions} from "./components/Toast/types";
@@ -27,7 +26,6 @@ export {
 	PageSection,
 	PageTitle,
 	PasswordInput,
-	SubmitButton,
 	Toast,
 	ToastVariant,
 	UiProvider,

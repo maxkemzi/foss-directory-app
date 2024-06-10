@@ -1,18 +1,17 @@
 "use client";
 
 import {Input, InputProps} from "@nextui-org/react";
-import {FC, useState} from "react";
+import {forwardRef, useState} from "react";
 import {EyeFilledIcon, EyeSlashFilledIcon} from "../icons";
 
-const PasswordInput: FC<InputProps> = props => {
+const PasswordInput = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
 	const [isVisible, setIsVisible] = useState(false);
 
 	const toggleVisibility = () => setIsVisible(prev => !prev);
 
 	return (
 		<Input
-			label="Password"
-			placeholder="Enter your password"
+			ref={ref}
 			endContent={
 				<button
 					className="focus:outline-none"
@@ -30,6 +29,8 @@ const PasswordInput: FC<InputProps> = props => {
 			{...props}
 		/>
 	);
-};
+});
+
+PasswordInput.displayName = "PasswordInput";
 
 export default PasswordInput;

@@ -1,10 +1,6 @@
-interface FormFields {
-	name: string;
-	description: string;
-	repoUrl: string;
-	role: string;
-	tags: string[];
-	roles: {[key: string]: number};
-}
+import {z} from "zod";
+import {VALIDATION_SCHEMA} from "./constants";
 
-export type {FormFields};
+type FormValues = z.infer<typeof VALIDATION_SCHEMA>;
+
+export type {FormValues};

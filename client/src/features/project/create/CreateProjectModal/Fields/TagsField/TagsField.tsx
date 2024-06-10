@@ -1,41 +1,34 @@
 "use client";
 
-import {useToast} from "#src/shared/toast";
 import {TagFromApi} from "#src/shared/api";
+import {useAction} from "#src/shared/hooks";
+import {useToast} from "#src/shared/toast";
 import {PlusIcon} from "@heroicons/react/24/solid";
 import {Autocomplete, AutocompleteItem, Button, Chip} from "@nextui-org/react";
 import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
-import {
-	FC,
-	KeyboardEvent,
-	RefObject,
-	useEffect,
-	useMemo,
-	useState
-} from "react";
+import {KeyboardEvent, useEffect, useMemo, useState} from "react";
+import {useFormContext} from "react-hook-form";
 import {getAllTags} from "../../../actions";
+import {FormValues} from "../../../types";
 
-interface Props {
-	isInvalid: boolean;
-	formRef: RefObject<HTMLFormElement>;
-	errorMessage?: string;
-	defaultValue?: string[];
-}
+const TagsField = () => {
+	const {showToast} = useToast();
 
-const TagsField: FC<Props> = ({
-	isInvalid,
-	formRef,
-	errorMessage,
-	defaultValue
-}) => {
-	const [autocompleteIsOpen, setAutocompleteIsOpen] = useState(false);
+	const {formState, ...form} = useFormContext<FormValues>();
+	const tagsValue = form.watch("tags");
 
 	const [tags, setTags] = useState<TagFromApi[]>([]);
-	const [tagsAreFetching, setTagsAreFetching] = useState(false);
+	const {execute, isPending} = useAction(getAllTags, {
+		onSuccess: data => {
+			setTags(data.tags);
+		},
+		onError: data => {
+			showToast({variant: "error", message: data.error});
+		}
+	});
 
-	const [addedTags, setAddedTags] = useState<string[]>(defaultValue || []);
-	const [inputValue, setInputValue] = useState<string>("");
-
+	const [autocompleteIsOpen, setAutocompleteIsOpen] = useState(false);
+	const [autocompleteValue, setAutocompleteValue] = useState("");
 	// todo: implement infinite scroll
 	const [, scrollRef] = useInfiniteScroll({
 		hasMore: false,
@@ -43,54 +36,33 @@ const TagsField: FC<Props> = ({
 		onLoadMore: () => {}
 	});
 
-	const [shouldSubmit, setShouldSubmit] = useState(false);
-
 	const submitIsDisabled = useMemo(
-		() => inputValue.length === 0 || addedTags.includes(inputValue),
-		[addedTags, inputValue]
+		() =>
+			autocompleteValue.length === 0 || tagsValue.includes(autocompleteValue),
+		[autocompleteValue, tagsValue]
 	);
 
-	const {showToast} = useToast();
-
 	useEffect(() => {
-		const fetchTags = async () => {
-			setTagsAreFetching(true);
-			try {
-				const data = await getAllTags();
-				setTags(data);
-			} catch (e) {
-				showToast({
-					variant: "error",
-					message: e instanceof Error ? e.message : "Something went wrong"
-				});
-			} finally {
-				setTagsAreFetching(false);
-			}
-		};
-		fetchTags();
-	}, [showToast]);
-
-	useEffect(() => {
-		if (shouldSubmit && formRef.current) {
-			formRef.current.requestSubmit();
-			setShouldSubmit(false);
-		}
-	}, [formRef, shouldSubmit]);
+		execute();
+	}, [execute]);
 
 	const addTag = () => {
-		setAddedTags(prev => [...prev, inputValue]);
-		setInputValue("");
+		const updatedTags = [...tagsValue, autocompleteValue];
+		form.setValue("tags", updatedTags, {shouldValidate: true});
+		setAutocompleteValue("");
 	};
-	const removeTag = (value: string) =>
-		setAddedTags(prev => prev.filter(tag => tag !== value));
+
+	const removeTag = (tag: string) => {
+		const updatedTags = tagsValue.filter(t => t !== tag);
+		form.setValue("tags", updatedTags, {shouldValidate: true});
+	};
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === "Enter") {
 			e.preventDefault();
+
 			if (!submitIsDisabled) {
 				addTag();
-			} else {
-				setShouldSubmit(true);
 			}
 		}
 	};
@@ -101,15 +73,15 @@ const TagsField: FC<Props> = ({
 				<Autocomplete
 					label="Tags"
 					placeholder="Enter tag"
-					isLoading={tagsAreFetching}
+					isLoading={isPending}
 					defaultItems={tags}
 					allowsCustomValue
 					scrollRef={scrollRef}
 					onOpenChange={setAutocompleteIsOpen}
-					inputValue={inputValue}
-					onInputChange={setInputValue}
-					isInvalid={isInvalid}
-					errorMessage={errorMessage}
+					inputValue={autocompleteValue}
+					onInputChange={setAutocompleteValue}
+					isInvalid={"tags" in formState.errors}
+					errorMessage={formState.errors.tags?.message}
 					onKeyDown={handleKeyDown}
 					// The following prop fixes the bug in nextui library
 					// https://github.com/nextui-org/nextui/issues/2554
@@ -129,20 +101,15 @@ const TagsField: FC<Props> = ({
 					<PlusIcon className="w-[24px] h-[24px]" />
 				</Button>
 			</div>
-			{addedTags.length !== 0 ? (
+			{tagsValue.length !== 0 ? (
 				<div className="flex gap-4 mt-2 overflow-x-auto">
-					{addedTags.map(tag => (
+					{tagsValue.map(tag => (
 						<Chip key={tag} onClose={() => removeTag(tag)} variant="flat">
 							{tag}
 						</Chip>
 					))}
 				</div>
 			) : null}
-			<input
-				type="hidden"
-				name="tags"
-				defaultValue={JSON.stringify(addedTags)}
-			/>
 		</div>
 	);
 };

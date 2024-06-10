@@ -17,10 +17,16 @@ const VALIDATION_SCHEMA = z.object({
 		.string({invalid_type_error: "Role must be a string"})
 		.trim()
 		.min(1, "Role is required"),
-	tags: z.string().array().nonempty({message: "Specify at least one tag"}),
+	tags: z
+		.string()
+		.array()
+		.refine(val => val.length > 0, {
+			message: "Specify at least one tag"
+		}),
 	roles: z
-		.record(z.string(), z.number())
-		.refine(val => Object.keys(val).length > 0, {
+		.tuple([z.string(), z.number()])
+		.array()
+		.refine(val => val.length > 0, {
 			message: "Specify at least one role"
 		})
 });

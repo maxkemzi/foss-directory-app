@@ -1,7 +1,7 @@
 "use client";
 
 import {logOut} from "#src/shared/auth";
-import {useFormAction} from "#src/shared/hooks";
+import {useAction} from "#src/shared/hooks";
 import {ModalProps} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
 import {
@@ -12,23 +12,29 @@ import {
 	ModalFooter,
 	ModalHeader
 } from "@nextui-org/react";
-import {FC} from "react";
+import {FC, FormEvent} from "react";
 import {deleteAccount} from "../actions";
 
 type Props = ModalProps;
 
 const DeleteAccountModal: FC<Props> = ({onClose}) => {
 	const {showToast} = useToast();
-	const {formAction} = useFormAction(deleteAccount, {
-		onSuccess: async () => {
+	const {execute, isPending} = useAction(deleteAccount, {
+		onSuccess: async data => {
 			await logOut();
-			showToast({variant: "success", message: "Account has been deleted"});
+			showToast({variant: "success", message: data.success});
 			onClose();
 		},
-		onError: () => {
-			showToast({variant: "error", message: "Error deleting account"});
+		onError: data => {
+			showToast({variant: "error", message: data.error});
 		}
 	});
+
+	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		execute();
+	};
 
 	return (
 		<Modal isOpen onClose={onClose}>
@@ -48,8 +54,8 @@ const DeleteAccountModal: FC<Props> = ({onClose}) => {
 							<Button variant="light" onClick={handleClose}>
 								Cancel
 							</Button>
-							<form action={formAction}>
-								<Button type="submit" color="danger">
+							<form onSubmit={handleSubmit}>
+								<Button color="danger" isDisabled={isPending} type="submit">
 									Delete
 								</Button>
 							</form>

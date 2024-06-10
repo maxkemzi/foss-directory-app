@@ -1,25 +1,41 @@
 "use client";
 
-import {logIn} from "#src/shared/auth";
 import {Pathname} from "#src/shared/constants";
-import {useFormAction} from "#src/shared/hooks";
-import {PasswordInput, SubmitButton} from "#src/shared/ui";
-import {Input, Link} from "@nextui-org/react";
+import {useAction} from "#src/shared/hooks";
+import {PasswordInput} from "#src/shared/ui";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Button, Input, Link} from "@nextui-org/react";
 import {useRouter} from "next/navigation";
+import {Controller, useForm} from "react-hook-form";
+import {z} from "zod";
+import {logInAction} from "../actions";
 import {LOGIN_VALIDATION_SCHEMA} from "../constants";
-import {LoginFormFields} from "../types";
+
+type FormValues = z.infer<typeof LOGIN_VALIDATION_SCHEMA>;
 
 const LoginForm = () => {
 	const router = useRouter();
-	const {formAction, error, fieldErrors} = useFormAction<LoginFormFields>(
-		logIn,
-		{
-			onSuccess: () => {
-				router.push(Pathname.HOME);
-			},
-			validationSchema: LOGIN_VALIDATION_SCHEMA
+	const {
+		control,
+		handleSubmit,
+		formState: {errors}
+	} = useForm<FormValues>({
+		resolver: zodResolver(LOGIN_VALIDATION_SCHEMA),
+		defaultValues: {
+			email: "",
+			password: ""
 		}
-	);
+	});
+
+	const {execute, error, isPending} = useAction(logInAction, {
+		onSuccess: () => {
+			router.push(Pathname.HOME);
+		}
+	});
+
+	const onSubmit = (values: FormValues) => {
+		execute(values);
+	};
 
 	return (
 		<div className="max-w-[325px] w-full">
@@ -29,22 +45,42 @@ const LoginForm = () => {
 					<p>{error}</p>
 				</div>
 			) : null}
-			<form className="mb-2" action={formAction}>
+			<form className="mb-2" onSubmit={handleSubmit(onSubmit)}>
 				<div className="flex flex-col gap-4 mb-6">
-					<Input
-						label="Email"
-						placeholder="Enter your email"
+					<Controller
 						name="email"
-						isInvalid={"email" in fieldErrors}
-						errorMessage={fieldErrors.email?.[0]}
+						control={control}
+						render={({field}) => {
+							return (
+								<Input
+									{...field}
+									label="Email"
+									placeholder="Enter your email"
+									isInvalid={"email" in errors}
+									errorMessage={errors.email?.message}
+								/>
+							);
+						}}
 					/>
-					<PasswordInput
+					<Controller
 						name="password"
-						isInvalid={"password" in fieldErrors}
-						errorMessage={fieldErrors.password?.[0]}
+						control={control}
+						render={({field}) => {
+							return (
+								<PasswordInput
+									{...field}
+									label="Password"
+									placeholder="Enter your password"
+									isInvalid={"password" in errors}
+									errorMessage={errors.password?.message}
+								/>
+							);
+						}}
 					/>
 				</div>
-				<SubmitButton>Log In</SubmitButton>
+				<Button color="primary" isDisabled={isPending} type="submit">
+					Log In
+				</Button>
 			</form>
 			<p className="text-small">
 				Don&apos;t have an account?{" "}

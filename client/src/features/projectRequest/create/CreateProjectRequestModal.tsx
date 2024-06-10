@@ -1,6 +1,6 @@
 "use client";
 
-import {useFormAction} from "#src/shared/hooks";
+import {useAction} from "#src/shared/hooks";
 import {ModalProps} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
 import {
@@ -11,10 +11,8 @@ import {
 	ModalFooter,
 	ModalHeader
 } from "@nextui-org/react";
-import {FC, useCallback} from "react";
+import {FC, FormEvent} from "react";
 import {createProjectRequest} from "./actions";
-import {VALIDATION_SCHEMA} from "./constants";
-import {FormFields} from "./types";
 
 interface Props extends ModalProps {
 	projectId: string;
@@ -28,21 +26,21 @@ const CreateProjectRequestModal: FC<Props> = ({
 }) => {
 	const {showToast} = useToast();
 
-	const handleError = useCallback(
-		() =>
-			showToast({variant: "error", message: "Error creating project request"}),
-		[showToast]
-	);
-
-	const {formAction} = useFormAction<FormFields>(createProjectRequest, {
-		onSuccess() {
+	const {execute, isPending} = useAction(createProjectRequest, {
+		onSuccess: data => {
+			showToast({variant: "success", message: data.success});
 			onClose();
-			showToast({variant: "success", message: "Request has been created"});
 		},
-		onError: handleError,
-		onValidationError: handleError,
-		validationSchema: VALIDATION_SCHEMA
+		onError: data => {
+			showToast({variant: "error", message: data.error});
+		}
 	});
+
+	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		execute({projectId, projectRoleId});
+	};
 
 	return (
 		<Modal isOpen onClose={onClose}>
@@ -55,16 +53,10 @@ const CreateProjectRequestModal: FC<Props> = ({
 					<Button color="danger" variant="light" onPress={onClose}>
 						Cancel
 					</Button>
-					<form action={formAction}>
-						<Button type="submit" color="primary">
+					<form onSubmit={handleSubmit}>
+						<Button color="primary" isDisabled={isPending} type="submit">
 							Request
 						</Button>
-						<input type="hidden" name="projectId" defaultValue={projectId} />
-						<input
-							type="hidden"
-							name="projectRoleId"
-							defaultValue={projectRoleId}
-						/>
 					</form>
 				</ModalFooter>
 			</ModalContent>

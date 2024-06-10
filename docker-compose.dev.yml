@@ -2,6 +2,7 @@ services:
   postgres:
     image: postgres:16.3
     container_name: postgres
+    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
@@ -11,25 +12,28 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
-      - app-network
+      - backend
 
   backend:
     build:
       context: ./server
       target: dev
     container_name: backend
+    restart: always
     volumes:
       - ./server:/app
     depends_on:
       - postgres
     networks:
-      - app-network
+      - backend
+      - frontend
 
   frontend:
     build:
       context: ./client
       target: dev
     container_name: frontend
+    restart: always
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
@@ -38,11 +42,12 @@ services:
     depends_on:
       - backend
     networks:
-      - app-network
+      - frontend
 
   nginx:
     image: nginx:1.27
     container_name: nginx
+    restart: always
     attach: false
     ports:
       - "80:80"
@@ -51,11 +56,11 @@ services:
     depends_on:
       - frontend
     networks:
-      - app-network
+      - frontend
 
 volumes:
   postgres-data:
 
 networks:
-  app-network:
-    driver: bridge
+  backend:
+  frontend:

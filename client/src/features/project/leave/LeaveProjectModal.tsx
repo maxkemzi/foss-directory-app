@@ -1,7 +1,7 @@
 "use client";
 
 import {Pathname} from "#src/shared/constants";
-import {useFormAction} from "#src/shared/hooks";
+import {useAction} from "#src/shared/hooks";
 import {ModalProps} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
 import {
@@ -13,10 +13,8 @@ import {
 	ModalHeader
 } from "@nextui-org/react";
 import {useRouter} from "next/navigation";
-import {FC, useCallback} from "react";
+import {FC, FormEvent} from "react";
 import {leaveProject} from "./actions";
-import {VALIDATION_SCHEMA} from "./constants";
-import {FormFields} from "./types";
 
 interface Props extends ModalProps {
 	projectId: string;
@@ -26,22 +24,23 @@ const LeaveProjectModal: FC<Props> = ({onClose, projectId}) => {
 	const router = useRouter();
 	const {showToast} = useToast();
 
-	const handleError = useCallback(
-		() => showToast({variant: "error", message: "Error leaving the project"}),
-		[showToast]
-	);
-
-	const {formAction} = useFormAction<FormFields>(leaveProject, {
-		onSuccess: () => {
-			onClose();
-			showToast({variant: "success", message: "You've left the project"});
+	const {execute, isPending} = useAction(leaveProject, {
+		onSuccess: data => {
 			router.push(Pathname.CHATS);
 			router.refresh();
+			showToast({variant: "success", message: data.success});
+			onClose();
 		},
-		onError: handleError,
-		onValidationError: handleError,
-		validationSchema: VALIDATION_SCHEMA
+		onError: data => {
+			showToast({variant: "error", message: data.error});
+		}
 	});
+
+	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		execute(projectId);
+	};
 
 	return (
 		<Modal isOpen onClose={onClose}>
@@ -56,11 +55,10 @@ const LeaveProjectModal: FC<Props> = ({onClose, projectId}) => {
 				</ModalBody>
 				<ModalFooter>
 					<Button onPress={onClose}>Cancel</Button>
-					<form action={formAction}>
-						<Button type="submit" color="danger">
+					<form onSubmit={handleSubmit}>
+						<Button color="danger" isDisabled={isPending} type="submit">
 							Leave
 						</Button>
-						<input type="hidden" name="projectId" defaultValue={projectId} />
 					</form>
 				</ModalFooter>
 			</ModalContent>

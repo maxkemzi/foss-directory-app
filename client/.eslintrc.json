@@ -25,7 +25,7 @@
 			"error",
 			{
 				"html": "ignore",
-				"exceptions": ["Input", "Modal", "ModalComponent"]
+				"exceptions": ["Input", "PasswordInput", "Modal", "ModalComponent", "FormProvider"]
 			}
 		],
 		"jsx-a11y/label-has-associated-control": [

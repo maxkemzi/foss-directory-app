@@ -1,6 +1,6 @@
 "use client";
 
-import {useFormAction} from "#src/shared/hooks";
+import {useAction} from "#src/shared/hooks";
 import {ModalProps} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
 import {
@@ -12,7 +12,7 @@ import {
 	ModalHeader
 } from "@nextui-org/react";
 import {useRouter} from "next/navigation";
-import {FC} from "react";
+import {FC, FormEvent} from "react";
 import {getGithubConnectionUrl} from "../actions";
 
 type Props = ModalProps;
@@ -20,14 +20,20 @@ type Props = ModalProps;
 const ConnectGithubModal: FC<Props> = ({onClose}) => {
 	const router = useRouter();
 	const {showToast} = useToast();
-	const {formAction} = useFormAction<void, string>(getGithubConnectionUrl, {
-		onSuccess: url => {
-			router.push(url);
+	const {execute, isPending} = useAction(getGithubConnectionUrl, {
+		onSuccess: data => {
+			router.push(data.url);
 		},
-		onError: () => {
-			showToast({variant: "error", message: "Error connecting github account"});
+		onError: data => {
+			showToast({variant: "error", message: data.error});
 		}
 	});
+
+	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		execute();
+	};
 
 	return (
 		<Modal isOpen onClose={onClose}>
@@ -46,8 +52,8 @@ const ConnectGithubModal: FC<Props> = ({onClose}) => {
 							<Button color="danger" variant="light" onPress={handleClose}>
 								Close
 							</Button>
-							<form action={formAction}>
-								<Button type="submit" color="primary">
+							<form onSubmit={handleSubmit}>
+								<Button color="primary" isDisabled={isPending} type="submit">
 									Connect
 								</Button>
 							</form>

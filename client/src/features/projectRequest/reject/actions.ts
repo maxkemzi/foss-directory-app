@@ -5,28 +5,26 @@ import {fetchRejectProjectRequest} from "#src/shared/api/projects/requests";
 import {getServerSession, logOut} from "#src/shared/auth";
 import {CacheTag} from "#src/shared/constants";
 import {revalidateTag} from "next/cache";
-import {FormFields} from "./types";
 
-const rejectProjectRequest = async ({
-	projectRequestId
-}: Partial<FormFields>) => {
+const rejectProjectRequestById = async (id: string) => {
 	const session = await getServerSession();
 	if (!session) {
 		return logOut();
 	}
 
 	try {
-		if (!projectRequestId) {
+		if (!id) {
 			throw new Error();
 		}
 
-		await fetchRejectProjectRequest(projectRequestId);
-		return revalidateTag(CacheTag.REQUESTS);
+		await fetchRejectProjectRequest(id);
+		revalidateTag(CacheTag.REQUESTS);
+
+		return {success: "Request has been rejected"};
 	} catch (e) {
-		throw new Error(
-			isApiError(e) ? e.message : "Error rejecting project request"
-		);
+		const error = isApiError(e) ? e.message : "Error rejecting request";
+		return {error};
 	}
 };
 
-export {rejectProjectRequest};
+export {rejectProjectRequestById};

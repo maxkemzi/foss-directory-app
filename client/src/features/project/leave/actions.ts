@@ -1,10 +1,16 @@
 "use server";
 
+import {isApiError} from "#src/shared/api/lib";
 import {fetchLeaveProject} from "#src/shared/api/projects";
-import {FormFields} from "./types";
 
-const leaveProject = async ({projectId}: FormFields) => {
-	await fetchLeaveProject(projectId);
+const leaveProject = async (projectId: string) => {
+	try {
+		await fetchLeaveProject(projectId);
+		return {success: "You have left the project"};
+	} catch (e) {
+		const error = isApiError(e) ? e.message : "Error leaving the project";
+		return {error};
+	}
 };
 
 export {leaveProject};
