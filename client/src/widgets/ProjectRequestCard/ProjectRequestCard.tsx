@@ -4,7 +4,7 @@ import {
 } from "#src/entities/projectRequest";
 import {AcceptProjectRequestButton} from "#src/features/projectRequest/accept";
 import {RejectProjectRequestButton} from "#src/features/projectRequest/reject";
-import {ProjectRequestFromApi} from "#src/shared/api";
+import {ProjectRequestFromApi} from "#src/shared/apis";
 import {FC} from "react";
 
 interface Props {

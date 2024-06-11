@@ -1,7 +1,7 @@
 "use server";
 
-import {fetchSignUp} from "#src/shared/api/auth";
-import {isApiError} from "#src/shared/api/lib";
+import authApi from "#src/shared/apis/auth";
+import {isApiError} from "#src/shared/apis/lib";
 import {logIn} from "#src/shared/auth";
 import {LoginFormFields, SignupFormFields} from "./types";
 
@@ -17,7 +17,7 @@ const logInAction = async (data: LoginFormFields) => {
 
 const signUp = async (data: SignupFormFields) => {
 	try {
-		await fetchSignUp(data);
+		await authApi.signUp(data);
 		return {success: "Successfully signed up"};
 	} catch (e) {
 		const error = isApiError(e) ? e.message : "Error signing up";

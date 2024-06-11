@@ -3,7 +3,7 @@
 import {Card, CardBody} from "@nextui-org/react";
 import classNames from "classnames";
 import {FC} from "react";
-import {ProjectFromApi} from "../../../shared/api/types";
+import {ProjectFromApi} from "../../../shared/apis";
 
 interface Props {
 	project: ProjectFromApi;

@@ -5,7 +5,7 @@ import {
 	CreateProjectModal,
 	CreateProjectModalProps
 } from "#src/features/project/create";
-import {UserFromApi} from "#src/shared/api";
+import {UserFromApi} from "#src/shared/apis";
 import {Pathname} from "#src/shared/constants";
 import {useModal} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";

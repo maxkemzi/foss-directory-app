@@ -1,4 +1,4 @@
-import {ProjectRequestFromApi} from "#src/shared/api";
+import {ProjectRequestFromApi} from "#src/shared/apis";
 import {Avatar, Card, CardBody} from "@nextui-org/react";
 import {FC, ReactNode} from "react";
 

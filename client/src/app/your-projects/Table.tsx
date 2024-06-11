@@ -1,6 +1,6 @@
 "use client";
 
-import {ProjectFromApi} from "#src/shared/api";
+import {ProjectFromApi} from "#src/shared/apis";
 import {YourProjectActionsDropdown} from "#src/widgets/YourProjectActionsDropdown";
 import {ProjectTable} from "#src/widgets/ProjectTable";
 import {FC} from "react";

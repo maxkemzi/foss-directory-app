@@ -1,4 +1,4 @@
-import {UserFromApi} from "../api/types";
+import {UserFromApi} from "../apis/types";
 
 interface Session {
 	user: UserFromApi;

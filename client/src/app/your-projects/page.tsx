@@ -1,4 +1,4 @@
-import {getOwnedProjects} from "#src/entities/project";
+import {getProjectsByOwnership} from "#src/entities/project";
 import {
 	PageContainer,
 	PageContent,
@@ -8,7 +8,7 @@ import {
 import Table from "./Table";
 
 const YourProjects = async () => {
-	const projects = await getOwnedProjects();
+	const {data: projects} = await getProjectsByOwnership();
 
 	return (
 		<PageSection>

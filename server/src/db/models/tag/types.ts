@@ -1,6 +1,11 @@
 interface FindAllOptions {
+	search?: string;
 	limit?: number;
 	offset?: number;
 }
 
-export type {FindAllOptions};
+interface CountAllOptions {
+	search?: string;
+}
+
+export type {FindAllOptions, CountAllOptions};

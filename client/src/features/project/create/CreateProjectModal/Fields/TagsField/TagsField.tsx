@@ -1,50 +1,43 @@
 "use client";
 
-import {TagFromApi} from "#src/shared/api";
-import {useAction} from "#src/shared/hooks";
-import {useToast} from "#src/shared/toast";
+import {useTagList} from "#src/entities/tag";
+import {useDebouncedCallback} from "#src/shared/hooks";
 import {PlusIcon} from "@heroicons/react/24/solid";
 import {Autocomplete, AutocompleteItem, Button, Chip} from "@nextui-org/react";
 import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
 import {KeyboardEvent, useEffect, useMemo, useState} from "react";
 import {useFormContext} from "react-hook-form";
-import {getAllTags} from "../../../actions";
 import {FormValues} from "../../../types";
 
 const TagsField = () => {
-	const {showToast} = useToast();
-
 	const {formState, ...form} = useFormContext<FormValues>();
 	const tagsValue = form.watch("tags");
 
-	const [tags, setTags] = useState<TagFromApi[]>([]);
-	const {execute, isPending} = useAction(getAllTags, {
-		onSuccess: data => {
-			setTags(data.tags);
-		},
-		onError: data => {
-			showToast({variant: "error", message: data.error});
-		}
-	});
+	const {tags, hasMore, isFetching, fetchFirstPage, fetchMore} = useTagList();
+	useEffect(() => {
+		fetchFirstPage();
+	}, [fetchFirstPage]);
 
 	const [autocompleteIsOpen, setAutocompleteIsOpen] = useState(false);
 	const [autocompleteValue, setAutocompleteValue] = useState("");
-	// todo: implement infinite scroll
-	const [, scrollRef] = useInfiniteScroll({
-		hasMore: false,
+	const [, scrollerRef] = useInfiniteScroll({
+		hasMore,
 		isEnabled: autocompleteIsOpen,
-		onLoadMore: () => {}
+		shouldUseLoader: false,
+		onLoadMore: () => fetchMore({search: autocompleteValue})
 	});
+
+	const fetchFirstPageWithDebounce = useDebouncedCallback(fetchFirstPage);
+	const handleInputChange = (value: string) => {
+		setAutocompleteValue(value);
+		fetchFirstPageWithDebounce({search: value});
+	};
 
 	const submitIsDisabled = useMemo(
 		() =>
 			autocompleteValue.length === 0 || tagsValue.includes(autocompleteValue),
 		[autocompleteValue, tagsValue]
 	);
-
-	useEffect(() => {
-		execute();
-	}, [execute]);
 
 	const addTag = () => {
 		const updatedTags = [...tagsValue, autocompleteValue];
@@ -71,22 +64,19 @@ const TagsField = () => {
 		<div>
 			<div className="flex items-start gap-4">
 				<Autocomplete
+					classNames={{listboxWrapper: "max-h-[100px]"}}
 					label="Tags"
 					placeholder="Enter tag"
-					isLoading={isPending}
-					defaultItems={tags}
+					isLoading={isFetching}
+					items={tags}
 					allowsCustomValue
-					scrollRef={scrollRef}
+					scrollRef={scrollerRef}
 					onOpenChange={setAutocompleteIsOpen}
 					inputValue={autocompleteValue}
-					onInputChange={setAutocompleteValue}
+					onInputChange={handleInputChange}
 					isInvalid={"tags" in formState.errors}
 					errorMessage={formState.errors.tags?.message}
 					onKeyDown={handleKeyDown}
-					// The following prop fixes the bug in nextui library
-					// https://github.com/nextui-org/nextui/issues/2554
-					allowsEmptyCollection={false}
-					//
 				>
 					{item => (
 						<AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>

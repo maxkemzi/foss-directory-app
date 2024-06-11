@@ -1,41 +1,37 @@
 "use client";
 
-import {RoleFromApi} from "#src/shared/api";
-import {useAction} from "#src/shared/hooks";
-import {useToast} from "#src/shared/toast";
+import {useRoleList} from "#src/entities/role";
+import {useDebouncedCallback} from "#src/shared/hooks";
 import {TrashIcon} from "@heroicons/react/20/solid";
 import {PlusIcon} from "@heroicons/react/24/solid";
 import {Autocomplete, AutocompleteItem, Button, Input} from "@nextui-org/react";
 import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
 import {ChangeEvent, KeyboardEvent, useEffect, useMemo, useState} from "react";
 import {useFormContext} from "react-hook-form";
-import {getAllRoles} from "../../../actions";
 import {FormValues} from "../../../types";
 
 const RolesField = () => {
-	const {showToast} = useToast();
-
 	const {formState, ...form} = useFormContext<FormValues>();
 	const rolesValue = form.watch("roles");
 
-	const [roles, setRoles] = useState<RoleFromApi[]>([]);
-	const {execute, isPending} = useAction(getAllRoles, {
-		onSuccess: data => {
-			setRoles(data.roles);
-		},
-		onError: data => {
-			showToast({variant: "error", message: data.error});
-		}
-	});
+	const {roles, hasMore, isFetching, fetchFirstPage, fetchMore} = useRoleList();
+	useEffect(() => {
+		fetchFirstPage();
+	}, [fetchFirstPage]);
 
 	const [autocompleteIsOpen, setAutocompleteIsOpen] = useState(false);
 	const [autocompleteValue, setAutocompleteValue] = useState("");
-	// todo: implement infinite scroll
 	const [, scrollRef] = useInfiniteScroll({
-		hasMore: false,
+		hasMore,
 		isEnabled: autocompleteIsOpen,
-		onLoadMore: () => {}
+		onLoadMore: () => fetchMore({search: autocompleteValue})
 	});
+
+	const fetchFirstPageWithDebounce = useDebouncedCallback(fetchFirstPage);
+	const handleInputChange = (value: string) => {
+		setAutocompleteValue(value);
+		fetchFirstPageWithDebounce({search: value});
+	};
 
 	const submitIsDisabled = useMemo(
 		() =>
@@ -43,10 +39,6 @@ const RolesField = () => {
 			rolesValue.some(r => r[0] === autocompleteValue),
 		[rolesValue, autocompleteValue]
 	);
-
-	useEffect(() => {
-		execute();
-	}, [execute]);
 
 	const addRole = () => {
 		const newRole: [string, number] = [autocompleteValue, 1];
@@ -81,22 +73,19 @@ const RolesField = () => {
 		<div>
 			<div className="flex items-start gap-4">
 				<Autocomplete
+					classNames={{listboxWrapper: "max-h-[100px]"}}
 					onKeyDown={handleKeyDown}
 					label="Roles"
 					placeholder="Enter role"
-					isLoading={isPending}
-					defaultItems={roles}
+					isLoading={isFetching}
+					items={roles}
 					allowsCustomValue
 					scrollRef={scrollRef}
 					onOpenChange={setAutocompleteIsOpen}
 					inputValue={autocompleteValue}
-					onInputChange={setAutocompleteValue}
+					onInputChange={handleInputChange}
 					isInvalid={"roles" in formState.errors}
 					errorMessage={formState.errors.roles?.message}
-					// The following prop fixes the bug in nextui library
-					// https://github.com/nextui-org/nextui/issues/2554
-					allowsEmptyCollection={false}
-					//
 				>
 					{item => (
 						<AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>

@@ -1,4 +1,4 @@
-import {ProjectMessageFromApi} from "#src/shared/api";
+import {ProjectMessageFromApi} from "#src/shared/apis";
 import {StarIcon} from "@heroicons/react/16/solid";
 import {Avatar as NextUiAvatar, Badge} from "@nextui-org/react";
 import {FC} from "react";

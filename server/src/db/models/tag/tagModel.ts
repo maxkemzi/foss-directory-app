@@ -1,15 +1,20 @@
 import {PoolClient} from "pg";
 import {TagFromDb} from "../../types/rows";
 import TagDocument from "./TagDocument";
-import {FindAllOptions} from "./types";
+import {CountAllOptions, FindAllOptions} from "./types";
+import {createSearchCondition} from "../project/helpers";
 
 const findAll = async (
 	client: PoolClient,
 	opts: FindAllOptions = {}
 ): Promise<TagDocument[]> => {
-	const {limit, offset} = opts;
+	const {limit, offset, search} = opts;
 
 	let query = "SELECT * FROM tag";
+
+	if (search) {
+		query += ` WHERE ${createSearchCondition(search, ["name"])}`;
+	}
 
 	if (limit) {
 		query += ` LIMIT ${limit}`;
@@ -24,10 +29,21 @@ const findAll = async (
 	return rows.map(r => new TagDocument(r));
 };
 
-const countAll = async (client: PoolClient): Promise<number> => {
+const countAll = async (
+	client: PoolClient,
+	opts: CountAllOptions = {}
+): Promise<number> => {
+	const {search} = opts;
+
+	let query = "SELECT COUNT(*) FROM tag";
+
+	if (search) {
+		query += ` WHERE ${createSearchCondition(search, ["name"])}`;
+	}
+
 	const {
 		rows: [{count}]
-	} = await client.query<{count: string}>("SELECT COUNT(*) FROM tag;");
+	} = await client.query<{count: string}>(`${query};`);
 
 	return Number(count);
 };

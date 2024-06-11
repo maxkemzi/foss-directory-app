@@ -7,7 +7,7 @@ import {
 	CreateProjectRequestModal,
 	CreateProjectRequestModalProps
 } from "#src/features/projectRequest/create";
-import {ProjectFromApi} from "#src/shared/api";
+import {ProjectFromApi} from "#src/shared/apis";
 import {useModal} from "#src/shared/modal";
 import {FC, useCallback} from "react";
 

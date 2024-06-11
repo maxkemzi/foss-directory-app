@@ -3,7 +3,7 @@ import {Pathname} from "#src/shared/constants";
 import {redirect} from "next/navigation";
 
 const Chats = async () => {
-	const projects = await getProjectsByMembership();
+	const {data: projects} = await getProjectsByMembership();
 
 	const firstProject = projects[0];
 	if (firstProject) {

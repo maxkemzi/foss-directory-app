@@ -1,6 +1,6 @@
 "use client";
 
-import {ProjectFromApi, ProjectMessageFromApi} from "#src/shared/api";
+import {ProjectFromApi, ProjectMessageFromApi} from "#src/shared/apis";
 import {Session} from "#src/shared/auth";
 import {useEffect, useState} from "react";
 import {Socket, io} from "socket.io-client";

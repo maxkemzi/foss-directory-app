@@ -1,15 +1,20 @@
 import {PoolClient} from "pg";
 import {RoleFromDb} from "../../types/rows";
 import RoleDocument from "./RoleDocument";
-import {FindAllOptions} from "./types";
+import {CountAllOptions, FindAllOptions} from "./types";
+import {createSearchCondition} from "../project/helpers";
 
 const findAll = async (
 	client: PoolClient,
 	opts: FindAllOptions = {}
 ): Promise<RoleDocument[]> => {
-	const {limit, offset} = opts;
+	const {limit, offset, search} = opts;
 
 	let query = "SELECT * FROM role";
+
+	if (search) {
+		query += ` WHERE ${createSearchCondition(search, ["name"])}`;
+	}
 
 	if (limit) {
 		query += ` LIMIT ${limit}`;
@@ -24,10 +29,21 @@ const findAll = async (
 	return rows.map(r => new RoleDocument(r));
 };
 
-const countAll = async (client: PoolClient): Promise<number> => {
+const countAll = async (
+	client: PoolClient,
+	opts: CountAllOptions = {}
+): Promise<number> => {
+	const {search} = opts;
+
+	let query = "SELECT COUNT(*) FROM role";
+
+	if (search) {
+		query += ` WHERE ${createSearchCondition(search, ["name"])}`;
+	}
+
 	const {
 		rows: [{count}]
-	} = await client.query<{count: string}>("SELECT COUNT(*) FROM role;");
+	} = await client.query<{count: string}>(`${query};`);
 
 	return Number(count);
 };

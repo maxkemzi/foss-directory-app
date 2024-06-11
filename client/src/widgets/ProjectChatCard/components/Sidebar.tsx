@@ -5,7 +5,7 @@ import {
 	ProjectChatList,
 	ProjectChatSidebar
 } from "#src/entities/project";
-import {ProjectFromApi} from "#src/shared/api";
+import {ProjectFromApi} from "#src/shared/apis";
 import {FC} from "react";
 
 interface Props {

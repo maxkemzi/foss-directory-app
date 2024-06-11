@@ -3,14 +3,14 @@ import {RoleDto} from "#src/dtos";
 import {GetAllOptions, GetAllReturn} from "./types";
 
 const getAll = async (opts: GetAllOptions): Promise<GetAllReturn> => {
-	const {limit, offset} = opts;
+	const {limit, offset, search} = opts;
 
 	const client = await db.getClient();
 
 	try {
 		const [roles, totalCount] = await Promise.all([
-			roleModel.findAll(client, {limit, offset}),
-			roleModel.countAll(client)
+			roleModel.findAll(client, {limit, offset, search}),
+			roleModel.countAll(client, {search})
 		]);
 
 		return {roles: roles.map(r => new RoleDto(r)), totalCount};

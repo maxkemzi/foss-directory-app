@@ -1,4 +1,4 @@
-import {fetchLogOut, fetchRefresh} from "#src/shared/api/auth";
+import authApi from "#src/shared/apis/auth";
 import {NextRequest, NextResponse} from "next/server";
 import {SessionOption} from "./shared/auth";
 import {Session} from "./shared/auth/types";
@@ -47,7 +47,7 @@ const clearSession = async (req: NextRequest) => {
 
 const logOut = async (refreshToken: string, req: NextRequest) => {
 	try {
-		await fetchLogOut(refreshToken);
+		await authApi.logOut(refreshToken);
 	} catch (e) {
 		console.log("Couldn't log out before clearing the session");
 	}
@@ -66,7 +66,7 @@ export const middleware = async (req: NextRequest) => {
 
 	let res = NextResponse.next();
 	try {
-		const data = await fetchRefresh(tokens.refresh);
+		const {data} = await authApi.refresh(tokens.refresh);
 		res = updateSession(data, req);
 	} catch (e) {
 		console.log("Error refreshing token: ", e);

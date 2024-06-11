@@ -1,6 +1,6 @@
 "use server";
 
-import {fetchProjectMessagesByProjectId} from "#src/shared/api/projects/messages";
+import projectMessagesApi from "#src/shared/apis/projects/messages";
 import {getServerSession, logOut} from "#src/shared/auth";
 
 const getProjectMessagesByProjectId = async (id: string) => {
@@ -10,8 +10,8 @@ const getProjectMessagesByProjectId = async (id: string) => {
 	}
 
 	try {
-		const messages = await fetchProjectMessagesByProjectId(id);
-		return messages;
+		const response = await projectMessagesApi.fetchByProjectId(id);
+		return response;
 	} catch (e) {
 		throw new Error("Error fetching messages");
 	}

@@ -11,7 +11,7 @@ import {
 import {ProjectRequestCard} from "#src/widgets/ProjectRequestCard";
 
 const Requests = async () => {
-	const requests = await getReceivedProjectRequests();
+	const {data: requests} = await getReceivedProjectRequests();
 
 	return (
 		<PageSection>

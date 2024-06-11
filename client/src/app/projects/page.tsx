@@ -8,7 +8,7 @@ import {
 import {ProjectCard} from "#src/widgets/ProjectCard";
 
 const Projects = async () => {
-	const projects = await getAllProjects();
+	const {data: projects} = await getAllProjects();
 
 	return (
 		<PageSection>

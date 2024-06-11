@@ -1,7 +1,7 @@
 "use server";
 
-import {isApiError} from "#src/shared/api/lib";
-import {fetchAcceptProjectRequest} from "#src/shared/api/projects/requests";
+import {isApiError} from "#src/shared/apis/lib";
+import projectRequestsApi from "#src/shared/apis/projects/requests";
 import {getServerSession, logOut} from "#src/shared/auth";
 import {CacheTag} from "#src/shared/constants";
 import {revalidateTag} from "next/cache";
@@ -17,7 +17,7 @@ const acceptProjectRequestById = async (id: string) => {
 			throw new Error();
 		}
 
-		await fetchAcceptProjectRequest(id);
+		await projectRequestsApi.accept(id);
 		revalidateTag(CacheTag.REQUESTS);
 
 		return {success: "Request has been accepted"};

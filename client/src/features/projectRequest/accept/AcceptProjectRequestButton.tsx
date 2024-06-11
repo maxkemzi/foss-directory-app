@@ -1,6 +1,6 @@
 "use client";
 
-import {ProjectRequestFromApi} from "#src/shared/api";
+import {ProjectRequestFromApi} from "#src/shared/apis";
 import {useAction} from "#src/shared/hooks";
 import {useToast} from "#src/shared/toast";
 import {Button} from "@nextui-org/react";

@@ -1,7 +1,7 @@
 "use server";
 
-import {isApiError} from "#src/shared/api/lib";
-import {fetchReceivedProjectRequests} from "#src/shared/api/projects/requests";
+import {isApiError} from "#src/shared/apis/lib";
+import projectRequestsApi from "#src/shared/apis/projects/requests";
 import {getServerSession, logOut} from "#src/shared/auth";
 
 const getReceivedProjectRequests = async () => {
@@ -11,8 +11,8 @@ const getReceivedProjectRequests = async () => {
 	}
 
 	try {
-		const requests = await fetchReceivedProjectRequests();
-		return requests;
+		const response = await projectRequestsApi.fetchIncoming();
+		return response;
 	} catch (e) {
 		throw new Error(isApiError(e) ? e.message : "Error fetching requests");
 	}

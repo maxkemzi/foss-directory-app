@@ -1,4 +1,4 @@
-import {ProjectFromApi} from "#src/shared/api";
+import {ProjectFromApi} from "#src/shared/apis";
 import {Chip} from "@nextui-org/react";
 import {FC} from "react";
 

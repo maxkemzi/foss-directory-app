@@ -1,4 +1,4 @@
-import {ProjectMessageFromApi} from "#src/shared/api";
+import {ProjectMessageFromApi} from "#src/shared/apis";
 import {Chip} from "@nextui-org/react";
 import {FC} from "react";
 import MessageText from "./MessageText";

@@ -11,11 +11,12 @@ const ChatsChat = async ({params}: {params: {projectId: string}}) => {
 		return logOut();
 	}
 
-	const [projects, project, messages] = await Promise.all([
-		getProjectsByMembership(),
-		getProjectById(projectId),
-		getProjectMessagesByProjectId(projectId)
-	]);
+	const [{data: projects}, {data: project}, {data: messages}] =
+		await Promise.all([
+			getProjectsByMembership(),
+			getProjectById(projectId),
+			getProjectMessagesByProjectId(projectId)
+		]);
 
 	return (
 		<Chat

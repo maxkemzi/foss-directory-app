@@ -1,7 +1,7 @@
 "use client";
 
 import {parseProjectMemberCount} from "#src/entities/project";
-import {ProjectUserFromApi} from "#src/shared/api";
+import {ProjectUserFromApi} from "#src/shared/apis";
 import {ModalProps} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
 import {StarIcon} from "@heroicons/react/16/solid";
@@ -32,7 +32,7 @@ const ShowProjectChatInfoModal: FC<Props> = ({onClose, projectId}) => {
 		const fetchProjectUsers = async () => {
 			setProjectUsersAreFetching(true);
 			try {
-				const data = await getProjectUsersByProjectId(projectId);
+				const {data} = await getProjectUsersByProjectId(projectId);
 				setProjectUsers(data);
 			} catch (e) {
 				showToast({

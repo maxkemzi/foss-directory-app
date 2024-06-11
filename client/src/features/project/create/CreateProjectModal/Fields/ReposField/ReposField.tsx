@@ -1,4 +1,4 @@
-import {RepoFromApi} from "#src/shared/api";
+import {RepoFromApi} from "#src/shared/apis";
 import {useAction} from "#src/shared/hooks";
 import {useToast} from "#src/shared/toast";
 import {Autocomplete, AutocompleteItem} from "@nextui-org/react";
@@ -19,7 +19,7 @@ const ReposField: FC<Props> = ({onKeyDown}) => {
 	const [repos, setRepos] = useState<RepoFromApi[]>([]);
 	const {execute, isPending} = useAction(getGithubRepos, {
 		onSuccess: data => {
-			setRepos(data.repos);
+			setRepos(data.response.data);
 		},
 		onError: data => {
 			showToast({variant: "error", message: data.error});

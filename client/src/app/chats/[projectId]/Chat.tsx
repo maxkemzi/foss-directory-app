@@ -1,6 +1,6 @@
 "use client";
 
-import {ProjectFromApi, ProjectMessageFromApi} from "#src/shared/api";
+import {ProjectFromApi, ProjectMessageFromApi} from "#src/shared/apis";
 import {Session} from "#src/shared/auth";
 import {Pathname} from "#src/shared/constants";
 import {ProjectChatCard} from "#src/widgets/ProjectChatCard";

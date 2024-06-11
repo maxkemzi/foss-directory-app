@@ -1,6 +1,7 @@
 import {TagDto} from "#src/dtos";
 
 interface GetAllOptions {
+	search?: string;
 	offset: number;
 	limit: number;
 }

@@ -1,7 +1,7 @@
 "use server";
 
-import {isApiError} from "#src/shared/api/lib";
-import {fetchCreateProjectRequest} from "#src/shared/api/projects/requests";
+import {isApiError} from "#src/shared/apis/lib";
+import projectRequestsApi from "#src/shared/apis/projects/requests";
 import {getServerSession, logOut} from "#src/shared/auth";
 
 const createProjectRequest = async (data: {
@@ -14,7 +14,7 @@ const createProjectRequest = async (data: {
 	}
 
 	try {
-		await fetchCreateProjectRequest(data);
+		await projectRequestsApi.create(data);
 		return {success: "Request has been created"};
 	} catch (e) {
 		const error = isApiError(e) ? e.message : "Error creating request";

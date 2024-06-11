@@ -1,4 +1,4 @@
-import {ProjectFromApi} from "#src/shared/api";
+import {ProjectFromApi} from "#src/shared/apis";
 import {
 	Card,
 	CardBody,

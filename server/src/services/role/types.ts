@@ -1,6 +1,7 @@
 import {RoleDto} from "#src/dtos";
 
 interface GetAllOptions {
+	search?: string;
 	limit: number;
 	offset: number;
 }

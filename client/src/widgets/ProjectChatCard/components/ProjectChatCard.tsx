@@ -1,7 +1,7 @@
 "use client";
 
 import {ProjectChatLayout} from "#src/entities/project";
-import {ProjectFromApi, ProjectMessageFromApi} from "#src/shared/api";
+import {ProjectFromApi, ProjectMessageFromApi} from "#src/shared/apis";
 import {Session} from "#src/shared/auth";
 import {FC, useState} from "react";
 import Body from "./Body";

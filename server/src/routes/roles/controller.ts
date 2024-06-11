@@ -5,13 +5,14 @@ import {
 	calcOffset,
 	calcTotalPages,
 	parseLimitString,
-	parsePageString
+	parsePageString,
+	parseSearchString
 } from "#src/utils";
 import {NextFunction, Request, Response} from "express";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const {page, limit} = req.query;
+		const {page, limit, search} = req.query;
 
 		if (page && typeof page !== "string") {
 			throw new ApiError(400, '"page" param must be a string');
@@ -21,12 +22,19 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
 			throw new ApiError(400, '"limit" param must be a string');
 		}
 
+		if (search && typeof search !== "string") {
+			throw new ApiError(400, '"search" param must be a string');
+		}
+
 		const parsedPage = parsePageString(page);
 		const parsedLimit = parseLimitString(limit);
+		const parsedSearch = parseSearchString(search);
+
 		const offset = calcOffset(parsedPage, parsedLimit);
 
 		const {roles, totalCount} = await roleService.getAll({
 			limit: parsedLimit,
+			search: parsedSearch,
 			offset
 		});
 

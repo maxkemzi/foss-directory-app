@@ -1,6 +1,6 @@
 "use client";
 
-import {ProjectFromApi} from "#src/shared/api";
+import {ProjectFromApi} from "#src/shared/apis";
 import {MyTable, TableRowData} from "#src/shared/ui";
 import {Link} from "@nextui-org/react";
 import {FC, Key, ReactNode} from "react";

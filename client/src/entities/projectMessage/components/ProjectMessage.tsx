@@ -1,6 +1,6 @@
 "use client";
 
-import {ProjectMessageFromApi} from "#src/shared/api";
+import {ProjectMessageFromApi} from "#src/shared/apis";
 import {FC} from "react";
 import DateMessage from "./DateMessage";
 import JoinMessage from "./JoinMessage";

@@ -8,7 +8,7 @@ import {
 } from "#src/entities/projectMessage";
 import {useSocketConnection} from "#src/features/socket/connect";
 import {SendProjectMessageForm} from "#src/features/projectMessage/send";
-import {ProjectFromApi, ProjectMessageFromApi} from "#src/shared/api";
+import {ProjectFromApi, ProjectMessageFromApi} from "#src/shared/apis";
 import {Session} from "#src/shared/auth";
 import {useEffectUpdateOnly} from "#src/shared/hooks";
 import {FC, useCallback, useRef, useState} from "react";

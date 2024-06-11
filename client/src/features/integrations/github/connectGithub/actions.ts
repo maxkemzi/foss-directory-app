@@ -1,23 +1,23 @@
 "use server";
 
-import {fetchGithubConnectionUrl} from "#src/shared/api/integrations/github";
-import {isApiError} from "#src/shared/api/lib";
+import githubApi from "#src/shared/apis/integrations/github";
+import {isApiError} from "#src/shared/apis/lib";
 import {Cookie, CsrfTokenOption} from "#src/shared/constants";
 import {cookies} from "next/headers";
 
 const getGithubConnectionUrl = async () => {
 	try {
-		const {url, csrfToken} = await fetchGithubConnectionUrl();
+		const {data} = await githubApi.fetchConnectionUrl();
 
 		const cookieStore = cookies();
-		cookieStore.set(Cookie.CSRF_TOKEN, csrfToken, {
+		cookieStore.set(Cookie.CSRF_TOKEN, data.csrfToken, {
 			httpOnly: CsrfTokenOption.HTTP_ONLY,
 			maxAge: CsrfTokenOption.MAX_AGE,
 			secure: CsrfTokenOption.IS_SECURE,
 			sameSite: CsrfTokenOption.SAME_SITE
 		});
 
-		return {success: "Github has been connected", url};
+		return {success: "Github has been connected", url: data.url};
 	} catch (e) {
 		const error = isApiError(e) ? e.message : "Error connecting github";
 		return {error};

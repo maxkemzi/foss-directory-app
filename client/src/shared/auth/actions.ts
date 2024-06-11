@@ -5,8 +5,8 @@ import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 import {Session} from "./types";
 import {SessionOption} from "./constants";
-import {LoginBody, fetchLogIn, fetchLogOut} from "../api/auth";
-import {fetchApi} from "../api";
+import {fetchApi} from "../apis";
+import authApi, {LoginBody} from "../apis/auth";
 
 const getServerSession = async (): Promise<Session | null> => {
 	const cookieStore = cookies();
@@ -35,8 +35,8 @@ const clearServerSession = async () => {
 };
 
 const logIn = async (data: LoginBody) => {
-	const session = await fetchLogIn(data);
-	await setServerSession(session);
+	const response = await authApi.logIn(data);
+	await setServerSession(response.data);
 };
 
 const logOut = async () => {
@@ -47,7 +47,7 @@ const logOut = async () => {
 	}
 
 	try {
-		await fetchLogOut(session.tokens.refresh);
+		await authApi.logOut(session.tokens.refresh);
 	} catch (e) {
 		console.log("Error logging out");
 	}

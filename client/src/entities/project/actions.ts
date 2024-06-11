@@ -1,10 +1,7 @@
-import {
-	fetchAllProjects,
-	fetchOwnedProjects,
-	fetchProjectById,
-	fetchProjectsByMembership
-} from "#src/shared/api/projects";
+import {isApiError} from "#src/shared/apis/lib";
+import projectsApi from "#src/shared/apis/projects";
 import {getServerSession, logOut} from "#src/shared/auth";
+import {AppError} from "#src/shared/error";
 
 const getAllProjects = async () => {
 	const session = await getServerSession();
@@ -13,24 +10,26 @@ const getAllProjects = async () => {
 	}
 
 	try {
-		const projects = await fetchAllProjects();
-		return projects;
+		const response = await projectsApi.fetchAll();
+		return response;
 	} catch (e) {
-		throw new Error("Error fetching projects");
+		const message = isApiError(e) ? e.message : "Error fetching projects";
+		throw new AppError(message);
 	}
 };
 
-const getOwnedProjects = async () => {
+const getProjectsByOwnership = async () => {
 	const session = await getServerSession();
 	if (!session) {
 		return logOut();
 	}
 
 	try {
-		const projects = await fetchOwnedProjects();
-		return projects;
+		const response = await projectsApi.fetchByOwnership();
+		return response;
 	} catch (e) {
-		throw new Error("Error fetching projects");
+		const message = isApiError(e) ? e.message : "Error fetching projects";
+		throw new AppError(message);
 	}
 };
 
@@ -41,10 +40,11 @@ const getProjectsByMembership = async () => {
 	}
 
 	try {
-		const projects = await fetchProjectsByMembership();
-		return projects;
+		const response = await projectsApi.fetchByMembership();
+		return response;
 	} catch (e) {
-		throw new Error("Error fetching projects");
+		const message = isApiError(e) ? e.message : "Error fetching projects";
+		throw new AppError(message);
 	}
 };
 
@@ -55,16 +55,17 @@ const getProjectById = async (id: string) => {
 	}
 
 	try {
-		const project = await fetchProjectById(id);
-		return project;
+		const response = await projectsApi.fetchById(id);
+		return response;
 	} catch (e) {
-		throw new Error("Error fetching project");
+		const message = isApiError(e) ? e.message : "Error fetching project";
+		throw new AppError(message);
 	}
 };
 
 export {
 	getAllProjects,
-	getOwnedProjects,
+	getProjectsByOwnership,
 	getProjectsByMembership,
 	getProjectById
 };

@@ -1,6 +1,6 @@
 import {ProjectChatHeader} from "#src/entities/project";
 import {ShowProjectChatInfoClickArea} from "#src/features/project/showChatInfo";
-import {ProjectFromApi} from "#src/shared/api";
+import {ProjectFromApi} from "#src/shared/apis";
 import {Session} from "#src/shared/auth";
 import {FC} from "react";
 import ActionsDropdown from "./ActionsDropdown";
