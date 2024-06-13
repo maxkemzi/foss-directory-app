@@ -8,7 +8,8 @@ import ProjectChatList from "./components/ProjectChatList";
 import ProjectChatSidebar from "./components/ProjectChatSidebar";
 import {parseProjectMemberCount} from "./helpers";
 
-export * from "./actions";
+export * as projectActions from "./actions";
+export {useProjectList} from "./hooks";
 export {
 	Project,
 	ProjectList,

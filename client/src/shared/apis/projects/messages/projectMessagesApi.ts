@@ -1,8 +1,7 @@
 "use server";
 
 import {fetchApiWithAuth} from "#src/shared/auth";
-import {ApiHeader} from "../../constants";
-import {parseNumericHeader} from "../../helpers";
+import {getPaginationHeaderValues} from "../../helpers";
 import {FetchProjectMessagesResponse} from "./types";
 
 const BASE_URL = "/projects";
@@ -19,15 +18,13 @@ const fetchByProjectId = async (
 	const data = await response.json();
 
 	const {headers} = response;
-	const totalCount = headers.get(ApiHeader.TOTAL_COUNT);
-	const page = headers.get(ApiHeader.PAGE);
-	const totalPages = headers.get(ApiHeader.TOTAL_PAGES);
+	const {totalCount, page, totalPages} = getPaginationHeaderValues(headers);
 
 	return {
 		data,
-		totalCount: parseNumericHeader(totalCount),
-		page: parseNumericHeader(page),
-		totalPages: parseNumericHeader(totalPages)
+		totalCount,
+		page,
+		totalPages
 	};
 };
 

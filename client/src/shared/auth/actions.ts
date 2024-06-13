@@ -57,9 +57,11 @@ const logOut = async () => {
 	redirect(Pathname.LOGIN);
 };
 
+type Args = Parameters<typeof fetchApi>;
+
 const fetchApiWithAuth = async (
-	url: string,
-	options: RequestInit = {}
+	url: Args[0],
+	opts: Args[1] = {}
 ): Promise<Response> => {
 	const session = await getServerSession();
 	if (!session) {
@@ -67,9 +69,9 @@ const fetchApiWithAuth = async (
 	}
 
 	const response = await fetchApi(url, {
-		...options,
+		...opts,
 		headers: {
-			...options.headers,
+			...opts.headers,
 			Authorization: `Bearer ${session.tokens.access}`
 		}
 	});

@@ -1,4 +1,11 @@
-import {ApiResponse, ApiResponseWithPagination, ProjectFromApi} from "../types";
+import {
+	ApiResponse,
+	ApiResponseWithPagination,
+	PaginationSearchParams,
+	ProjectFromApi
+} from "../types";
+
+type FetchProjectsSearchParams = PaginationSearchParams & {search?: string};
 
 type FetchProjectsResponseData = ProjectFromApi[];
 type FetchProjectsResponse =
@@ -19,6 +26,7 @@ type CreateProjectResponseData = ProjectFromApi;
 type CreateProjectResponse = ApiResponse<CreateProjectResponseData>;
 
 export type {
+	FetchProjectsSearchParams,
 	CreateProjectBody,
 	CreateProjectResponse,
 	FetchProjectResponse,

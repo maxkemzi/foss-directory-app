@@ -2,13 +2,13 @@
 
 import {fetchApiWithAuth} from "#src/shared/auth";
 import {CacheTag} from "#src/shared/constants";
-import {ApiHeader} from "../constants";
-import {parseNumericHeader} from "../helpers";
+import {getPaginationHeaderValues} from "../helpers";
 import {
 	CreateProjectBody,
 	CreateProjectResponse,
 	FetchProjectResponse,
-	FetchProjectsResponse
+	FetchProjectsResponse,
+	FetchProjectsSearchParams
 } from "./types";
 
 const BASE_URL = "/projects";
@@ -26,63 +26,66 @@ const create = async (
 	return {data};
 };
 
-const fetchAll = async (): Promise<FetchProjectsResponse> => {
+const fetchAll = async (
+	params?: FetchProjectsSearchParams
+): Promise<FetchProjectsResponse> => {
 	const response = await fetchApiWithAuth(BASE_URL, {
-		next: {tags: [CacheTag.PROJECTS]}
+		next: {tags: [CacheTag.PROJECTS]},
+		params
 	});
 
 	const data = await response.json();
 
 	const {headers} = response;
-	const totalCount = headers.get(ApiHeader.TOTAL_COUNT);
-	const page = headers.get(ApiHeader.PAGE);
-	const totalPages = headers.get(ApiHeader.TOTAL_PAGES);
+	const {totalCount, page, totalPages} = getPaginationHeaderValues(headers);
 
 	return {
 		data,
-		totalCount: parseNumericHeader(totalCount),
-		page: parseNumericHeader(page),
-		totalPages: parseNumericHeader(totalPages)
+		totalCount,
+		page,
+		totalPages
 	};
 };
 
-const fetchByOwnership = async (): Promise<FetchProjectsResponse> => {
+const fetchByOwnership = async (
+	params?: FetchProjectsSearchParams
+): Promise<FetchProjectsResponse> => {
 	const response = await fetchApiWithAuth(`${BASE_URL}/owned`, {
-		next: {tags: [CacheTag.PROJECTS]}
+		next: {tags: [CacheTag.PROJECTS]},
+		params
 	});
 
 	const data = await response.json();
 
 	const {headers} = response;
-	const totalCount = headers.get(ApiHeader.TOTAL_COUNT);
-	const page = headers.get(ApiHeader.PAGE);
-	const totalPages = headers.get(ApiHeader.TOTAL_PAGES);
+	const {totalCount, page, totalPages} = getPaginationHeaderValues(headers);
 
 	return {
 		data,
-		totalCount: parseNumericHeader(totalCount),
-		page: parseNumericHeader(page),
-		totalPages: parseNumericHeader(totalPages)
+		totalCount,
+		page,
+		totalPages
 	};
 };
 
-const fetchByMembership = async (): Promise<FetchProjectsResponse> => {
+const fetchByMembership = async (
+	params?: FetchProjectsSearchParams
+): Promise<FetchProjectsResponse> => {
 	const response = await fetchApiWithAuth(`${BASE_URL}/membership`, {
-		next: {tags: [CacheTag.PROJECTS]}
+		next: {tags: [CacheTag.PROJECTS]},
+		params
 	});
 
 	const data = await response.json();
 
 	const {headers} = response;
-	const totalCount = headers.get(ApiHeader.TOTAL_COUNT);
-	const page = headers.get(ApiHeader.PAGE);
-	const totalPages = headers.get(ApiHeader.TOTAL_PAGES);
+	const {totalCount, page, totalPages} = getPaginationHeaderValues(headers);
 
 	return {
 		data,
-		totalCount: parseNumericHeader(totalCount),
-		page: parseNumericHeader(page),
-		totalPages: parseNumericHeader(totalPages)
+		totalCount,
+		page,
+		totalPages
 	};
 };
 
@@ -110,10 +113,10 @@ const leaveById = async (projectId: string): Promise<void> => {
 
 export {
 	create,
-	fetchAll,
-	fetchByOwnership,
-	fetchByMembership,
-	fetchById,
 	deleteById,
+	fetchAll,
+	fetchById,
+	fetchByMembership,
+	fetchByOwnership,
 	leaveById
 };

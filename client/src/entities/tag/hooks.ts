@@ -12,7 +12,7 @@ const useTagList = () => {
 	const [tags, setTags] = useState<TagFromApi[]>([]);
 	const [page, setPage] = useState(1);
 	const [hasMore, setHasMore] = useState<boolean>(false);
-	const limit = useRef(10).current;
+	const limit = useRef(10);
 
 	const {execute, isPending: isFetching} = useSafeAction(safeGetAll, {
 		onSuccess: result => {
@@ -24,13 +24,8 @@ const useTagList = () => {
 				setTags(prev => [...prev, ...response.data]);
 			}
 
-			if (response.page) {
-				setPage(response.page);
-
-				if (response.totalPages) {
-					setHasMore(response.page < response.totalPages);
-				}
-			}
+			setPage(response.page);
+			setHasMore(response.page < response.totalPages);
 		},
 		onError: result => {
 			showToast({variant: "error", message: result.error});
@@ -39,9 +34,9 @@ const useTagList = () => {
 
 	const fetchFirstPage = useCallback(
 		({search}: Pick<FetchTagsSearchParams, "search"> = {}) => {
-			execute({page: 1, limit, search});
+			execute({page: 1, limit: limit.current, search});
 		},
-		[execute, limit]
+		[execute]
 	);
 
 	const fetchMore = useCallback(
@@ -49,10 +44,10 @@ const useTagList = () => {
 			execute({
 				page: page + 1,
 				search,
-				limit
+				limit: limit.current
 			});
 		},
-		[execute, limit, page]
+		[execute, page]
 	);
 
 	return {tags, hasMore, isFetching, fetchFirstPage, fetchMore};

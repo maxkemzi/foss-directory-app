@@ -12,9 +12,9 @@ interface ApiResponse<Data = any> {
 }
 
 interface ApiPaginationData {
-	totalCount: number | null;
-	page: number | null;
-	totalPages: number | null;
+	totalCount: number;
+	page: number;
+	totalPages: number;
 }
 
 type ApiResponseWithPagination<Data = any> = ApiResponse<Data> &

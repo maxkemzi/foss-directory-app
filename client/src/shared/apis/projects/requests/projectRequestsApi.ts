@@ -2,8 +2,7 @@
 
 import {fetchApiWithAuth} from "#src/shared/auth";
 import {CacheTag} from "#src/shared/constants";
-import {ApiHeader} from "../../constants";
-import {parseNumericHeader} from "../../helpers";
+import {getPaginationHeaderValues} from "../../helpers";
 import {
 	AcceptProjectRequestResponse,
 	CreateProjectRequestBody,
@@ -47,16 +46,14 @@ const fetchIncoming = async (): Promise<FetchProjectRequestsResponse> => {
 	const data = await response.json();
 
 	const {headers} = response;
-	const totalCount = headers.get(ApiHeader.TOTAL_COUNT);
-	const page = headers.get(ApiHeader.PAGE);
-	const totalPages = headers.get(ApiHeader.TOTAL_PAGES);
+	const {totalCount, page, totalPages} = getPaginationHeaderValues(headers);
 
 	return {
 		data,
-		totalCount: parseNumericHeader(totalCount),
-		page: parseNumericHeader(page),
-		totalPages: parseNumericHeader(totalPages)
+		totalCount,
+		page,
+		totalPages
 	};
 };
 
-export {create, accept, reject, fetchIncoming};
+export {accept, create, fetchIncoming, reject};

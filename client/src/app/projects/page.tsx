@@ -1,26 +1,30 @@
-import {ProjectList, getAllProjects} from "#src/entities/project";
+import {projectActions} from "#src/entities/project";
+import {calcHasMore} from "#src/shared/apis";
 import {
 	PageContainer,
 	PageContent,
 	PageSection,
 	PageTitle
 } from "#src/shared/ui";
-import {ProjectCard} from "#src/widgets/ProjectCard";
+import List from "./List";
 
 const Projects = async () => {
-	const {data: projects} = await getAllProjects();
+	const LIMIT = 6;
+	const {data, page, totalPages} = await projectActions.getAll({limit: LIMIT});
+
+	const hasMore = calcHasMore(page, totalPages);
 
 	return (
 		<PageSection>
 			<PageContainer>
 				<PageTitle>Projects</PageTitle>
 				<PageContent>
-					{projects.length !== 0 ? (
-						<ProjectList>
-							{projects.map(p => (
-								<ProjectCard key={p.id} project={p} />
-							))}
-						</ProjectList>
+					{data.length !== 0 ? (
+						<List
+							initialProjects={data}
+							initialHasMore={hasMore}
+							limit={LIMIT}
+						/>
 					) : (
 						<p>There are no projects</p>
 					)}

@@ -1,12 +1,28 @@
-import {SearchParams} from "./types";
+import {AppError} from "../error";
+import {ApiHeader} from "./constants";
+import {ApiPaginationData, SearchParams} from "./types";
 
-const parseNumericHeader = (value: string | null) => {
-	if (value === null) {
-		return null;
+const getPaginationHeaderValues = (headers: Headers) => {
+	const totalCount = headers.get(ApiHeader.TOTAL_COUNT);
+	if (!totalCount) {
+		throw new AppError(`${ApiHeader.TOTAL_COUNT} header is missing`);
 	}
 
-	const parsedValue = Number(value);
-	return !Number.isNaN(parsedValue) ? parsedValue : null;
+	const page = headers.get(ApiHeader.PAGE);
+	if (!page) {
+		throw new AppError(`${ApiHeader.PAGE} header is missing`);
+	}
+
+	const totalPages = headers.get(ApiHeader.TOTAL_PAGES);
+	if (!totalPages) {
+		throw new AppError(`${ApiHeader.TOTAL_PAGES} header is missing`);
+	}
+
+	return {
+		totalCount: Number(totalCount),
+		page: Number(page),
+		totalPages: Number(totalPages)
+	};
 };
 
 const getUrlString = (url: string, opts: {params?: SearchParams} = {}) => {
@@ -28,4 +44,9 @@ const getUrlString = (url: string, opts: {params?: SearchParams} = {}) => {
 	return result.toString();
 };
 
-export {parseNumericHeader, getUrlString};
+const calcHasMore = (
+	page: ApiPaginationData["page"],
+	totalPages: ApiPaginationData["totalPages"]
+) => page < totalPages;
+
+export {getPaginationHeaderValues, getUrlString, calcHasMore};

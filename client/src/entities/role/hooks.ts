@@ -1,6 +1,6 @@
 "use client";
 
-import {RoleFromApi} from "#src/shared/apis";
+import {RoleFromApi, calcHasMore} from "#src/shared/apis";
 import {FetchTagsSearchParams} from "#src/shared/apis/tags";
 import {useSafeAction} from "#src/shared/hooks";
 import {useToast} from "#src/shared/toast";
@@ -12,7 +12,7 @@ const useRoleList = () => {
 	const [roles, setRoles] = useState<RoleFromApi[]>([]);
 	const [page, setPage] = useState(1);
 	const [hasMore, setHasMore] = useState<boolean>(false);
-	const limit = useRef(10).current;
+	const limit = useRef(10);
 
 	const {execute, isPending: isFetching} = useSafeAction(safeGetAll, {
 		onSuccess: result => {
@@ -24,13 +24,8 @@ const useRoleList = () => {
 				setRoles(prev => [...prev, ...response.data]);
 			}
 
-			if (response.page) {
-				setPage(response.page);
-
-				if (response.totalPages) {
-					setHasMore(response.page < response.totalPages);
-				}
-			}
+			setPage(response.page);
+			setHasMore(calcHasMore(response.page, response.totalPages));
 		},
 		onError: result => {
 			showToast({variant: "error", message: result.error});
@@ -39,9 +34,9 @@ const useRoleList = () => {
 
 	const fetchFirstPage = useCallback(
 		({search}: Pick<FetchTagsSearchParams, "search"> = {}) => {
-			execute({page: 1, limit, search});
+			execute({page: 1, limit: limit.current, search});
 		},
-		[execute, limit]
+		[execute]
 	);
 
 	const fetchMore = useCallback(
@@ -49,10 +44,10 @@ const useRoleList = () => {
 			execute({
 				page: page + 1,
 				search,
-				limit
+				limit: limit.current
 			});
 		},
-		[execute, limit, page]
+		[execute, page]
 	);
 
 	return {roles, hasMore, isFetching, fetchFirstPage, fetchMore};
