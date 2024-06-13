@@ -17,7 +17,7 @@ services:
   backend:
     build:
       context: ./server
-      target: dev
+      dockerfile: dev.Dockerfile
     container_name: backend
     restart: always
     volumes:
@@ -31,7 +31,7 @@ services:
   frontend:
     build:
       context: ./client
-      target: dev
+      dockerfile: dev.Dockerfile
     container_name: frontend
     restart: always
     environment:

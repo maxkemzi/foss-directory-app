@@ -15,7 +15,7 @@ services:
   backend:
     build:
       context: ./server
-      target: prod
+      dockerfile: Dockerfile
     container_name: backend
     restart: always
     depends_on:
@@ -27,7 +27,7 @@ services:
   frontend:
     build:
       context: ./client
-      target: prod
+      dockerfile: Dockerfile
     container_name: frontend
     restart: always
     depends_on:

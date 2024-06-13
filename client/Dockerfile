@@ -2,19 +2,12 @@ FROM node:20-alpine as base
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm install
-
 COPY . .
 
-EXPOSE 3000
+RUN npm install
 
-FROM base AS prod
+EXPOSE 3000
 
 RUN npm run build
 
 CMD ["npm", "start"]
-
-FROM base AS dev
-
-CMD ["npm", "run", "dev"]
