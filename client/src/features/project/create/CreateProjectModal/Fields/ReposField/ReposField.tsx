@@ -1,11 +1,11 @@
+import {githubRepoActions} from "#src/entities/githubRepo";
 import {RepoFromApi} from "#src/shared/apis";
-import {useAction} from "#src/shared/hooks";
+import {useSafeAction} from "#src/shared/hooks";
 import {useToast} from "#src/shared/toast";
 import {Autocomplete, AutocompleteItem} from "@nextui-org/react";
 import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
 import {FC, Key, KeyboardEventHandler, useEffect, useState} from "react";
 import {useFormContext} from "react-hook-form";
-import {getGithubRepos} from "../../../actions";
 
 interface Props {
 	onKeyDown: KeyboardEventHandler<HTMLInputElement>;
@@ -17,14 +17,18 @@ const ReposField: FC<Props> = ({onKeyDown}) => {
 	const form = useFormContext();
 
 	const [repos, setRepos] = useState<RepoFromApi[]>([]);
-	const {execute, isPending} = useAction(getGithubRepos, {
-		onSuccess: data => {
-			setRepos(data.response.data);
-		},
-		onError: data => {
-			showToast({variant: "error", message: data.error});
+	const {execute, isPending} = useSafeAction(
+		githubRepoActions.safeGetByOwnership,
+		{
+			onSuccess: result => {
+				const {data: response} = result;
+				setRepos(response.data);
+			},
+			onError: result => {
+				showToast({variant: "error", message: result.error});
+			}
 		}
-	});
+	);
 
 	const [autocompleteIsOpen, setAutocompleteIsOpen] = useState(false);
 	const [autocompleteValue, setAutocompleteValue] = useState("");

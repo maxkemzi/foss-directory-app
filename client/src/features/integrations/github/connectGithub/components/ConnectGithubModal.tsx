@@ -1,6 +1,6 @@
 "use client";
 
-import {useAction} from "#src/shared/hooks";
+import {useSafeAction} from "#src/shared/hooks";
 import {ModalProps} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
 import {
@@ -13,19 +13,19 @@ import {
 } from "@nextui-org/react";
 import {useRouter} from "next/navigation";
 import {FC, FormEvent} from "react";
-import {getGithubConnectionUrl} from "../actions";
+import {safeGetConnectionUrl} from "../actions";
 
 type Props = ModalProps;
 
 const ConnectGithubModal: FC<Props> = ({onClose}) => {
 	const router = useRouter();
 	const {showToast} = useToast();
-	const {execute, isPending} = useAction(getGithubConnectionUrl, {
-		onSuccess: data => {
-			router.push(data.url);
+	const {execute, isPending} = useSafeAction(safeGetConnectionUrl, {
+		onSuccess: result => {
+			router.push(result.data.url);
 		},
-		onError: data => {
-			showToast({variant: "error", message: data.error});
+		onError: result => {
+			showToast({variant: "error", message: result.error});
 		}
 	});
 

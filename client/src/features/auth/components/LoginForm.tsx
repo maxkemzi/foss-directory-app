@@ -1,14 +1,14 @@
 "use client";
 
 import {Pathname} from "#src/shared/constants";
-import {useAction} from "#src/shared/hooks";
+import {useSafeAction} from "#src/shared/hooks";
 import {PasswordInput} from "#src/shared/ui";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Button, Input, Link} from "@nextui-org/react";
 import {useRouter} from "next/navigation";
 import {Controller, useForm} from "react-hook-form";
 import {z} from "zod";
-import {logInAction} from "../actions";
+import {safeLogIn} from "../actions";
 import {LOGIN_VALIDATION_SCHEMA} from "../constants";
 
 type FormValues = z.infer<typeof LOGIN_VALIDATION_SCHEMA>;
@@ -27,7 +27,7 @@ const LoginForm = () => {
 		}
 	});
 
-	const {execute, error, isPending} = useAction(logInAction, {
+	const {execute, error, isPending} = useSafeAction(safeLogIn, {
 		onSuccess: () => {
 			router.push(Pathname.HOME);
 		}

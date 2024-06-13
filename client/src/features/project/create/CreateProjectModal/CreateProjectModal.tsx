@@ -1,7 +1,7 @@
 "use client";
 
 import {Pathname} from "#src/shared/constants";
-import {useAction} from "#src/shared/hooks";
+import {useSafeAction} from "#src/shared/hooks";
 import {ModalProps} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -16,7 +16,7 @@ import {
 import {useRouter} from "next/navigation";
 import {FC} from "react";
 import {FormProvider, useForm} from "react-hook-form";
-import {createProject} from "../actions";
+import {safeCreateProject} from "../actions";
 import {VALIDATION_SCHEMA} from "../constants";
 import {FormValues} from "../types";
 import Fields from "./Fields/Fields";
@@ -39,14 +39,14 @@ const CreateProjectModal: FC<Props> = ({onClose}) => {
 		}
 	});
 
-	const {execute, isPending} = useAction(createProject, {
-		onSuccess: data => {
+	const {execute, isPending} = useSafeAction(safeCreateProject, {
+		onSuccess: result => {
 			router.push(Pathname.YOUR_PROJECTS);
-			showToast({variant: "success", message: data.success});
+			showToast({variant: "success", message: result.success});
 			onClose();
 		},
-		onError: data => {
-			showToast({variant: "error", message: data.error});
+		onError: result => {
+			showToast({variant: "error", message: result.error});
 		}
 	});
 

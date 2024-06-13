@@ -1,5 +1,6 @@
-import useEffectUpdateOnly from "./useEffectUpdateOnly";
-import useAction from "./useAction/useAction";
 import useDebouncedCallback from "./useDebouncedCallback";
+import useEffectUpdateOnly from "./useEffectUpdateOnly";
+import useSafeAction from "./useSafeAction/useSafeAction";
 
-export {useEffectUpdateOnly, useAction, useDebouncedCallback};
+export type {SafeAction} from "./useSafeAction/types";
+export {useSafeAction, useDebouncedCallback, useEffectUpdateOnly};

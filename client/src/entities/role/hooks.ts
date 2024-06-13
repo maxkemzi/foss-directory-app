@@ -2,10 +2,10 @@
 
 import {RoleFromApi} from "#src/shared/apis";
 import {FetchTagsSearchParams} from "#src/shared/apis/tags";
-import {useAction} from "#src/shared/hooks";
+import {useSafeAction} from "#src/shared/hooks";
 import {useToast} from "#src/shared/toast";
 import {useCallback, useRef, useState} from "react";
-import {getAllSafe} from "./actions";
+import {safeGetAll} from "./actions";
 
 const useRoleList = () => {
 	const {showToast} = useToast();
@@ -14,9 +14,9 @@ const useRoleList = () => {
 	const [hasMore, setHasMore] = useState<boolean>(false);
 	const limit = useRef(10).current;
 
-	const {execute, isPending: isFetching} = useAction(getAllSafe, {
-		onSuccess: data => {
-			const {response} = data;
+	const {execute, isPending: isFetching} = useSafeAction(safeGetAll, {
+		onSuccess: result => {
+			const {data: response} = result;
 
 			if (response.page === 1) {
 				setRoles(response.data);
@@ -32,8 +32,8 @@ const useRoleList = () => {
 				}
 			}
 		},
-		onError: data => {
-			showToast({variant: "error", message: data.error});
+		onError: result => {
+			showToast({variant: "error", message: result.error});
 		}
 	});
 

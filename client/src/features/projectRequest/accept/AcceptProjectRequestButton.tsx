@@ -1,11 +1,11 @@
 "use client";
 
 import {ProjectRequestFromApi} from "#src/shared/apis";
-import {useAction} from "#src/shared/hooks";
+import {useSafeAction} from "#src/shared/hooks";
 import {useToast} from "#src/shared/toast";
 import {Button} from "@nextui-org/react";
 import {FC, FormEvent} from "react";
-import {acceptProjectRequestById} from "./actions";
+import {safeAcceptProjectRequestById} from "./actions";
 
 interface Props {
 	requestId: ProjectRequestFromApi["id"];
@@ -13,12 +13,12 @@ interface Props {
 
 const AcceptProjectRequestButton: FC<Props> = ({requestId}) => {
 	const {showToast} = useToast();
-	const {execute, isPending} = useAction(acceptProjectRequestById, {
-		onSuccess: data => {
-			showToast({variant: "success", message: data.success});
+	const {execute, isPending} = useSafeAction(safeAcceptProjectRequestById, {
+		onSuccess: result => {
+			showToast({variant: "success", message: result.success});
 		},
-		onError: data => {
-			showToast({variant: "error", message: data.error});
+		onError: result => {
+			showToast({variant: "error", message: result.error});
 		}
 	});
 

@@ -3,9 +3,12 @@
 import authApi from "#src/shared/apis/auth";
 import {isApiError} from "#src/shared/apis/lib";
 import {logIn} from "#src/shared/auth";
-import {LoginFormFields, SignupFormFields} from "./types";
+import {AppError} from "#src/shared/error";
+import {getErrorMessage} from "#src/shared/helpers";
+import {SafeAction} from "#src/shared/hooks";
+import {SignupFormFields} from "./types";
 
-const logInAction = async (data: LoginFormFields) => {
+const safeLogIn: SafeAction<typeof logIn> = async data => {
 	try {
 		await logIn(data);
 		return {success: "Successfully logged in"};
@@ -17,12 +20,21 @@ const logInAction = async (data: LoginFormFields) => {
 
 const signUp = async (data: SignupFormFields) => {
 	try {
-		await authApi.signUp(data);
-		return {success: "Successfully signed up"};
+		const response = await authApi.signUp(data);
+		return response;
 	} catch (e) {
-		const error = isApiError(e) ? e.message : "Error signing up";
-		return {error};
+		const message = isApiError(e) ? e.message : "Error signing up";
+		throw new AppError(message);
 	}
 };
 
-export {logInAction, signUp};
+const safeSignUp: SafeAction<typeof signUp> = async data => {
+	try {
+		await signUp(data);
+		return {success: "Successfully signed up"};
+	} catch (e) {
+		return {error: getErrorMessage(e)};
+	}
+};
+
+export {safeLogIn, safeSignUp};

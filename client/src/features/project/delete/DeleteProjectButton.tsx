@@ -1,12 +1,12 @@
 "use client";
 
-import {useAction} from "#src/shared/hooks";
+import {useSafeAction} from "#src/shared/hooks";
 import {useModal} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
 import {Button} from "@nextui-org/react";
 import {useRouter} from "next/navigation";
 import {FC, FormEvent} from "react";
-import {deleteProject} from "./actions";
+import {safeDeleteProjectById} from "./actions";
 
 interface Props {
 	projectId: string;
@@ -17,14 +17,14 @@ const DeleteProjectButton: FC<Props> = ({projectId}) => {
 	const {showToast} = useToast();
 	const {closeModal} = useModal();
 
-	const {execute, isPending} = useAction(deleteProject, {
-		onSuccess: data => {
+	const {execute, isPending} = useSafeAction(safeDeleteProjectById, {
+		onSuccess: result => {
 			router.refresh();
-			showToast({variant: "success", message: data.success});
+			showToast({variant: "success", message: result.success});
 			closeModal();
 		},
-		onError: data => {
-			showToast({variant: "error", message: data.error});
+		onError: result => {
+			showToast({variant: "error", message: result.error});
 		}
 	});
 

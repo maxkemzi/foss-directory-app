@@ -1,9 +1,13 @@
 "use server";
 
 import {isApiError} from "#src/shared/apis/lib";
-import tagsApi, {FetchTagsSearchParams} from "#src/shared/apis/tags";
+import tagsApi, {
+	FetchTagsResponse,
+	FetchTagsSearchParams
+} from "#src/shared/apis/tags";
 import {AppError} from "#src/shared/error";
 import {getErrorMessage} from "#src/shared/helpers";
+import {SafeAction} from "#src/shared/hooks";
 
 const getAll = async (params?: FetchTagsSearchParams) => {
 	try {
@@ -16,13 +20,16 @@ const getAll = async (params?: FetchTagsSearchParams) => {
 	}
 };
 
-const getAllSafe = async (params?: FetchTagsSearchParams) => {
+const safeGetAll: SafeAction<
+	typeof getAll,
+	FetchTagsResponse
+> = async params => {
 	try {
 		const response = await getAll(params);
-		return {success: "Tags has been fetched", response};
+		return {success: "Tags has been fetched", data: response};
 	} catch (e) {
 		return {error: getErrorMessage(e)};
 	}
 };
 
-export {getAll, getAllSafe};
+export {getAll, safeGetAll};

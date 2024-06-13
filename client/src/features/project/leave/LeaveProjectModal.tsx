@@ -1,7 +1,7 @@
 "use client";
 
 import {Pathname} from "#src/shared/constants";
-import {useAction} from "#src/shared/hooks";
+import {useSafeAction} from "#src/shared/hooks";
 import {ModalProps} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
 import {
@@ -14,7 +14,7 @@ import {
 } from "@nextui-org/react";
 import {useRouter} from "next/navigation";
 import {FC, FormEvent} from "react";
-import {leaveProject} from "./actions";
+import {safeLeaveProjectById} from "./actions";
 
 interface Props extends ModalProps {
 	projectId: string;
@@ -24,15 +24,15 @@ const LeaveProjectModal: FC<Props> = ({onClose, projectId}) => {
 	const router = useRouter();
 	const {showToast} = useToast();
 
-	const {execute, isPending} = useAction(leaveProject, {
-		onSuccess: data => {
+	const {execute, isPending} = useSafeAction(safeLeaveProjectById, {
+		onSuccess: result => {
 			router.push(Pathname.CHATS);
 			router.refresh();
-			showToast({variant: "success", message: data.success});
+			showToast({variant: "success", message: result.success});
 			onClose();
 		},
-		onError: data => {
-			showToast({variant: "error", message: data.error});
+		onError: result => {
+			showToast({variant: "error", message: result.error});
 		}
 	});
 

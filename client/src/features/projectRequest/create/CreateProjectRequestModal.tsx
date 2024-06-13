@@ -1,6 +1,6 @@
 "use client";
 
-import {useAction} from "#src/shared/hooks";
+import {useSafeAction} from "#src/shared/hooks";
 import {ModalProps} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
 import {
@@ -12,7 +12,7 @@ import {
 	ModalHeader
 } from "@nextui-org/react";
 import {FC, FormEvent} from "react";
-import {createProjectRequest} from "./actions";
+import {safeCreateProjectRequest} from "./actions";
 
 interface Props extends ModalProps {
 	projectId: string;
@@ -26,13 +26,13 @@ const CreateProjectRequestModal: FC<Props> = ({
 }) => {
 	const {showToast} = useToast();
 
-	const {execute, isPending} = useAction(createProjectRequest, {
-		onSuccess: data => {
-			showToast({variant: "success", message: data.success});
+	const {execute, isPending} = useSafeAction(safeCreateProjectRequest, {
+		onSuccess: result => {
+			showToast({variant: "success", message: result.success});
 			onClose();
 		},
-		onError: data => {
-			showToast({variant: "error", message: data.error});
+		onError: result => {
+			showToast({variant: "error", message: result.error});
 		}
 	});
 

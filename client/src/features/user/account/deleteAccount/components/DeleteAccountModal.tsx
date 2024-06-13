@@ -1,7 +1,7 @@
 "use client";
 
 import {logOut} from "#src/shared/auth";
-import {useAction} from "#src/shared/hooks";
+import {useSafeAction} from "#src/shared/hooks";
 import {ModalProps} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
 import {
@@ -13,20 +13,20 @@ import {
 	ModalHeader
 } from "@nextui-org/react";
 import {FC, FormEvent} from "react";
-import {deleteAccount} from "../actions";
+import {safeDeleteAccount} from "../actions";
 
 type Props = ModalProps;
 
 const DeleteAccountModal: FC<Props> = ({onClose}) => {
 	const {showToast} = useToast();
-	const {execute, isPending} = useAction(deleteAccount, {
-		onSuccess: async data => {
+	const {execute, isPending} = useSafeAction(safeDeleteAccount, {
+		onSuccess: async result => {
 			await logOut();
-			showToast({variant: "success", message: data.success});
+			showToast({variant: "success", message: result.success});
 			onClose();
 		},
-		onError: data => {
-			showToast({variant: "error", message: data.error});
+		onError: result => {
+			showToast({variant: "error", message: result.error});
 		}
 	});
 

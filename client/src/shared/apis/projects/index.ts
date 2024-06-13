@@ -1,4 +1,8 @@
 import * as projectsApi from "./projectsApi";
 
 export default projectsApi;
-export type {CreateProjectBody} from "./types";
+export type {
+	CreateProjectBody,
+	FetchProjectsResponse,
+	FetchProjectResponse
+} from "./types";
