@@ -44,6 +44,7 @@ const getByProjectId = async (
 		res.set({
 			[Header.TOTAL_COUNT]: totalCount,
 			[Header.PAGE]: parsedPage,
+			[Header.PAGE_LIMIT]: parsedLimit,
 			[Header.TOTAL_PAGES]: calcTotalPages(totalCount, parsedLimit)
 		});
 		res.json(messages);

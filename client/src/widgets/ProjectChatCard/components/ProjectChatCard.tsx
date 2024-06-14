@@ -9,9 +9,19 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 
 interface Props {
-	projects: ProjectFromApi[];
+	projects: {
+		data: ProjectFromApi[];
+		hasMore: boolean;
+		isFetching: boolean;
+		onFetchMore: () => void;
+	};
+	messages: {
+		data: ProjectMessageFromApi[];
+		hasMore: boolean;
+		isFetching: boolean;
+		onFetchMore: () => void;
+	};
 	project: ProjectFromApi;
-	initialMessages: ProjectMessageFromApi[];
 	session: Session;
 	isChatActive?: (projectId: ProjectFromApi["id"]) => boolean;
 	onChatClick?: (projectId: ProjectFromApi["id"]) => void;
@@ -19,8 +29,8 @@ interface Props {
 
 const ProjectChatCard: FC<Props> = ({
 	projects,
+	messages,
 	project,
-	initialMessages,
 	session,
 	isChatActive,
 	onChatClick
@@ -34,7 +44,10 @@ const ProjectChatCard: FC<Props> = ({
 		<ProjectChatLayout
 			sidebarSlot={
 				<Sidebar
-					projects={projects}
+					projects={projects.data}
+					hasMore={projects.hasMore}
+					isFetching={projects.isFetching}
+					onFetchMore={projects.onFetchMore}
 					isOpen={sidebarIsOpen}
 					onClose={closeSidebar}
 					isChatActive={isChatActive}
@@ -49,11 +62,7 @@ const ProjectChatCard: FC<Props> = ({
 				/>
 			}
 			bodySlot={
-				<Body
-					project={project}
-					initialMessages={initialMessages}
-					session={session}
-				/>
+				<Body project={project} messages={messages} session={session} />
 			}
 		/>
 	);

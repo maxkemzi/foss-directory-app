@@ -15,9 +15,6 @@ const RolesField = () => {
 	const rolesValue = form.watch("roles");
 
 	const {roles, hasMore, isFetching, fetchFirstPage, fetchMore} = useRoleList();
-	useEffect(() => {
-		fetchFirstPage();
-	}, [fetchFirstPage]);
 
 	const [autocompleteIsOpen, setAutocompleteIsOpen] = useState(false);
 	const [autocompleteValue, setAutocompleteValue] = useState("");
@@ -28,10 +25,9 @@ const RolesField = () => {
 	});
 
 	const fetchFirstPageWithDebounce = useDebouncedCallback(fetchFirstPage);
-	const handleInputChange = (value: string) => {
-		setAutocompleteValue(value);
-		fetchFirstPageWithDebounce({search: value});
-	};
+	useEffect(() => {
+		fetchFirstPageWithDebounce({search: autocompleteValue});
+	}, [autocompleteValue, fetchFirstPageWithDebounce]);
 
 	const submitIsDisabled = useMemo(
 		() =>
@@ -83,7 +79,7 @@ const RolesField = () => {
 					scrollRef={scrollRef}
 					onOpenChange={setAutocompleteIsOpen}
 					inputValue={autocompleteValue}
-					onInputChange={handleInputChange}
+					onInputChange={setAutocompleteValue}
 					isInvalid={"roles" in formState.errors}
 					errorMessage={formState.errors.roles?.message}
 				>

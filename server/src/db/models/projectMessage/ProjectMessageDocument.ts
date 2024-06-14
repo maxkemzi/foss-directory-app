@@ -62,17 +62,17 @@ class ProjectMessageDocument
 					`
 				SELECT *
 				FROM (
-					SELECT pr.id, r.name, pr.created_at, pr.updated_at, row_number() OVER (ORDER BY pr.created_at) as seq_num
+					SELECT pr.id, r.name, pr.created_at, pr.updated_at
 					FROM project_user_accounts pua
 					JOIN project_roles pr ON pua.project_role_id = pr.id
 					JOIN role r ON pr.role_id = r.id
 					WHERE pua.project_id = $1 AND pua.user_account_id = $2
 					UNION ALL
-					SELECT pr.id, pr.name, pr.created_at, pr.updated_at, row_number() OVER (ORDER BY pr.created_at) as seq_num
+					SELECT pr.id, pr.name, pr.created_at, pr.updated_at
 					FROM project_user_accounts pua
 					JOIN project_roles pr ON pua.project_role_id = pr.id
 					WHERE pua.project_id = $1 AND pua.user_account_id = $2 AND pr.role_id IS NULL
-				) AS combined ORDER BY combined.seq_num;
+				);
 			`,
 					[projectId, userId]
 				)

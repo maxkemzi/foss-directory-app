@@ -2,12 +2,13 @@
 
 import {fetchApiWithAuth} from "#src/shared/auth";
 import {CacheTag} from "#src/shared/constants";
-import {getPaginationHeaderValues} from "../../helpers";
+import {calcHasMore, getPaginationHeaderValues} from "../../helpers";
 import {
 	AcceptProjectRequestResponse,
 	CreateProjectRequestBody,
 	CreateProjectRequestResponse,
 	FetchProjectRequestsResponse,
+	FetchProjectRequestsSearchParams,
 	RejectProjectRequestResponse
 } from "./types";
 
@@ -38,21 +39,26 @@ const reject = async (id: string): Promise<RejectProjectRequestResponse> => {
 	return response.json();
 };
 
-const fetchIncoming = async (): Promise<FetchProjectRequestsResponse> => {
+const fetchIncoming = async (
+	params?: FetchProjectRequestsSearchParams
+): Promise<FetchProjectRequestsResponse> => {
 	const response = await fetchApiWithAuth(`${BASE_URL}/received`, {
-		next: {tags: [CacheTag.REQUESTS]}
+		next: {tags: [CacheTag.REQUESTS]},
+		params
 	});
 
 	const data = await response.json();
 
 	const {headers} = response;
-	const {totalCount, page, totalPages} = getPaginationHeaderValues(headers);
+	const {totalCount, page, limit, totalPages} =
+		getPaginationHeaderValues(headers);
 
 	return {
 		data,
 		totalCount,
 		page,
-		totalPages
+		limit,
+		hasMore: calcHasMore(page, totalPages)
 	};
 };
 

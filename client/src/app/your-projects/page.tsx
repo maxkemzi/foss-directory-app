@@ -1,4 +1,4 @@
-import {getProjectsByOwnership} from "#src/entities/project";
+import {projectActions} from "#src/entities/project";
 import {
 	PageContainer,
 	PageContent,
@@ -8,14 +8,17 @@ import {
 import Table from "./Table";
 
 const YourProjects = async () => {
-	const {data: projects} = await getProjectsByOwnership();
+	const LIMIT = 6;
+	const response = await projectActions.getByOwnership({
+		limit: LIMIT
+	});
 
 	return (
 		<PageSection>
 			<PageContainer>
 				<PageTitle>Your projects</PageTitle>
 				<PageContent>
-					<Table projects={projects} />
+					<Table response={response} />
 				</PageContent>
 			</PageContainer>
 		</PageSection>

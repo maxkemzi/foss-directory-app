@@ -1,6 +1,13 @@
 "use client";
 
-import {ProjectFromApi, ProjectMessageFromApi} from "#src/shared/apis";
+import {useProjectList} from "#src/entities/project";
+import {useProjectMessageList} from "#src/entities/projectMessage";
+import {ProjectFromApi} from "#src/shared/apis";
+import {
+	FetchProjectResponse,
+	FetchProjectsResponse
+} from "#src/shared/apis/projects";
+import {FetchProjectMessagesResponse} from "#src/shared/apis/projects/messages";
 import {Session} from "#src/shared/auth";
 import {Pathname} from "#src/shared/constants";
 import {ProjectChatCard} from "#src/widgets/ProjectChatCard";
@@ -9,23 +16,34 @@ import {FC} from "react";
 import {revalidateChatPath} from "./actions";
 
 interface Props {
-	projects: ProjectFromApi[];
-	project: ProjectFromApi;
-	initialMessages: ProjectMessageFromApi[];
+	projectId: ProjectFromApi["id"];
+	projectsResponse: FetchProjectsResponse;
+	messagesResponse: FetchProjectMessagesResponse;
+	projectResponse: FetchProjectResponse;
 	session: Session;
 }
 
-const Chat: FC<Props> = ({projects, project, initialMessages, session}) => {
+const Chat: FC<Props> = ({
+	projectId,
+	projectsResponse,
+	messagesResponse,
+	projectResponse,
+	session
+}) => {
 	const pathname = usePathname();
 	const router = useRouter();
 
-	const getChatPath = (projectId: string) => `${Pathname.CHATS}/${projectId}`;
+	const projectList = useProjectList("membership", projectsResponse);
 
-	const handleIsChatActive = (projectId: string) =>
-		pathname === getChatPath(projectId);
+	const projectMessageList = useProjectMessageList(projectId, messagesResponse);
 
-	const handleChatClick = async (projectId: string) => {
-		const path = getChatPath(projectId);
+	const getChatPathByProjectId = (id: string) => `${Pathname.CHATS}/${id}`;
+
+	const handleIsChatActive = (id: string) =>
+		pathname === getChatPathByProjectId(id);
+
+	const handleChatClick = async (id: string) => {
+		const path = getChatPathByProjectId(id);
 
 		await revalidateChatPath(path);
 		router.replace(path);
@@ -33,9 +51,19 @@ const Chat: FC<Props> = ({projects, project, initialMessages, session}) => {
 
 	return (
 		<ProjectChatCard
-			projects={projects}
-			project={project}
-			initialMessages={initialMessages}
+			projects={{
+				data: projectList.projects,
+				hasMore: projectList.hasMore,
+				isFetching: projectList.isFetching,
+				onFetchMore: projectList.fetchMore
+			}}
+			messages={{
+				data: projectMessageList.messages,
+				hasMore: projectMessageList.hasMore,
+				isFetching: projectMessageList.isFetching,
+				onFetchMore: projectMessageList.fetchMore
+			}}
+			project={projectResponse.data}
 			session={session}
 			isChatActive={handleIsChatActive}
 			onChatClick={handleChatClick}

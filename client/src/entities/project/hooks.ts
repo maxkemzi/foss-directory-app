@@ -1,18 +1,13 @@
 "use client";
 
-import {ProjectFromApi, calcHasMore} from "#src/shared/apis";
-import {FetchProjectsSearchParams} from "#src/shared/apis/projects";
+import {
+	FetchProjectsResponse,
+	FetchProjectsSearchParams
+} from "#src/shared/apis/projects";
 import {useSafeAction} from "#src/shared/hooks";
-import {useCallback, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {safeGetAll, safeGetByMembership, safeGetByOwnership} from "./actions";
 import {ProjectsFetchVariant} from "./types";
-
-interface Options {
-	initialProjects: ProjectFromApi[];
-	variant: ProjectsFetchVariant;
-	initialHasMore: boolean;
-	initialParams?: Omit<FetchProjectsSearchParams, "search">;
-}
 
 const VARIANT_TO_ACTION_MAPPING = {
 	all: safeGetAll,
@@ -20,12 +15,22 @@ const VARIANT_TO_ACTION_MAPPING = {
 	membership: safeGetByMembership
 };
 
-const useProjectList = (opts: Options) => {
-	const {initialProjects, variant, initialHasMore, initialParams = {}} = opts;
-	const [projects, setProjects] = useState(initialProjects);
-	const [page, setPage] = useState(initialParams.page || 1);
-	const [hasMore, setHasMore] = useState<boolean>(initialHasMore || false);
-	const limit = useRef(initialParams.limit || 6);
+const useProjectList = (
+	variant: ProjectsFetchVariant,
+	initialResponse: FetchProjectsResponse
+) => {
+	const [projects, setProjects] = useState(initialResponse.data);
+	const [page, setPage] = useState(initialResponse.page);
+	const [hasMore, setHasMore] = useState<boolean>(initialResponse.hasMore);
+	const limit = useRef(initialResponse.limit);
+
+	useEffect(() => {
+		setProjects(initialResponse.data);
+	}, [initialResponse.data]);
+
+	useEffect(() => {
+		setHasMore(initialResponse.hasMore);
+	}, [initialResponse.hasMore]);
 
 	const {execute, isPending: isFetching} = useSafeAction(
 		VARIANT_TO_ACTION_MAPPING[variant],
@@ -40,7 +45,7 @@ const useProjectList = (opts: Options) => {
 				}
 
 				setPage(response.page);
-				setHasMore(calcHasMore(response.page, response.totalPages));
+				setHasMore(response.hasMore);
 			}
 		}
 	);

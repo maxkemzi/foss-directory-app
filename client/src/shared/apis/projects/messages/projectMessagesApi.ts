@@ -1,30 +1,34 @@
 "use server";
 
 import {fetchApiWithAuth} from "#src/shared/auth";
-import {getPaginationHeaderValues} from "../../helpers";
-import {FetchProjectMessagesResponse} from "./types";
+import {calcHasMore, getPaginationHeaderValues} from "../../helpers";
+import {
+	FetchProjectMessagesResponse,
+	FetchProjectMessagesSearchParams
+} from "./types";
 
 const BASE_URL = "/projects";
 
 const fetchByProjectId = async (
 	id: string,
-	options: RequestInit = {}
+	params?: FetchProjectMessagesSearchParams
 ): Promise<FetchProjectMessagesResponse> => {
-	const response = await fetchApiWithAuth(
-		`${BASE_URL}/${id}/messages`,
-		options
-	);
+	const response = await fetchApiWithAuth(`${BASE_URL}/${id}/messages`, {
+		params
+	});
 
 	const data = await response.json();
 
 	const {headers} = response;
-	const {totalCount, page, totalPages} = getPaginationHeaderValues(headers);
+	const {totalCount, page, limit, totalPages} =
+		getPaginationHeaderValues(headers);
 
 	return {
 		data,
 		totalCount,
 		page,
-		totalPages
+		limit,
+		hasMore: calcHasMore(page, totalPages)
 	};
 };
 

@@ -2,6 +2,7 @@
 
 import {
 	PropsWithChildren,
+	ReactNode,
 	forwardRef,
 	useImperativeHandle,
 	useRef
@@ -11,8 +12,12 @@ interface Ref {
 	scrollToEnd: () => void;
 }
 
-const ProjectMessageList = forwardRef<Ref, PropsWithChildren>(
-	({children}, ref) => {
+interface Props extends PropsWithChildren {
+	topSlot?: ReactNode;
+}
+
+const ProjectMessageList = forwardRef<Ref, Props>(
+	({children, topSlot}, ref) => {
 		const lastElementRef = useRef<HTMLDivElement>(null);
 
 		useImperativeHandle(
@@ -31,6 +36,7 @@ const ProjectMessageList = forwardRef<Ref, PropsWithChildren>(
 			<div className="flex flex-col-reverse overflow-y-auto">
 				<div ref={lastElementRef} className="invisible" />
 				<div className="flex flex-col-reverse gap-4 p-6">{children}</div>
+				{topSlot}
 			</div>
 		);
 	}

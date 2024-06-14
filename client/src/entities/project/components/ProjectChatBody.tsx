@@ -14,7 +14,7 @@ const ProjectChatBody: FC<Props> = ({contentSlot, bottomSlot}) => {
 			<Card
 				fullWidth
 				classNames={{
-					base: "h-full",
+					base: "flex-grow",
 					body: "p-0 overflow-hidden"
 				}}
 			>

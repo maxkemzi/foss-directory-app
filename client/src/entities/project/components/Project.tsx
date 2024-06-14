@@ -17,15 +17,21 @@ interface Props {
 
 const Project: FC<Props> = ({project, topSlot, bottomSlot}) => {
 	return (
-		<Card classNames={{base: "max-w-[500px]"}} fullWidth>
+		<Card classNames={{base: "max-w-[500px] h-full"}} fullWidth>
 			<CardHeader>
 				<p className="text-md">{project.name}</p>
 			</CardHeader>
 			<Divider />
 			<CardBody>
-				{topSlot ? <div className="mb-2">{topSlot}</div> : null}
-				<p>{project.description}</p>
-				{bottomSlot ? <div className="mt-4">{bottomSlot}</div> : null}
+				<div className="flex flex-col h-full">
+					{topSlot ? <div className="mb-2 flex-shrink-0">{topSlot}</div> : null}
+					<p className="flex-grow [display:-webkit-box] [-webkit-line-clamp:4] [-webkit-box-orient:vertical] overflow-hidden text-ellipsis">
+						{project.description}
+					</p>
+					{bottomSlot ? (
+						<div className="mt-4 flex-shrink-0">{bottomSlot}</div>
+					) : null}
+				</div>
 			</CardBody>
 			<Divider />
 			<CardFooter>

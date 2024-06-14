@@ -14,9 +14,6 @@ const TagsField = () => {
 	const tagsValue = form.watch("tags");
 
 	const {tags, hasMore, isFetching, fetchFirstPage, fetchMore} = useTagList();
-	useEffect(() => {
-		fetchFirstPage();
-	}, [fetchFirstPage]);
 
 	const [autocompleteIsOpen, setAutocompleteIsOpen] = useState(false);
 	const [autocompleteValue, setAutocompleteValue] = useState("");
@@ -28,10 +25,9 @@ const TagsField = () => {
 	});
 
 	const fetchFirstPageWithDebounce = useDebouncedCallback(fetchFirstPage);
-	const handleInputChange = (value: string) => {
-		setAutocompleteValue(value);
-		fetchFirstPageWithDebounce({search: value});
-	};
+	useEffect(() => {
+		fetchFirstPageWithDebounce({search: autocompleteValue});
+	}, [autocompleteValue, fetchFirstPageWithDebounce]);
 
 	const submitIsDisabled = useMemo(
 		() =>
@@ -73,7 +69,7 @@ const TagsField = () => {
 					scrollRef={scrollerRef}
 					onOpenChange={setAutocompleteIsOpen}
 					inputValue={autocompleteValue}
-					onInputChange={handleInputChange}
+					onInputChange={setAutocompleteValue}
 					isInvalid={"tags" in formState.errors}
 					errorMessage={formState.errors.tags?.message}
 					onKeyDown={handleKeyDown}

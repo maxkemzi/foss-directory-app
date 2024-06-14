@@ -1,11 +1,11 @@
-import {getProjectsByMembership} from "#src/entities/project";
+import {projectActions} from "#src/entities/project";
 import {Pathname} from "#src/shared/constants";
 import {redirect} from "next/navigation";
 
 const Chats = async () => {
-	const {data: projects} = await getProjectsByMembership();
+	const {data} = await projectActions.getByMembership();
 
-	const firstProject = projects[0];
+	const firstProject = data[0];
 	if (firstProject) {
 		redirect(`${Pathname.CHATS}/${firstProject.id}`);
 	}

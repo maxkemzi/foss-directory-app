@@ -1,7 +1,7 @@
 "use server";
 
 import {fetchApiWithAuth} from "#src/shared/auth";
-import {getPaginationHeaderValues} from "../../helpers";
+import {calcHasMore, getPaginationHeaderValues} from "../../helpers";
 import {FetchProjectUsersResponse} from "./types";
 
 const BASE_URL = "/projects";
@@ -14,13 +14,15 @@ const fetchByProjectId = async (
 	const data = await response.json();
 
 	const {headers} = response;
-	const {totalCount, page, totalPages} = getPaginationHeaderValues(headers);
+	const {totalCount, page, limit, totalPages} =
+		getPaginationHeaderValues(headers);
 
 	return {
 		data,
 		totalCount,
 		page,
-		totalPages
+		limit,
+		hasMore: calcHasMore(page, totalPages)
 	};
 };
 

@@ -1,26 +1,20 @@
 "use client";
 
 import {ProjectList, useProjectList} from "#src/entities/project";
-import {ProjectFromApi} from "#src/shared/apis";
+import {FetchMoreButton} from "#src/features/fetchMore";
+import {FetchProjectsResponse} from "#src/shared/apis/projects";
 import {ProjectCard} from "#src/widgets/ProjectCard";
-import {Button, Spinner} from "@nextui-org/react";
 import {FC} from "react";
 
 interface Props {
-	initialProjects: ProjectFromApi[];
-	initialHasMore: boolean;
-	limit: number;
+	response: FetchProjectsResponse;
 }
 
-const List: FC<Props> = ({initialProjects, initialHasMore, limit}) => {
-	const {projects, fetchMore, hasMore, isFetching} = useProjectList({
-		variant: "all",
-		initialProjects,
-		initialHasMore,
-		initialParams: {limit}
-	});
-
-	const handleClick = () => fetchMore();
+const List: FC<Props> = ({response}) => {
+	const {projects, fetchMore, hasMore, isFetching} = useProjectList(
+		"all",
+		response
+	);
 
 	return (
 		<div>
@@ -29,20 +23,12 @@ const List: FC<Props> = ({initialProjects, initialHasMore, limit}) => {
 					<ProjectCard key={p.id} project={p} />
 				))}
 			</ProjectList>
-			{isFetching || hasMore ? (
-				<div className="flex justify-center mt-4">
-					{isFetching ? (
-						<Spinner />
-					) : (
-						<Button
-							color="primary"
-							isDisabled={isFetching}
-							onClick={handleClick}
-						>
-							Load More
-						</Button>
-					)}
-				</div>
+			{hasMore ? (
+				<FetchMoreButton
+					className="mt-4"
+					isFetching={isFetching}
+					onFetchMore={fetchMore}
+				/>
 			) : null}
 		</div>
 	);

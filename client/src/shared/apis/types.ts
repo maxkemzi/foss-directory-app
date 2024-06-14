@@ -14,7 +14,8 @@ interface ApiResponse<Data = any> {
 interface ApiPaginationData {
 	totalCount: number;
 	page: number;
-	totalPages: number;
+	limit: number;
+	hasMore: boolean;
 }
 
 type ApiResponseWithPagination<Data = any> = ApiResponse<Data> &

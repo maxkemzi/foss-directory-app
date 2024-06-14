@@ -6,7 +6,7 @@ interface Props {
 }
 
 const PageContent: FC<PropsWithChildren<Props>> = ({children, className}) => (
-	<div className={classNames("", className)}>{children}</div>
+	<div className={classNames("w-full", className)}>{children}</div>
 );
 
 export default PageContent;

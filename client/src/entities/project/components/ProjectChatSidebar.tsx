@@ -20,8 +20,8 @@ const ProjectChatSidebar: FC<Props> = ({isOpen, onClose, contentSlot}) => {
 	});
 
 	return (
-		<aside>
-			<div className="hidden md:block">{contentSlot}</div>
+		<aside className="h-full">
+			<div className="h-full hidden md:block">{contentSlot}</div>
 			<AnimatePresence>
 				{isOpen ? (
 					<motion.aside

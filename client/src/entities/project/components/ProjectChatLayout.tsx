@@ -8,11 +8,13 @@ interface Props {
 
 const ProjectChatLayout: FC<Props> = ({sidebarSlot, headerSlot, bodySlot}) => {
 	return (
-		<div className="relative overflow-hidden">
-			<div className="max-md:flex max-md:flex-col md:grid md:grid-cols-[200px,_1fr] md:grid-rows-[auto_60vh] md:gap-6">
-				<div className="md:row-span-2">{sidebarSlot}</div>
-				<div className="max-md:mb-6">{headerSlot}</div>
-				<div className="max-md:h-[60vh]">{bodySlot}</div>
+		<div className="relative overflow-hidden h-[70vh]">
+			<div className="h-full max-md:flex max-md:flex-col md:flex md:gap-4">
+				<div className="flex-shrink-0 w-[200px]">{sidebarSlot}</div>
+				<div className="flex flex-col flex-grow gap-4">
+					<div className="flex-shrink-0">{headerSlot}</div>
+					<div className="h-full flex-grow overflow-hidden">{bodySlot}</div>
+				</div>
 			</div>
 		</div>
 	);

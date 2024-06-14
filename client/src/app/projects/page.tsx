@@ -1,5 +1,4 @@
 import {projectActions} from "#src/entities/project";
-import {calcHasMore} from "#src/shared/apis";
 import {
 	PageContainer,
 	PageContent,
@@ -10,21 +9,15 @@ import List from "./List";
 
 const Projects = async () => {
 	const LIMIT = 6;
-	const {data, page, totalPages} = await projectActions.getAll({limit: LIMIT});
-
-	const hasMore = calcHasMore(page, totalPages);
+	const response = await projectActions.getAll({limit: LIMIT});
 
 	return (
 		<PageSection>
 			<PageContainer>
 				<PageTitle>Projects</PageTitle>
 				<PageContent>
-					{data.length !== 0 ? (
-						<List
-							initialProjects={data}
-							initialHasMore={hasMore}
-							limit={LIMIT}
-						/>
+					{response.data.length !== 0 ? (
+						<List response={response} />
 					) : (
 						<p>There are no projects</p>
 					)}

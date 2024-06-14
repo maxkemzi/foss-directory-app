@@ -2,7 +2,7 @@
 
 import {fetchApiWithAuth} from "#src/shared/auth";
 import {CacheTag} from "#src/shared/constants";
-import {getPaginationHeaderValues} from "../helpers";
+import {calcHasMore, getPaginationHeaderValues} from "../helpers";
 import {
 	CreateProjectBody,
 	CreateProjectResponse,
@@ -37,13 +37,15 @@ const fetchAll = async (
 	const data = await response.json();
 
 	const {headers} = response;
-	const {totalCount, page, totalPages} = getPaginationHeaderValues(headers);
+	const {totalCount, page, limit, totalPages} =
+		getPaginationHeaderValues(headers);
 
 	return {
 		data,
 		totalCount,
 		page,
-		totalPages
+		limit,
+		hasMore: calcHasMore(page, totalPages)
 	};
 };
 
@@ -58,13 +60,15 @@ const fetchByOwnership = async (
 	const data = await response.json();
 
 	const {headers} = response;
-	const {totalCount, page, totalPages} = getPaginationHeaderValues(headers);
+	const {totalCount, page, limit, totalPages} =
+		getPaginationHeaderValues(headers);
 
 	return {
 		data,
 		totalCount,
 		page,
-		totalPages
+		limit,
+		hasMore: calcHasMore(page, totalPages)
 	};
 };
 
@@ -79,13 +83,15 @@ const fetchByMembership = async (
 	const data = await response.json();
 
 	const {headers} = response;
-	const {totalCount, page, totalPages} = getPaginationHeaderValues(headers);
+	const {totalCount, page, limit, totalPages} =
+		getPaginationHeaderValues(headers);
 
 	return {
 		data,
 		totalCount,
 		page,
-		totalPages
+		limit,
+		hasMore: calcHasMore(page, totalPages)
 	};
 };
 

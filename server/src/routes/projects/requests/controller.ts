@@ -1,5 +1,12 @@
 import {ApiError} from "#src/lib";
 import {projectRequestService} from "#src/services";
+import {
+	parsePageString,
+	parseLimitString,
+	calcOffset,
+	Header,
+	calcTotalPages
+} from "#src/utils";
 import {NextFunction, Request, Response} from "express";
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
@@ -33,8 +40,33 @@ const getReceived = async (req: Request, res: Response, next: NextFunction) => {
 			throw new ApiError(401, "Unauthorized");
 		}
 
-		const requests = await projectRequestService.getByReceiverUserId(userId);
+		const {page, limit} = req.query;
 
+		if (page && typeof page !== "string") {
+			throw new ApiError(400, '"page" param must be a string');
+		}
+
+		if (limit && typeof limit !== "string") {
+			throw new ApiError(400, '"limit" param must be a string');
+		}
+
+		const parsedPage = parsePageString(page);
+		const parsedLimit = parseLimitString(limit);
+
+		const offset = calcOffset(parsedPage, parsedLimit);
+
+		const {requests, totalCount} =
+			await projectRequestService.getByReceiverUserId(userId, {
+				limit: parsedLimit,
+				offset
+			});
+
+		res.set({
+			[Header.TOTAL_COUNT]: totalCount,
+			[Header.PAGE]: parsedPage,
+			[Header.PAGE_LIMIT]: parsedLimit,
+			[Header.TOTAL_PAGES]: calcTotalPages(totalCount, parsedLimit)
+		});
 		res.json(requests);
 	} catch (e) {
 		next(e);

@@ -4,15 +4,16 @@ import {TagFromApi} from "#src/shared/apis";
 import {FetchTagsSearchParams} from "#src/shared/apis/tags";
 import {useSafeAction} from "#src/shared/hooks";
 import {useToast} from "#src/shared/toast";
-import {useCallback, useRef, useState} from "react";
+import {useCallback, useState} from "react";
 import {safeGetAll} from "./actions";
+
+const LIMIT = 10;
 
 const useTagList = () => {
 	const {showToast} = useToast();
 	const [tags, setTags] = useState<TagFromApi[]>([]);
 	const [page, setPage] = useState(1);
 	const [hasMore, setHasMore] = useState<boolean>(false);
-	const limit = useRef(10);
 
 	const {execute, isPending: isFetching} = useSafeAction(safeGetAll, {
 		onSuccess: result => {
@@ -25,7 +26,7 @@ const useTagList = () => {
 			}
 
 			setPage(response.page);
-			setHasMore(response.page < response.totalPages);
+			setHasMore(response.hasMore);
 		},
 		onError: result => {
 			showToast({variant: "error", message: result.error});
@@ -34,7 +35,7 @@ const useTagList = () => {
 
 	const fetchFirstPage = useCallback(
 		({search}: Pick<FetchTagsSearchParams, "search"> = {}) => {
-			execute({page: 1, limit: limit.current, search});
+			execute({page: 1, limit: LIMIT, search});
 		},
 		[execute]
 	);
@@ -44,7 +45,7 @@ const useTagList = () => {
 			execute({
 				page: page + 1,
 				search,
-				limit: limit.current
+				limit: LIMIT
 			});
 		},
 		[execute, page]

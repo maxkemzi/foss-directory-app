@@ -15,7 +15,7 @@ const ProjectRequestCard: FC<Props> = ({request}) => {
 	return (
 		<ProjectRequest
 			request={request}
-			bottomSlot={
+			endSlot={
 				<ProjectRequestButtonList>
 					<AcceptProjectRequestButton requestId={request.id} />
 					<RejectProjectRequestButton requestId={request.id} />

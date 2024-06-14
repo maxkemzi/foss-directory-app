@@ -1,6 +1,6 @@
 import {AppError} from "../error";
 import {ApiHeader} from "./constants";
-import {ApiPaginationData, SearchParams} from "./types";
+import {SearchParams} from "./types";
 
 const getPaginationHeaderValues = (headers: Headers) => {
 	const totalCount = headers.get(ApiHeader.TOTAL_COUNT);
@@ -13,6 +13,11 @@ const getPaginationHeaderValues = (headers: Headers) => {
 		throw new AppError(`${ApiHeader.PAGE} header is missing`);
 	}
 
+	const limit = headers.get(ApiHeader.PAGE_LIMIT);
+	if (!limit) {
+		throw new AppError(`${ApiHeader.PAGE_LIMIT} header is missing`);
+	}
+
 	const totalPages = headers.get(ApiHeader.TOTAL_PAGES);
 	if (!totalPages) {
 		throw new AppError(`${ApiHeader.TOTAL_PAGES} header is missing`);
@@ -21,6 +26,7 @@ const getPaginationHeaderValues = (headers: Headers) => {
 	return {
 		totalCount: Number(totalCount),
 		page: Number(page),
+		limit: Number(limit),
 		totalPages: Number(totalPages)
 	};
 };
@@ -44,9 +50,6 @@ const getUrlString = (url: string, opts: {params?: SearchParams} = {}) => {
 	return result.toString();
 };
 
-const calcHasMore = (
-	page: ApiPaginationData["page"],
-	totalPages: ApiPaginationData["totalPages"]
-) => page < totalPages;
+const calcHasMore = (page: number, totalPages: number) => page < totalPages;
 
 export {getPaginationHeaderValues, getUrlString, calcHasMore};

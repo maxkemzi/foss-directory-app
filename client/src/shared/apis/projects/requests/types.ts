@@ -1,6 +1,7 @@
 import {
 	ApiResponse,
 	ApiResponseWithPagination,
+	PaginationSearchParams,
 	ProjectRequestFromApi
 } from "../../types";
 
@@ -27,14 +28,17 @@ interface RejectProjectRequestResponseData {
 type RejectProjectRequestResponse =
 	ApiResponse<RejectProjectRequestResponseData>;
 
+type FetchProjectRequestsSearchParams = PaginationSearchParams;
+
 type FetchProjectRequestsResponseData = ProjectRequestFromApi[];
 type FetchProjectRequestsResponse =
 	ApiResponseWithPagination<FetchProjectRequestsResponseData>;
 
 export type {
+	FetchProjectRequestsSearchParams,
+	AcceptProjectRequestResponse,
 	CreateProjectRequestBody,
 	CreateProjectRequestResponse,
-	AcceptProjectRequestResponse,
-	RejectProjectRequestResponse,
-	FetchProjectRequestsResponse
+	FetchProjectRequestsResponse,
+	RejectProjectRequestResponse
 };

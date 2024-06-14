@@ -8,6 +8,7 @@ import {
 } from "#src/db";
 import {ProjectRequestDto} from "#src/dtos";
 import {ApiError} from "#src/lib";
+import {GetByReceiverUserIdOptions, GetByReceiverUserIdReturn} from "./types";
 
 const create = async (
 	payload: ProjectRequestPayload,
@@ -35,16 +36,25 @@ const create = async (
 };
 
 const getByReceiverUserId = async (
-	id: string
-): Promise<ProjectRequestDto[]> => {
+	id: string,
+	opts: GetByReceiverUserIdOptions = {}
+): Promise<GetByReceiverUserIdReturn> => {
+	const {limit, offset} = opts;
+
 	const client = await db.getClient();
 
 	try {
-		const requests = await projectRequestModel.findByReceiverUserId(client, id);
+		const [requests, totalCount] = await Promise.all([
+			projectRequestModel.findByReceiverUserId(client, id, {limit, offset}),
+			projectRequestModel.countByReceiverUserId(client, id)
+		]);
 
 		const populatedRequests = await dbHelpers.populateMany(client, requests);
 
-		return populatedRequests.map(pr => new ProjectRequestDto(pr));
+		return {
+			requests: populatedRequests.map(pr => new ProjectRequestDto(pr)),
+			totalCount
+		};
 	} finally {
 		client.release();
 	}

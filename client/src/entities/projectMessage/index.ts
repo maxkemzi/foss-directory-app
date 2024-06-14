@@ -1,8 +1,9 @@
-import {getProjectMessagesByProjectId} from "./actions";
 import ProjectMessage from "./components/ProjectMessage";
 import ProjectMessageList, {
 	ProjectMessageListRef
 } from "./components/ProjectMessageList";
 
-export {ProjectMessage, ProjectMessageList, getProjectMessagesByProjectId};
+export * as projectMessageActions from "./actions";
+export {useProjectMessageList} from "./hooks";
+export {ProjectMessage, ProjectMessageList};
 export type {ProjectMessageListRef};

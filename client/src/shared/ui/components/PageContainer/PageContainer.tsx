@@ -7,7 +7,9 @@ interface Props {
 }
 
 const PageContainer: FC<PropsWithChildren<Props>> = ({children, className}) => (
-	<Container className={classNames("flex flex-col gap-6", className)}>
+	<Container
+		className={classNames("flex flex-col gap-6 items-start", className)}
+	>
 		{children}
 	</Container>
 );

@@ -53,15 +53,15 @@ class ProjectDocument
 				`
 				SELECT *
 				FROM (
-					SELECT pt.id, t.name, pt.created_at, pt.updated_at, row_number() OVER (ORDER BY pt.created_at) as seq_num
+					SELECT pt.id, t.name, pt.created_at, pt.updated_at
 					FROM project_tags pt
 					JOIN tag t ON pt.tag_id = t.id
 					WHERE pt.project_id = $1
 					UNION ALL
-					SELECT id, name, created_at, updated_at, row_number() OVER (ORDER BY created_at) as seq_num
+					SELECT id, name, created_at, updated_at
 					FROM project_tags
 					WHERE project_id = $1 AND tag_id IS NULL
-				) AS combined ORDER BY combined.seq_num;
+				) ORDER BY created_at;
 				`,
 				[id]
 			),
@@ -69,15 +69,15 @@ class ProjectDocument
 				`
 				SELECT *
 				FROM (
-					SELECT pr.id, r.name, pr.places_available, pr.created_at, pr.updated_at, row_number() OVER (ORDER BY pr.created_at) as seq_num
+					SELECT pr.id, r.name, pr.places_available, pr.created_at, pr.updated_at
 					FROM project_roles pr
 					JOIN role r ON pr.role_id = r.id
 					WHERE pr.project_id = $1 AND pr.places_available > 0
 					UNION ALL
-					SELECT id, name, places_available, created_at, updated_at, row_number() OVER (ORDER BY created_at) as seq_num
+					SELECT id, name, places_available, created_at, updated_at
 					FROM project_roles
 					WHERE project_id = $1 AND role_id IS NULL AND places_available > 0
-				) AS combined ORDER BY combined.seq_num;
+				) ORDER BY created_at;
 				`,
 				[id]
 			)

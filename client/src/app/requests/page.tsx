@@ -1,29 +1,25 @@
-import {
-	ProjectRequestList,
-	getReceivedProjectRequests
-} from "#src/entities/projectRequest";
+import {projectRequestActions} from "#src/entities/projectRequest";
 import {
 	PageContainer,
 	PageContent,
 	PageSection,
 	PageTitle
 } from "#src/shared/ui";
-import {ProjectRequestCard} from "#src/widgets/ProjectRequestCard";
+import List from "./List";
 
 const Requests = async () => {
-	const {data: requests} = await getReceivedProjectRequests();
+	const LIMIT = 6;
+	const response = await projectRequestActions.getIncoming({
+		limit: LIMIT
+	});
 
 	return (
 		<PageSection>
 			<PageContainer>
 				<PageTitle>Requests</PageTitle>
 				<PageContent>
-					{requests.length !== 0 ? (
-						<ProjectRequestList>
-							{requests.map(r => {
-								return <ProjectRequestCard key={r.id} request={r} />;
-							})}
-						</ProjectRequestList>
+					{response.data.length !== 0 ? (
+						<List response={response} />
 					) : (
 						<p>There are no requests</p>
 					)}

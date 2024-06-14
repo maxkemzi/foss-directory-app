@@ -1,21 +1,34 @@
 "use server";
 
 import {isApiError} from "#src/shared/apis/lib";
-import projectRequestsApi from "#src/shared/apis/projects/requests";
-import {getServerSession, logOut} from "#src/shared/auth";
+import projectRequestsApi, {
+	FetchProjectRequestsResponse
+} from "#src/shared/apis/projects/requests";
+import {FetchProjectRequestsSearchParams} from "#src/shared/apis/projects/requests/types";
+import {AppError} from "#src/shared/error";
+import {getErrorMessage} from "#src/shared/helpers";
+import {SafeAction} from "#src/shared/hooks";
 
-const getReceivedProjectRequests = async () => {
-	const session = await getServerSession();
-	if (!session) {
-		return logOut();
-	}
-
+const getIncoming = async (params?: FetchProjectRequestsSearchParams) => {
 	try {
-		const response = await projectRequestsApi.fetchIncoming();
+		const response = await projectRequestsApi.fetchIncoming(params);
 		return response;
 	} catch (e) {
-		throw new Error(isApiError(e) ? e.message : "Error fetching requests");
+		const message = isApiError(e) ? e.message : "Error fetching requests";
+		throw new AppError(message);
 	}
 };
 
-export {getReceivedProjectRequests};
+const safeGetIncoming: SafeAction<
+	typeof getIncoming,
+	FetchProjectRequestsResponse
+> = async (params?) => {
+	try {
+		const response = await getIncoming(params);
+		return {success: "Project requests have been fetched", data: response};
+	} catch (e) {
+		return {error: getErrorMessage(e)};
+	}
+};
+
+export {getIncoming, safeGetIncoming};

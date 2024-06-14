@@ -29,6 +29,8 @@ const findByProjectId = async (
 
 	let query = "SELECT * FROM project_messages WHERE project_id = $1";
 
+	query += ` ORDER BY created_at DESC`;
+
 	if (limit) {
 		query += ` LIMIT ${limit}`;
 	}
