@@ -2,6 +2,7 @@
 
 import {FetchProjectMessagesResponse} from "#src/shared/apis/projects/messages";
 import {useSafeAction} from "#src/shared/hooks";
+import {useToast} from "#src/shared/toast";
 import {useCallback, useEffect, useRef, useState} from "react";
 import {safeGetByProjectId} from "./actions";
 
@@ -9,6 +10,7 @@ const useProjectMessageList = (
 	projectId: string,
 	initialResponse: FetchProjectMessagesResponse
 ) => {
+	const {showToast} = useToast();
 	const [messages, setMessages] = useState(initialResponse.data);
 	const [page, setPage] = useState(initialResponse.page);
 	const [hasMore, setHasMore] = useState<boolean>(initialResponse.hasMore);
@@ -34,6 +36,9 @@ const useProjectMessageList = (
 
 			setPage(response.page);
 			setHasMore(response.hasMore);
+		},
+		onError: result => {
+			showToast({variant: "error", message: result.error});
 		}
 	});
 

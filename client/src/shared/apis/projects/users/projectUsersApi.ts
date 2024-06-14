@@ -2,14 +2,18 @@
 
 import {fetchApiWithAuth} from "#src/shared/auth";
 import {calcHasMore, getPaginationHeaderValues} from "../../helpers";
-import {FetchProjectUsersResponse} from "./types";
+import {
+	FetchProjectUsersResponse,
+	FetchProjectUsersSearchParams
+} from "./types";
 
 const BASE_URL = "/projects";
 
 const fetchByProjectId = async (
-	id: string
+	id: string,
+	params?: FetchProjectUsersSearchParams
 ): Promise<FetchProjectUsersResponse> => {
-	const response = await fetchApiWithAuth(`${BASE_URL}/${id}/users`);
+	const response = await fetchApiWithAuth(`${BASE_URL}/${id}/users`, {params});
 
 	const data = await response.json();
 

@@ -1,9 +1,9 @@
 "use client";
 
 import {parseProjectMemberCount} from "#src/entities/project";
-import {ProjectUserFromApi} from "#src/shared/apis";
+import {useProjectUserList} from "#src/entities/projectUser";
+import {FetchMoreButton} from "#src/features/fetchMore";
 import {ModalProps} from "#src/shared/modal";
-import {useToast} from "#src/shared/toast";
 import {StarIcon} from "@heroicons/react/16/solid";
 import {
 	Avatar,
@@ -16,35 +16,19 @@ import {
 	ModalHeader,
 	Spinner
 } from "@nextui-org/react";
-import {FC, useEffect, useState} from "react";
-import {getProjectUsersByProjectId} from "../actions";
+import {FC, useEffect} from "react";
 
 interface Props extends ModalProps {
 	projectId: string;
 }
 
 const ShowProjectChatInfoModal: FC<Props> = ({onClose, projectId}) => {
-	const {showToast} = useToast();
-	const [projectUsers, setProjectUsers] = useState<ProjectUserFromApi[]>([]);
-	const [projectUsersAreFetching, setProjectUsersAreFetching] = useState(false);
+	const {users, isFetching, hasMore, fetchFirstPage, fetchMore} =
+		useProjectUserList(projectId);
 
 	useEffect(() => {
-		const fetchProjectUsers = async () => {
-			setProjectUsersAreFetching(true);
-			try {
-				const {data} = await getProjectUsersByProjectId(projectId);
-				setProjectUsers(data);
-			} catch (e) {
-				showToast({
-					variant: "error",
-					message: e instanceof Error ? e.message : "Something went wrong"
-				});
-			} finally {
-				setProjectUsersAreFetching(false);
-			}
-		};
-		fetchProjectUsers();
-	}, [projectId, showToast]);
+		fetchFirstPage();
+	}, [fetchFirstPage]);
 
 	if (!projectId) {
 		return null;
@@ -53,19 +37,13 @@ const ShowProjectChatInfoModal: FC<Props> = ({onClose, projectId}) => {
 	return (
 		<Modal isOpen onClose={onClose}>
 			<ModalContent>
-				{projectUsersAreFetching ? (
-					<ModalBody>
-						<Spinner />
-					</ModalBody>
-				) : (
-					<>
-						<ModalHeader className="flex flex-col gap-1">
-							Project info
-						</ModalHeader>
-						<ModalBody>
-							<h3>{parseProjectMemberCount(projectUsers.length)}</h3>
+				<ModalHeader className="flex flex-col gap-1">Project info</ModalHeader>
+				<ModalBody>
+					{!isFetching || hasMore ? (
+						<>
+							<h3>{parseProjectMemberCount(users.length)}</h3>
 							<ul className="flex flex-col gap-2">
-								{projectUsers.map(pu => {
+								{users.map(pu => {
 									const avatarJsx = (
 										<Avatar
 											isBordered
@@ -108,9 +86,17 @@ const ShowProjectChatInfoModal: FC<Props> = ({onClose, projectId}) => {
 									);
 								})}
 							</ul>
-						</ModalBody>
-					</>
-				)}
+						</>
+					) : null}
+					{isFetching && !hasMore ? <Spinner /> : null}
+					{hasMore ? (
+						<FetchMoreButton
+							className="mt-2"
+							isFetching={isFetching}
+							onFetchMore={fetchMore}
+						/>
+					) : null}
+				</ModalBody>
 			</ModalContent>
 		</Modal>
 	);

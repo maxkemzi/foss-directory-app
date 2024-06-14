@@ -5,6 +5,7 @@ import {
 	FetchProjectsSearchParams
 } from "#src/shared/apis/projects";
 import {useSafeAction} from "#src/shared/hooks";
+import {useToast} from "#src/shared/toast";
 import {useCallback, useEffect, useRef, useState} from "react";
 import {safeGetAll, safeGetByMembership, safeGetByOwnership} from "./actions";
 import {ProjectsFetchVariant} from "./types";
@@ -19,6 +20,7 @@ const useProjectList = (
 	variant: ProjectsFetchVariant,
 	initialResponse: FetchProjectsResponse
 ) => {
+	const {showToast} = useToast();
 	const [projects, setProjects] = useState(initialResponse.data);
 	const [page, setPage] = useState(initialResponse.page);
 	const [hasMore, setHasMore] = useState<boolean>(initialResponse.hasMore);
@@ -46,6 +48,9 @@ const useProjectList = (
 
 				setPage(response.page);
 				setHasMore(response.hasMore);
+			},
+			onError: result => {
+				showToast({variant: "error", message: result.error});
 			}
 		}
 	);
