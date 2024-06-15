@@ -18,9 +18,9 @@ interface ProjectFromDb extends RowFromDb {
 
 interface ProjectMessageFromDb extends RowFromDb {
 	project_id: string;
-	user_account_id: string | null;
+	user_account_id?: string | null;
 	text: string;
-	type: "regular" | "join";
+	type: "regular" | "join" | "leave";
 }
 
 interface ProjectRequestFromDb extends RowFromDb {

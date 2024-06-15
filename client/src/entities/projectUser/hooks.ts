@@ -1,17 +1,26 @@
 "use client";
 
 import {ProjectUserFromApi} from "#src/shared/apis";
+import {FetchProjectUsersResponse} from "#src/shared/apis/projects/users";
 import {useSafeAction} from "#src/shared/hooks";
 import {useToast} from "#src/shared/toast";
 import {useCallback, useRef, useState} from "react";
 import {safeGetByProjectId} from "./actions";
 
-const useProjectUserList = (projectId: string) => {
+const useProjectUserList = (
+	projectId: string,
+	initialResponse?: FetchProjectUsersResponse
+) => {
+	const initialUsers = initialResponse?.data || [];
+	const initialPage = initialResponse?.page || 1;
+	const initialHasMore = initialResponse?.hasMore || false;
+	const initialLimit = initialResponse?.limit || 10;
+
 	const {showToast} = useToast();
-	const [users, setUsers] = useState<ProjectUserFromApi[]>([]);
-	const [page, setPage] = useState(1);
-	const [hasMore, setHasMore] = useState<boolean>(false);
-	const limit = useRef(10);
+	const [users, setUsers] = useState<ProjectUserFromApi[]>(initialUsers);
+	const [page, setPage] = useState(initialPage);
+	const [hasMore, setHasMore] = useState<boolean>(initialHasMore);
+	const limit = useRef(initialLimit);
 
 	const {execute, isPending: isFetching} = useSafeAction(safeGetByProjectId, {
 		onSuccess: result => {

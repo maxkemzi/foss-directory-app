@@ -30,12 +30,23 @@ interface ProjectPayload {
 	repoUrl: ProjectFromDb["repo_url"];
 }
 
-interface ProjectMessagePayload {
+interface BaseProjectMessagePayload {
 	projectId: ProjectMessageFromDb["project_id"];
-	userId: ProjectMessageFromDb["user_account_id"];
-	text: ProjectMessageFromDb["text"];
-	type: ProjectMessageFromDb["type"];
 }
+
+type ProjectMessagePayload = BaseProjectMessagePayload &
+	(
+		| {
+				userId: NonNullable<ProjectMessageFromDb["user_account_id"]>;
+				text: ProjectMessageFromDb["text"];
+				type: "regular";
+		  }
+		| {
+				userId?: ProjectMessageFromDb["user_account_id"];
+				text?: never;
+				type: "join" | "leave";
+		  }
+	);
 
 interface ProjectUserPayload {
 	userId: ProjectUserFromDb["user_account_id"];

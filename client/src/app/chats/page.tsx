@@ -7,7 +7,8 @@ const Chats = async () => {
 
 	const firstProject = data[0];
 	if (firstProject) {
-		redirect(`${Pathname.CHATS}/${firstProject.id}`);
+		const path = `${Pathname.CHATS}/${firstProject.id}`;
+		redirect(path);
 	}
 
 	return <p>There are no chats</p>;

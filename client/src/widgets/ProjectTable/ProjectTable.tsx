@@ -1,6 +1,5 @@
 "use client";
 
-import {FetchMoreButton} from "#src/features/fetchMore";
 import {ProjectFromApi} from "#src/shared/apis";
 import {MyTable, TableRowData} from "#src/shared/ui";
 import {
@@ -11,23 +10,19 @@ import {
 	TableHeader,
 	TableRow
 } from "@nextui-org/react";
-import {FC, Key, ReactNode} from "react";
+import {FC, Key, ReactNode, useMemo} from "react";
 import {TableColumnKey, tableColumns} from "./constants";
 
 interface Props {
 	projects: ProjectFromApi[];
-	onFetchMore?: () => void;
-	isFetching?: boolean;
-	hasMore?: boolean;
 	renderActionsCell: (projectId: string) => ReactNode;
+	bottomContent?: ReactNode;
 }
 
 const ProjectTable: FC<Props> = ({
 	projects,
-	isFetching,
-	hasMore,
 	renderActionsCell,
-	onFetchMore
+	bottomContent
 }) => {
 	const renderCell = (
 		project: TableRowData<ProjectFromApi>,
@@ -53,26 +48,20 @@ const ProjectTable: FC<Props> = ({
 		}
 	};
 
-	const rows: TableRowData<ProjectFromApi>[] = projects.map(p => ({
-		id: p.id,
-		name: p.name,
-		description: p.description,
-		repoUrl: p.repoUrl,
-		memberCount: p.memberCount
-	}));
+	const rows: TableRowData<ProjectFromApi>[] = useMemo(
+		() =>
+			projects.map(p => ({
+				id: p.id,
+				name: p.name,
+				description: p.description,
+				repoUrl: p.repoUrl,
+				memberCount: p.memberCount
+			})),
+		[projects]
+	);
 
 	return (
-		<MyTable
-			bottomContent={
-				hasMore ? (
-					<FetchMoreButton
-						className="mt-4"
-						isFetching={isFetching}
-						onFetchMore={onFetchMore}
-					/>
-				) : null
-			}
-		>
+		<MyTable bottomContent={bottomContent}>
 			<TableHeader columns={tableColumns}>
 				{column => <TableColumn key={column.key}>{column.text}</TableColumn>}
 			</TableHeader>

@@ -7,11 +7,13 @@ import JoinMessage from "./JoinMessage";
 import SequentialMessage from "./SequentialMessage";
 import UserMessage from "./UserMessage/UserMessage";
 import YourMessage from "./YourMessage";
+import {ProjectDateMessage} from "../types";
+import LeaveMessage from "./LeaveMessage";
 
 interface Props {
-	message: ProjectMessageFromApi;
-	isMine: boolean;
-	isSequential: boolean;
+	message: ProjectMessageFromApi | ProjectDateMessage;
+	isMine?: boolean;
+	isSequential?: boolean;
 }
 
 const ProjectMessage: FC<Props> = ({message, isMine, isSequential}) => {
@@ -19,6 +21,10 @@ const ProjectMessage: FC<Props> = ({message, isMine, isSequential}) => {
 
 	if (type === "join") {
 		return <JoinMessage message={message} />;
+	}
+
+	if (type === "leave") {
+		return <LeaveMessage message={message} />;
 	}
 
 	if (type === "date") {

@@ -16,7 +16,7 @@ const findAll = async (
 		query += ` WHERE ${createSearchCondition(search, ["name"])}`;
 	}
 
-	query += ` ORDER BY created_at DESC`;
+	query += ` ORDER BY created_at DESC, serial_id DESC`;
 
 	if (limit) {
 		query += ` LIMIT ${limit}`;

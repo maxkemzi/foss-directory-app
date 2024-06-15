@@ -2,6 +2,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS user_account (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	serial_id BIGSERIAL,
 	username TEXT UNIQUE NOT NULL,
 	email TEXT UNIQUE NOT NULL,
 	password TEXT NOT NULL,
@@ -11,13 +12,9 @@ CREATE TABLE IF NOT EXISTS user_account (
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS temp_username (
-  user_account_id UUID PRIMARY KEY,
-  username TEXT UNIQUE NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS github_connection (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	serial_id BIGSERIAL,
 	user_account_id UUID UNIQUE NOT NULL REFERENCES user_account(id) ON DELETE CASCADE,
 	token TEXT NOT NULL,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -26,6 +23,7 @@ CREATE TABLE IF NOT EXISTS github_connection (
 
 CREATE TABLE IF NOT EXISTS refresh_token (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	serial_id BIGSERIAL,
 	user_account_id UUID UNIQUE NOT NULL REFERENCES user_account(id) ON DELETE CASCADE,
 	token TEXT NOT NULL,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -34,6 +32,7 @@ CREATE TABLE IF NOT EXISTS refresh_token (
 
 CREATE TABLE IF NOT EXISTS project (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	serial_id BIGSERIAL,
 	owner_user_account_id UUID NOT NULL REFERENCES user_account(id) ON DELETE CASCADE,
 	name TEXT NOT NULL,
 	description TEXT NOT NULL,
@@ -44,6 +43,7 @@ CREATE TABLE IF NOT EXISTS project (
 
 CREATE TABLE IF NOT EXISTS tag (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	serial_id BIGSERIAL,
 	name TEXT UNIQUE NOT NULL,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS tag (
 
 CREATE TABLE IF NOT EXISTS project_tags (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	serial_id BIGSERIAL,
 	project_id UUID NOT NULL REFERENCES project(id) ON DELETE CASCADE,
 	tag_id UUID REFERENCES tag(id) ON DELETE CASCADE,
 	name TEXT,
@@ -61,6 +62,7 @@ CREATE TABLE IF NOT EXISTS project_tags (
 
 CREATE TABLE IF NOT EXISTS role (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	serial_id BIGSERIAL,
 	name TEXT UNIQUE NOT NULL,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -68,6 +70,7 @@ CREATE TABLE IF NOT EXISTS role (
 
 CREATE TABLE IF NOT EXISTS project_roles (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	serial_id BIGSERIAL,
 	project_id UUID NOT NULL REFERENCES project(id) ON DELETE CASCADE,
 	role_id UUID REFERENCES role(id) ON DELETE CASCADE,
 	name TEXT,
@@ -80,6 +83,7 @@ CREATE TABLE IF NOT EXISTS project_roles (
 
 CREATE TABLE IF NOT EXISTS project_user_accounts (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	serial_id BIGSERIAL,
 	user_account_id UUID NOT NULL REFERENCES user_account(id) ON DELETE CASCADE,
 	project_id UUID NOT NULL REFERENCES project(id) ON DELETE CASCADE,
 	project_role_id UUID NOT NULL REFERENCES project_roles(id) ON DELETE CASCADE,
@@ -91,6 +95,7 @@ CREATE TABLE IF NOT EXISTS project_user_accounts (
 
 CREATE TABLE IF NOT EXISTS project_requests (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	serial_id BIGSERIAL,
 	user_account_id UUID NOT NULL REFERENCES user_account(id) ON DELETE CASCADE,
 	project_id UUID NOT NULL REFERENCES project(id) ON DELETE CASCADE,
 	project_role_id UUID NOT NULL REFERENCES project_roles(id) ON DELETE CASCADE,
@@ -100,15 +105,16 @@ CREATE TABLE IF NOT EXISTS project_requests (
 );
 
 DO $$ BEGIN
-	CREATE TYPE MESSAGE_TYPE AS ENUM ('regular', 'join', 'date');
+	CREATE TYPE MESSAGE_TYPE AS ENUM ('regular', 'join', 'leave', 'date');
 EXCEPTION
 	WHEN duplicate_object THEN null;
 END $$;
 CREATE TABLE IF NOT EXISTS project_messages (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	serial_id BIGSERIAL,
 	project_id UUID NOT NULL REFERENCES project(id) ON DELETE CASCADE,
-	user_account_id UUID REFERENCES user_account(id) ON DELETE SET NULL DEFAULT NULL,
-	text TEXT NOT NULL,
+	user_account_id UUID REFERENCES user_account(id) ON DELETE SET NULL,
+	text TEXT DEFAULT NULL,
 	type MESSAGE_TYPE,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -185,14 +191,8 @@ BEGIN
 	SET places_available = places_available - 1
 	WHERE id = NEW.project_role_id;
 
-	INSERT INTO project_messages (project_id, user_account_id, text, type)
-	VALUES (NEW.project_id, NEW.user_account_id, (
-		SELECT CONCAT(username, ' joined the project') FROM user_account WHERE id = NEW.user_account_id
-	), 'join');
-
-	INSERT INTO temp_username (user_account_id, username)
-  VALUES (NEW.user_account_id, (SELECT username FROM user_account WHERE id = NEW.user_account_id))
-	ON CONFLICT (user_account_id) DO NOTHING;
+	INSERT INTO project_messages (project_id, user_account_id, type)
+	VALUES (NEW.project_id, NEW.user_account_id, 'join');
 
 	RETURN NEW;
 END;
@@ -205,12 +205,14 @@ EXECUTE FUNCTION project_user_accounts_after_insert();
 
 CREATE OR REPLACE FUNCTION project_user_accounts_after_delete()
 RETURNS TRIGGER AS $$
-DECLARE
-	temp_username TEXT;
 BEGIN
 	IF (NOT EXISTS (SELECT 1 FROM project WHERE id = OLD.project_id)) THEN
 		RETURN OLD;
 	END IF;
+
+	IF NOT EXISTS (SELECT 1 FROM user_account WHERE id = OLD.user_account_id) THEN
+    OLD.user_account_id := NULL;
+  END IF;
 
 	IF (OLD.is_owner) THEN
 		DELETE FROM project WHERE id = OLD.project_id;
@@ -219,20 +221,9 @@ BEGIN
 		SET places_available = places_available + 1
 		WHERE id = OLD.project_role_id;
 
-		IF (NOT EXISTS (SELECT 1 FROM user_account WHERE id = OLD.user_account_id)) THEN
-			SELECT username INTO temp_username FROM temp_username WHERE user_account_id = OLD.user_account_id;
-
-			INSERT INTO project_messages (project_id, text, type)
-			VALUES (OLD.project_id, CONCAT(temp_username, ' left the project'), 'join');
-		ELSE
-			INSERT INTO project_messages (project_id, user_account_id, text, type)
-			VALUES (OLD.project_id, OLD.user_account_id, (
-				SELECT CONCAT(username, ' left the project') FROM user_account WHERE id = OLD.user_account_id
-			), 'join');
-		END IF;
+		INSERT INTO project_messages (project_id, user_account_id, type)
+		VALUES (OLD.project_id, OLD.user_account_id, 'leave');
 	END IF;
-
-	DELETE FROM temp_username WHERE user_account_id = OLD.user_account_id;
 
 	RETURN OLD;
 END;
@@ -244,35 +235,6 @@ FOR EACH ROW
 EXECUTE FUNCTION project_user_accounts_after_delete();
 
 -- project_messages triggers
-
-CREATE OR REPLACE FUNCTION project_messages_before_insert()
-RETURNS TRIGGER AS $$
-DECLARE is_first_row_today BOOLEAN;
-BEGIN
-	IF (NEW.type = 'date') THEN
-		RETURN NEW;
-	END IF;
-
-	SELECT NOT EXISTS (
-		SELECT 1
-		FROM project_messages
-		WHERE date_trunc('day', created_at) = date_trunc('day', CURRENT_TIMESTAMP)
-		AND project_id = NEW.project_id
-	) INTO is_first_row_today;
-
-	IF (is_first_row_today) THEN
-		INSERT INTO project_messages (project_id, text, type)
-		VALUES (NEW.project_id, to_char(CURRENT_DATE, 'FMMonth FMDD'), 'date');
-	END IF;
-
-	RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE TRIGGER project_messages_before_insert
-BEFORE INSERT ON project_messages
-FOR EACH ROW
-EXECUTE FUNCTION project_messages_before_insert();
 
 CREATE OR REPLACE FUNCTION project_messages_after_insert()
 RETURNS TRIGGER AS $$

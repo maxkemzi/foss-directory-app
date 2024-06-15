@@ -87,7 +87,7 @@ interface ProjectUserFromApi {
 	isOwner: boolean;
 }
 
-interface ProjectMessageFromApi {
+type BaseProjectMessageFromApi = {
 	id: string;
 	sender: {
 		user: {
@@ -98,10 +98,10 @@ interface ProjectMessageFromApi {
 		role: {id: string; name: string} | null;
 		isOwner: boolean;
 	} | null;
-	text: string;
-	type: "regular" | "join" | "date";
 	createdAt: string;
-}
+};
+type ProjectMessageFromApi = BaseProjectMessageFromApi &
+	({text: string; type: "regular"} | {text: null; type: "join" | "leave"});
 
 export type {
 	ApiPaginationData,

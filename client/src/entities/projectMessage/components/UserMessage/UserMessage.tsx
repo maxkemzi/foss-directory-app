@@ -23,7 +23,7 @@ const UserMessage: FC<Props> = ({message}) => {
 				</div>
 				<Card classNames={{base: "bg-content2"}}>
 					<CardBody>
-						<MessageText text={text} />
+						<MessageText>{text}</MessageText>
 					</CardBody>
 				</Card>
 				<MessageTime isoDateString={createdAt} />

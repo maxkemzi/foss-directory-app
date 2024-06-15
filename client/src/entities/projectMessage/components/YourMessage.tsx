@@ -15,7 +15,7 @@ const YourMessage: FC<Props> = ({message}) => {
 		<div className="flex flex-col items-end gap-2 ml-auto">
 			<Card classNames={{base: "bg-primary"}}>
 				<CardBody>
-					<MessageText text={text} />
+					<MessageText>{text}</MessageText>
 				</CardBody>
 			</Card>
 			<div className="self-end">

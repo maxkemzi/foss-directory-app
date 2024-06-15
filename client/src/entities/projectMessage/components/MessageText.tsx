@@ -1,11 +1,7 @@
-import {FC} from "react";
+import {FC, PropsWithChildren} from "react";
 
-interface Props {
-	text: string;
-}
-
-const MessageText: FC<Props> = ({text}) => {
-	return <p className="[overflow-wrap:_anywhere]">{text}</p>;
+const MessageText: FC<PropsWithChildren> = ({children}) => {
+	return <p className="[overflow-wrap:_anywhere]">{children}</p>;
 };
 
 export default MessageText;

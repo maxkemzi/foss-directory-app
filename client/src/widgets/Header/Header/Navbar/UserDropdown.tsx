@@ -35,6 +35,7 @@ const UserDropdown: FC<Props> = ({user}) => {
 				break;
 			case "chats":
 				router.push(Pathname.CHATS);
+				router.refresh();
 				break;
 			case "requests":
 				router.push(Pathname.REQUESTS);

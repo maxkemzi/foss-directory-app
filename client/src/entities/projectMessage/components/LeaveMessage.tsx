@@ -8,14 +8,14 @@ interface Props {
 	message: ProjectMessageFromApi;
 }
 
-const JoinMessage: FC<Props> = ({message}) => {
+const LeaveMessage: FC<Props> = ({message}) => {
 	const {sender, createdAt} = message;
 
 	return (
 		<div className="flex flex-col gap-2 ml-auto mr-auto">
 			<Chip size="lg">
 				<MessageText>
-					{sender?.user.username || "unknown"} joined the project
+					{sender?.user.username || "unknown"} left the project
 				</MessageText>
 			</Chip>
 			<div className="self-center">
@@ -25,4 +25,4 @@ const JoinMessage: FC<Props> = ({message}) => {
 	);
 };
 
-export default JoinMessage;
+export default LeaveMessage;

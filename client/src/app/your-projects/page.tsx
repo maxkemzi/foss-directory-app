@@ -7,8 +7,9 @@ import {
 } from "#src/shared/ui";
 import Table from "./Table";
 
+const LIMIT = 6;
+
 const YourProjects = async () => {
-	const LIMIT = 6;
 	const response = await projectActions.getByOwnership({
 		limit: LIMIT
 	});

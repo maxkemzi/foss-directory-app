@@ -16,7 +16,7 @@ const SequentialMessage: FC<Props> = ({message}) => {
 			<div className="flex flex-col items-start gap-2 col-start-2">
 				<Card classNames={{base: "bg-content2"}}>
 					<CardBody>
-						<MessageText text={text} />
+						<MessageText>{text}</MessageText>
 					</CardBody>
 				</Card>
 				<MessageTime isoDateString={createdAt} />

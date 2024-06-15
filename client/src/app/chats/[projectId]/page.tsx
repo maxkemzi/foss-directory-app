@@ -2,7 +2,9 @@ import {projectActions} from "#src/entities/project";
 import {projectMessageActions} from "#src/entities/projectMessage";
 import {getServerSession, logOut} from "#src/shared/auth";
 import Chat from "./Chat";
-import {FETCH_MESSAGES_LIMIT, FETCH_PROJECTS_LIMIT} from "./constants";
+
+const PROJECTS_LIMIT = 10;
+const MESSAGES_LIMIT = 20;
 
 const ChatsChat = async ({params}: {params: {projectId: string}}) => {
 	const {projectId} = params;
@@ -14,9 +16,9 @@ const ChatsChat = async ({params}: {params: {projectId: string}}) => {
 
 	const [projectsResponse, messagesResponse, projectResponse] =
 		await Promise.all([
-			projectActions.getByMembership({limit: FETCH_PROJECTS_LIMIT}),
+			projectActions.getByMembership({limit: PROJECTS_LIMIT}),
 			projectMessageActions.getByProjectId(projectId, {
-				limit: FETCH_MESSAGES_LIMIT
+				limit: MESSAGES_LIMIT
 			}),
 			projectActions.getById(projectId)
 		]);

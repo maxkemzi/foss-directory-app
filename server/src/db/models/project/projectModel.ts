@@ -45,7 +45,7 @@ const findAll = async (
 		query += ` WHERE ${createSearchCondition(search, ["name", "description"])}`;
 	}
 
-	query += ` ORDER BY created_at DESC`;
+	query += ` ORDER BY created_at DESC, serial_id DESC`;
 
 	if (limit) {
 		query += ` LIMIT ${limit}`;
@@ -92,7 +92,7 @@ const findByOwnerUserId = async (
 		query += ` AND ${createSearchCondition(search, ["name", "description"])}`;
 	}
 
-	query += ` ORDER BY created_at DESC`;
+	query += ` ORDER BY created_at DESC, serial_id DESC`;
 
 	if (limit) {
 		query += ` LIMIT ${limit}`;
@@ -147,7 +147,7 @@ const findByMemberUserId = async (
 		])}`;
 	}
 
-	query += ` ORDER BY created_at DESC`;
+	query += ` ORDER BY created_at DESC, serial_id DESC`;
 
 	if (limit) {
 		query += ` LIMIT ${limit}`;

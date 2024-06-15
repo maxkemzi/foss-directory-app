@@ -13,7 +13,6 @@ import {Pathname} from "#src/shared/constants";
 import {ProjectChatCard} from "#src/widgets/ProjectChatCard";
 import {usePathname, useRouter} from "next/navigation";
 import {FC} from "react";
-import {revalidateChatPath} from "./actions";
 
 interface Props {
 	projectId: ProjectFromApi["id"];
@@ -45,8 +44,8 @@ const Chat: FC<Props> = ({
 	const handleChatClick = async (id: string) => {
 		const path = getChatPathByProjectId(id);
 
-		await revalidateChatPath(path);
 		router.replace(path);
+		router.refresh();
 	};
 
 	return (

@@ -54,7 +54,7 @@ const findByReceiverUserId = async (
 		WHERE p.owner_user_account_id = $1
 	`;
 
-	query += ` ORDER BY created_at DESC`;
+	query += ` ORDER BY created_at DESC, serial_id DESC`;
 
 	if (limit) {
 		query += ` LIMIT ${limit}`;
