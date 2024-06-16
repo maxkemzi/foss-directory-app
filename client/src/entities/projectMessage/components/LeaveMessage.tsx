@@ -19,7 +19,7 @@ const LeaveMessage: FC<Props> = ({message}) => {
 				</MessageText>
 			</Chip>
 			<div className="self-center">
-				<MessageTime isoDateString={createdAt} />
+				<MessageTime createdAt={createdAt} />
 			</div>
 		</div>
 	);

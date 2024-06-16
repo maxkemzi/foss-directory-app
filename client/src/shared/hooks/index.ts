@@ -1,6 +1,6 @@
 import useDebouncedCallback from "./useDebouncedCallback";
-import useEffectUpdateOnly from "./useEffectUpdateOnly";
+import useLayoutEffectUpdateOnly from "./useLayoutEffectUpdateOnly";
 import useSafeAction from "./useSafeAction/useSafeAction";
 
 export type {SafeAction} from "./useSafeAction/types";
-export {useSafeAction, useDebouncedCallback, useEffectUpdateOnly};
+export {useDebouncedCallback, useLayoutEffectUpdateOnly, useSafeAction};

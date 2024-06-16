@@ -2,7 +2,6 @@
 
 import {ProjectChatBody} from "#src/entities/project";
 import {
-	ProjectDateMessage,
 	ProjectMessage,
 	ProjectMessageList,
 	ProjectMessageListRef
@@ -12,9 +11,8 @@ import {SendProjectMessageForm} from "#src/features/projectMessage/send";
 import {useSocketConnection} from "#src/features/socket/connect";
 import {ProjectFromApi, ProjectMessageFromApi} from "#src/shared/apis";
 import {Session} from "#src/shared/auth";
-import {useEffectUpdateOnly} from "#src/shared/hooks";
-import {FC, useCallback, useMemo, useRef, useState} from "react";
-import {v4 as uuidv4} from "uuid";
+import {useLayoutEffectUpdateOnly} from "#src/shared/hooks";
+import {FC, useCallback, useRef, useState} from "react";
 
 interface Props {
 	messages: {
@@ -39,7 +37,7 @@ const Body: FC<Props> = ({project, messages, session}) => {
 		}
 	});
 
-	useEffectUpdateOnly(() => {
+	useLayoutEffectUpdateOnly(() => {
 		messageListRef.current?.scrollToEnd();
 	}, [newMessages]);
 
@@ -54,42 +52,14 @@ const Body: FC<Props> = ({project, messages, session}) => {
 		[project.id, socket]
 	);
 
-	const allMessages = useMemo(() => {
-		const date = new Date();
-		const year = date.getFullYear();
-		const month = date.getMonth();
-		const day = date.getDate();
-
-		return [...newMessages, ...messages.data].reduce<
-			(ProjectMessageFromApi | ProjectDateMessage)[]
-		>((prev, curr, index, arr) => {
-			const createdAtDate = new Date(curr.createdAt);
-			const createdAtYear = createdAtDate.getFullYear();
-			const createdAtMonth = createdAtDate.getMonth();
-			const createdAtDay = createdAtDate.getDate();
-
-			const isDifferentDates =
-				year !== createdAtYear ||
-				month !== createdAtMonth ||
-				day !== createdAtDay;
-
-			if ((index === arr.length - 1 && !messages.hasMore) || isDifferentDates) {
-				return [
-					...prev,
-					curr,
-					{id: uuidv4(), isoDate: curr.createdAt, type: "date"}
-				];
-			}
-
-			return [...prev, curr];
-		}, []);
-	}, [messages, newMessages]);
-
 	return (
 		<ProjectChatBody
 			contentSlot={
 				<ProjectMessageList
 					ref={messageListRef}
+					session={session}
+					withStartDate={!messages.hasMore}
+					messages={[...newMessages, ...messages.data]}
 					topSlot={
 						messages.hasMore ? (
 							<FetchMoreButton
@@ -100,30 +70,16 @@ const Body: FC<Props> = ({project, messages, session}) => {
 						) : null
 					}
 				>
-					{allMessages.map((message, index, arr) => {
-						const isMine =
-							message.type !== "date" && message.sender != null
-								? message.sender.user.id === session.user.id
-								: false;
-
-						const prevMessage = arr[index + 1];
-						const isSequential =
-							message.type !== "date" &&
-							message.sender != null &&
-							prevMessage &&
-							prevMessage.type === "regular" &&
-							prevMessage.sender != null &&
-							prevMessage.sender.user.id === message.sender.user.id;
-
-						return (
+					{items =>
+						items.map(({message, isMine, isSequential}) => (
 							<ProjectMessage
 								key={message.id}
 								message={message}
 								isMine={isMine}
 								isSequential={isSequential}
 							/>
-						);
-					})}
+						))
+					}
 				</ProjectMessageList>
 			}
 			bottomSlot={<SendProjectMessageForm onSend={handleMessageSend} />}

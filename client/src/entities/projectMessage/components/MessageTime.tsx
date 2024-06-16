@@ -1,28 +1,30 @@
 "use client";
 
-import {FC, useEffect, useState} from "react";
-import {formatIsoDateString} from "../helpers";
+import {ProjectMessageFromApi} from "#src/shared/apis";
+import dynamic from "next/dynamic";
+import {FC} from "react";
 
 interface Props {
-	isoDateString: string;
+	createdAt: ProjectMessageFromApi["createdAt"];
 }
 
-const MessageTime: FC<Props> = ({isoDateString}) => {
-	const [formattedTime, setFormattedTime] = useState<string | null>(null);
+const CLASS_NAMES = "text-sm text-foreground-400 truncate";
 
-	useEffect(() => {
-		setFormattedTime(formatIsoDateString(isoDateString));
-	}, [isoDateString]);
+const MessageTime: FC<Props> = ({createdAt}) => {
+	const time = new Intl.DateTimeFormat("en", {
+		hour: "2-digit",
+		minute: "2-digit",
+		hour12: false
+	}).format(new Date(createdAt));
 
-	const classNames = "text-sm text-foreground-400 truncate";
-
-	return formattedTime ? (
-		<time className={classNames} dateTime={formattedTime}>
-			{formattedTime}
+	return (
+		<time className={CLASS_NAMES} dateTime={time}>
+			{time}
 		</time>
-	) : (
-		<p className={classNames}>...</p>
 	);
 };
 
-export default MessageTime;
+export default dynamic(() => Promise.resolve(MessageTime), {
+	ssr: false,
+	loading: () => <p className={CLASS_NAMES}>...</p>
+});

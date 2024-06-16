@@ -1,9 +1,9 @@
-import {DependencyList, useEffect, useRef} from "react";
+import {DependencyList, useLayoutEffect, useRef} from "react";
 
-const useEffectUpdateOnly = (cb: () => void, deps: DependencyList) => {
+const useLayoutEffectUpdateOnly = (cb: () => void, deps: DependencyList) => {
 	const isFirstRender = useRef(true);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (isFirstRender.current) {
 			isFirstRender.current = false;
 			return undefined;
@@ -14,4 +14,4 @@ const useEffectUpdateOnly = (cb: () => void, deps: DependencyList) => {
 	}, deps);
 };
 
-export default useEffectUpdateOnly;
+export default useLayoutEffectUpdateOnly;

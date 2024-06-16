@@ -26,7 +26,7 @@ const UserMessage: FC<Props> = ({message}) => {
 						<MessageText>{text}</MessageText>
 					</CardBody>
 				</Card>
-				<MessageTime isoDateString={createdAt} />
+				<MessageTime createdAt={createdAt} />
 			</div>
 		</div>
 	);

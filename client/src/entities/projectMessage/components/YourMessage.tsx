@@ -19,7 +19,7 @@ const YourMessage: FC<Props> = ({message}) => {
 				</CardBody>
 			</Card>
 			<div className="self-end">
-				<MessageTime isoDateString={createdAt} />
+				<MessageTime createdAt={createdAt} />
 			</div>
 		</div>
 	);

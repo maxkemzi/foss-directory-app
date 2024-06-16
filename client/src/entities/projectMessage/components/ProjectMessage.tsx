@@ -42,4 +42,5 @@ const ProjectMessage: FC<Props> = ({message, isMine, isSequential}) => {
 	return <UserMessage message={message} />;
 };
 
+export type {Props as ProjectMessageProps};
 export default ProjectMessage;
