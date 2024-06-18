@@ -1,5 +1,5 @@
 import authService from "./authService";
-import githubService from "./githubService";
+import githubService from "./github/githubService";
 import projectService from "./project/projectService";
 import projectMessageService from "./projectMessage/projectMessageService";
 import projectUserService from "./projectUser/projectUserService";

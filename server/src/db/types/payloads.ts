@@ -1,5 +1,6 @@
 import {
 	GithubConnectionFromDb,
+	GithubRateLimitFromDb,
 	ProjectFromDb,
 	ProjectMessageFromDb,
 	ProjectRequestFromDb,
@@ -21,6 +22,12 @@ interface PaginationArgs {
 interface GithubConnectionPayload {
 	userId: GithubConnectionFromDb["user_account_id"];
 	token: GithubConnectionFromDb["token"];
+}
+
+interface GithubRateLimitPayload {
+	connectionId: GithubRateLimitFromDb["github_connection_id"];
+	resource: GithubRateLimitFromDb["resource"];
+	resetTime: GithubRateLimitFromDb["reset_time"];
 }
 
 interface ProjectPayload {
@@ -99,6 +106,7 @@ interface UserPayload {
 export type {
 	GithubConnectionPayload,
 	PaginationArgs,
+	GithubRateLimitPayload,
 	ProjectMessagePayload,
 	ProjectPayload,
 	ProjectRequestPayload,

@@ -1,10 +1,14 @@
-import {githubRepoActions} from "#src/entities/githubRepo";
-import {RepoFromApi} from "#src/shared/apis";
-import {useSafeAction} from "#src/shared/hooks";
-import {useToast} from "#src/shared/toast";
+import {useGithubRepoList} from "#src/entities/githubRepo";
+import {useDebouncedCallback, useObserver} from "#src/shared/hooks";
 import {Autocomplete, AutocompleteItem} from "@nextui-org/react";
-import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
-import {FC, Key, KeyboardEventHandler, useEffect, useState} from "react";
+import {
+	FC,
+	Key,
+	KeyboardEventHandler,
+	useEffect,
+	useRef,
+	useState
+} from "react";
 import {useFormContext} from "react-hook-form";
 
 interface Props {
@@ -12,36 +16,28 @@ interface Props {
 }
 
 const ReposField: FC<Props> = ({onKeyDown}) => {
-	const {showToast} = useToast();
-
 	const form = useFormContext();
 
-	const [repos, setRepos] = useState<RepoFromApi[]>([]);
-	const {execute, isPending} = useSafeAction(
-		githubRepoActions.safeGetByOwnership,
-		{
-			onSuccess: result => {
-				const {data: response} = result;
-				setRepos(response.data);
-			},
-			onError: result => {
-				showToast({variant: "error", message: result.error});
-			}
-		}
-	);
+	const {repos, hasMore, isFetching, fetchFirstPage, fetchMore} =
+		useGithubRepoList();
 
 	const [autocompleteIsOpen, setAutocompleteIsOpen] = useState(false);
 	const [autocompleteValue, setAutocompleteValue] = useState("");
-	// todo: implement infinite scroll
-	const [, scrollRef] = useInfiniteScroll({
-		hasMore: false,
-		isEnabled: autocompleteIsOpen,
-		onLoadMore: () => {}
+
+	const rootRef = useRef(null);
+	const targetRef = useRef(null);
+	useObserver(targetRef, {
+		hasMore,
+		isEnabled: autocompleteIsOpen && !isFetching,
+		rootRef,
+		rootMargin: "0px 0px 75px 0px",
+		onIntersect: () => fetchMore({search: autocompleteValue})
 	});
 
+	const fetchFirstPageWithDebounce = useDebouncedCallback(fetchFirstPage);
 	useEffect(() => {
-		execute();
-	}, [execute]);
+		fetchFirstPageWithDebounce({search: autocompleteValue});
+	}, [autocompleteValue, fetchFirstPageWithDebounce]);
 
 	const handleSelectionChange = (id: Key) => {
 		form.reset();
@@ -51,31 +47,38 @@ const ReposField: FC<Props> = ({onKeyDown}) => {
 			return;
 		}
 
-		form.setValue("name", repo.name);
-		form.setValue("description", repo.description);
-		form.setValue("repoUrl", repo.url);
-		form.setValue("tags", repo.topics);
+		form.setValue("name", repo.name, {shouldValidate: true});
+		form.setValue("description", repo.description, {shouldValidate: true});
+		form.setValue("repoUrl", repo.url, {shouldValidate: true});
+		form.setValue("tags", repo.topics, {shouldValidate: true});
 	};
 
 	return (
 		<Autocomplete
 			label="Repos"
 			placeholder="Select repo"
-			isLoading={isPending}
-			defaultItems={repos}
+			isLoading={isFetching}
+			items={repos}
 			allowsCustomValue
-			scrollRef={scrollRef}
+			scrollRef={rootRef}
 			onOpenChange={setAutocompleteIsOpen}
 			inputValue={autocompleteValue}
 			onInputChange={setAutocompleteValue}
 			onSelectionChange={handleSelectionChange}
 			onKeyDown={onKeyDown}
-			// The following prop fixes the bug in nextui library
-			// https://github.com/nextui-org/nextui/issues/2554
-			allowsEmptyCollection={false}
-			//
 		>
-			{item => <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>}
+			{item => {
+				if (item.id === repos[repos.length - 1].id) {
+					return (
+						<AutocompleteItem key={item.id}>
+							{item.name}
+							<div ref={targetRef} className="invisible" />
+						</AutocompleteItem>
+					);
+				}
+
+				return <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>;
+			}}
 		</Autocomplete>
 	);
 };

@@ -29,8 +29,8 @@ const insert = async (
 	return new ProjectDocument(project);
 };
 
-const deleteById = async (client: PoolClient, id: string) => {
-	return client.query<ProjectFromDb>("DELETE FROM project WHERE id=$1;", [id]);
+const deleteById = async (client: PoolClient, id: string): Promise<void> => {
+	await client.query<ProjectFromDb>("DELETE FROM project WHERE id=$1;", [id]);
 };
 
 const findAll = async (

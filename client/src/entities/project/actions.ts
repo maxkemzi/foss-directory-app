@@ -1,3 +1,5 @@
+"use server";
+
 import {isApiError} from "#src/shared/apis/lib";
 import projectsApi, {
 	FetchProjectsResponse,

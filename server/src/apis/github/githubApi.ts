@@ -1,6 +1,11 @@
+import {modelHelpers} from "#src/db";
 import {ApiError} from "#src/lib";
+import {delay} from "../helpers";
 import {
-	AuthReposResponse,
+	FetchGithubApiOptions,
+	FetchReposOptions,
+	FetchReposResponse,
+	FetchSearchReposApiResponse,
 	OAuthTokenApiResponse,
 	OAuthTokenResponse
 } from "./types";
@@ -26,34 +31,134 @@ const fetchOAuthToken = async (code: string): Promise<OAuthTokenResponse> => {
 	);
 
 	if (!response.ok) {
-		throw new ApiError(404, "Something went wrong.");
+		const {error} = await response.json();
+		if (error === "unverified_user_email") {
+			throw new ApiError(401, "You need to verify your GitHub email.");
+		}
+
+		throw new ApiError(404, "Error authorizing GitHub.");
 	}
 
 	const data = (await response.json()) as OAuthTokenApiResponse;
 	return {accessToken: data.access_token};
 };
 
-const fetchReposByToken = async (token: string): Promise<AuthReposResponse> => {
-	const searchParams = new URLSearchParams();
-	searchParams.set("visibility", "public");
-	searchParams.set("affiliation", "owner");
-	searchParams.set("sort", "pushed");
+const fetchGithubApi = async (
+	url: string,
+	opts: FetchGithubApiOptions,
+	init: RequestInit = {}
+): Promise<Response> => {
+	const {token, onRateLimitExceeded} = opts;
+	const {headers: initHeaders, ...restInit} = init;
 
-	const response = await fetch(
-		`${BASE_URL}/user/repos?${searchParams.toString()}`,
-		{
-			headers: {
-				Accept: "application/vnd.github+json",
-				Authorization: `Bearer ${token}`
-			}
-		}
-	);
+	const response = await fetch(`${BASE_URL}${url}`, {
+		headers: {
+			...initHeaders,
+			Accept: "application/vnd.github+json",
+			Authorization: `Bearer ${token}`
+		},
+		...restInit
+	});
 
 	if (!response.ok) {
-		throw new ApiError(404, "Something went wrong.");
+		const {headers, status} = response;
+
+		if (status === 429 || status === 403) {
+			let retryAfterSeconds;
+
+			const retryAfter = headers.get("retry-after");
+			if (retryAfter) {
+				retryAfterSeconds = Number(retryAfter);
+			}
+
+			const rateLimitRemaining = headers.get("x-ratelimit-remaining");
+			const rateLimitReset = headers.get("x-ratelimit-reset");
+			if (rateLimitRemaining === "0" && rateLimitReset) {
+				const resetTime = Number(rateLimitReset);
+				const currentTime = Math.floor(Date.now() / 1000);
+				const diffTime = resetTime - currentTime;
+				retryAfterSeconds = retryAfterSeconds
+					? Math.max(retryAfterSeconds, diffTime)
+					: diffTime;
+			}
+
+			retryAfterSeconds ??= 60;
+
+			if (retryAfterSeconds <= 5) {
+				await delay(retryAfterSeconds * 1000);
+				return fetchGithubApi(url, opts);
+			}
+
+			const rateLimitResource = headers.get("x-ratelimit-resource");
+			if (
+				rateLimitResource &&
+				modelHelpers.isValidRateLimitResource(rateLimitResource)
+			) {
+				const resetTime = Math.ceil(Date.now() / 1000) + retryAfterSeconds;
+				onRateLimitExceeded?.({
+					resource: rateLimitResource,
+					resetTime
+				});
+			}
+
+			throw new ApiError(
+				429,
+				"GitHub API rate limit exceeded. Try again later."
+			);
+		}
+
+		const {error} = await response.json();
+		if (error === "bad_verification_code") {
+			throw new ApiError(
+				401,
+				"Your GitHub token has expired, connect to GitHub again."
+			);
+		}
+
+		throw new ApiError(404, "Something went wrong with requesting GitHub API.");
 	}
 
-	return response.json();
+	return response;
+};
+
+const fetchReposByToken = async (
+	token: string,
+	opts: FetchReposOptions
+): Promise<FetchReposResponse> => {
+	const {limit, page, search, onRateLimitExceeded} = opts;
+
+	const userResponse = await fetchGithubApi("/user", {
+		token,
+		onRateLimitExceeded
+	});
+
+	const user = await userResponse.json();
+
+	const searchParams = new URLSearchParams();
+	searchParams.set("sort", "updated");
+
+	let q = `user:${user.login}`;
+	if (search) {
+		q += ` ${search} in:name`;
+	}
+	searchParams.set("q", q);
+
+	if (limit) {
+		searchParams.set("per_page", String(limit));
+	}
+	if (page) {
+		searchParams.set("page", String(page));
+	}
+
+	const reposResponse = await fetchGithubApi(
+		`/search/repositories?${searchParams.toString()}`,
+		{token, onRateLimitExceeded}
+	);
+
+	const {total_count: totalCount, items: data} =
+		(await reposResponse.json()) as FetchSearchReposApiResponse;
+
+	return {data, totalCount};
 };
 
 export default {fetchOAuthToken, fetchReposByToken};

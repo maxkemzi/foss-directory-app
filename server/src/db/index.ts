@@ -1,6 +1,8 @@
 import db from "./db";
-import helpers from "./helpers";
+import dbHelpers from "./helpers";
+import modelHelpers from "./models/helpers";
 import githubConnectionModel from "./models/githubConnection/githubConnectionModel";
+import githubRateLimitModel from "./models/githubRateLimit/githubRateLimitModel";
 import projectModel from "./models/project/projectModel";
 import projectMessageModel from "./models/projectMessage/projectMessageModel";
 import projectRequestModel from "./models/projectRequest/projectRequestModel";
@@ -12,13 +14,15 @@ import roleModel from "./models/role/roleModel";
 import tagModel from "./models/tag/tagModel";
 import userModel from "./models/user/userModel";
 
-export * from "./types/payloads";
-export * from "./types/documents";
 export {NotificationChannel} from "./constants";
+export * from "./types/documents";
+export * from "./types/payloads";
 export {
 	db,
-	helpers as dbHelpers,
+	dbHelpers,
+	modelHelpers,
 	githubConnectionModel,
+	githubRateLimitModel,
 	projectMessageModel,
 	projectModel,
 	projectRequestModel,

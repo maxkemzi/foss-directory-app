@@ -9,6 +9,12 @@ interface GithubConnectionFromDb extends RowFromDb {
 	token: string;
 }
 
+interface GithubRateLimitFromDb extends RowFromDb {
+	github_connection_id: string;
+	resource: "core" | "search";
+	reset_time: number;
+}
+
 interface ProjectFromDb extends RowFromDb {
 	owner_user_account_id: string;
 	name: string;
@@ -75,6 +81,7 @@ interface UserFromDb extends RowFromDb {
 export type {
 	RowFromDb,
 	GithubConnectionFromDb,
+	GithubRateLimitFromDb,
 	ProjectFromDb,
 	ProjectMessageFromDb,
 	ProjectRequestFromDb,

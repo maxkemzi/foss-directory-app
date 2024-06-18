@@ -1,4 +1,9 @@
-import {ApiResponse, RepoFromApi} from "../../types";
+import {
+	ApiResponse,
+	ApiResponseWithPagination,
+	PaginationSearchParams,
+	RepoFromApi
+} from "../../types";
 
 interface FetchConnectionUrlResponseData {
 	url: string;
@@ -6,7 +11,11 @@ interface FetchConnectionUrlResponseData {
 }
 type FetchConnectionUrlResponse = ApiResponse<FetchConnectionUrlResponseData>;
 
-type FetchReposResponseData = RepoFromApi[];
-type FetchReposResponse = ApiResponse<FetchReposResponseData>;
+type FetchReposSearchParams = PaginationSearchParams & {search?: string};
+type FetchReposResponse = ApiResponseWithPagination<RepoFromApi[]>;
 
-export type {FetchConnectionUrlResponse, FetchReposResponse};
+export type {
+	FetchConnectionUrlResponse,
+	FetchReposResponse,
+	FetchReposSearchParams
+};

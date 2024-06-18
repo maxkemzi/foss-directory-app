@@ -21,6 +21,21 @@ CREATE TABLE IF NOT EXISTS github_connection (
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+DO $$ BEGIN
+	CREATE TYPE RESOURCE_TYPE AS ENUM ('core', 'search');
+EXCEPTION
+	WHEN duplicate_object THEN null;
+END $$;
+CREATE TABLE IF NOT EXISTS github_connection_rate_limits (
+	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	serial_id BIGSERIAL,
+	github_connection_id UUID UNIQUE NOT NULL REFERENCES github_connection(id) ON DELETE CASCADE,
+	resource RESOURCE_TYPE NOT NULL,
+	reset_time BIGINT NOT NULL,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS refresh_token (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 	serial_id BIGSERIAL,
@@ -267,6 +282,11 @@ EXECUTE FUNCTION update_updated_at();
 
 CREATE OR REPLACE TRIGGER github_connection_updated_at
 BEFORE UPDATE ON github_connection
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at();
+
+CREATE OR REPLACE TRIGGER github_connection_rate_limits_updated_at
+BEFORE UPDATE ON github_connection_rate_limits
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();
 

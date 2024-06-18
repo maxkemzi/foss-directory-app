@@ -1,3 +1,5 @@
+import {GithubRateLimitDocument} from "#src/db";
+
 interface GithubRepo {
 	id: number;
 	name: string;
@@ -19,11 +21,38 @@ interface OAuthTokenResponse {
 	accessToken: string;
 }
 
-type AuthReposResponse = GithubRepo[];
+type OnRateLimitExceeded = (
+	data: Pick<GithubRateLimitDocument, "resource" | "resetTime">
+) => void;
+
+interface FetchReposOptions {
+	limit: number;
+	page: number;
+	search?: string;
+	onRateLimitExceeded?: OnRateLimitExceeded;
+}
+
+interface FetchGithubApiOptions {
+	token: string;
+	onRateLimitExceeded?: OnRateLimitExceeded;
+}
+
+interface FetchSearchReposApiResponse {
+	total_count: number;
+	items: GithubRepo[];
+}
+
+interface FetchReposResponse {
+	data: GithubRepo[];
+	totalCount: number;
+}
 
 export type {
+	FetchGithubApiOptions,
+	FetchReposOptions,
+	FetchReposResponse,
+	FetchSearchReposApiResponse,
 	GithubRepo,
-	AuthReposResponse,
 	OAuthTokenApiResponse,
 	OAuthTokenResponse,
 	OAuthUrlParams

@@ -1,12 +1,18 @@
 "use client";
 
 import {useRoleList} from "#src/entities/role";
-import {useDebouncedCallback} from "#src/shared/hooks";
+import {useDebouncedCallback, useObserver} from "#src/shared/hooks";
 import {TrashIcon} from "@heroicons/react/20/solid";
 import {PlusIcon} from "@heroicons/react/24/solid";
 import {Autocomplete, AutocompleteItem, Button, Input} from "@nextui-org/react";
-import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
-import {ChangeEvent, KeyboardEvent, useEffect, useMemo, useState} from "react";
+import {
+	ChangeEvent,
+	KeyboardEvent,
+	useEffect,
+	useMemo,
+	useRef,
+	useState
+} from "react";
 import {useFormContext} from "react-hook-form";
 import {FormValues} from "../../../types";
 
@@ -18,10 +24,15 @@ const RolesField = () => {
 
 	const [autocompleteIsOpen, setAutocompleteIsOpen] = useState(false);
 	const [autocompleteValue, setAutocompleteValue] = useState("");
-	const [, scrollRef] = useInfiniteScroll({
+
+	const rootRef = useRef(null);
+	const targetRef = useRef(null);
+	useObserver(targetRef, {
 		hasMore,
-		isEnabled: autocompleteIsOpen,
-		onLoadMore: () => fetchMore({search: autocompleteValue})
+		isEnabled: autocompleteIsOpen && !isFetching,
+		rootRef,
+		rootMargin: "0px 0px 75px 0px",
+		onIntersect: () => fetchMore({search: autocompleteValue})
 	});
 
 	const fetchFirstPageWithDebounce = useDebouncedCallback(fetchFirstPage);
@@ -69,23 +80,33 @@ const RolesField = () => {
 		<div>
 			<div className="flex items-start gap-4">
 				<Autocomplete
-					classNames={{listboxWrapper: "max-h-[100px]"}}
 					onKeyDown={handleKeyDown}
 					label="Roles"
 					placeholder="Enter role"
 					isLoading={isFetching}
 					items={roles}
 					allowsCustomValue
-					scrollRef={scrollRef}
+					scrollRef={rootRef}
 					onOpenChange={setAutocompleteIsOpen}
 					inputValue={autocompleteValue}
 					onInputChange={setAutocompleteValue}
 					isInvalid={"roles" in formState.errors}
 					errorMessage={formState.errors.roles?.message}
 				>
-					{item => (
-						<AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
-					)}
+					{item => {
+						if (item.id === roles[roles.length - 1].id) {
+							return (
+								<AutocompleteItem key={item.id}>
+									{item.name}
+									<div ref={targetRef} className="invisible" />
+								</AutocompleteItem>
+							);
+						}
+
+						return (
+							<AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
+						);
+					}}
 				</Autocomplete>
 				<Button
 					isIconOnly

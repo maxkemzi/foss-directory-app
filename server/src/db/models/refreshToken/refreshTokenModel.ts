@@ -10,7 +10,7 @@ const upsert = async (
 	const {userId, token} = payload;
 
 	const {rows} = await client.query<RefreshTokenFromDb>(
-		"INSERT INTO refresh_token(user_account_id, token) VALUES($1, $2) ON CONFLICT(user_account_id) DO UPDATE SET user_account_id=EXCLUDED.user_account_id, token=EXCLUDED.token RETURNING *;",
+		"INSERT INTO refresh_token(user_account_id, token) VALUES($1, $2) ON CONFLICT(user_account_id) DO UPDATE SET token=EXCLUDED.token RETURNING *;",
 		[userId, token]
 	);
 

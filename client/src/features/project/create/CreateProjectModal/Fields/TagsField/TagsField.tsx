@@ -1,11 +1,10 @@
 "use client";
 
 import {useTagList} from "#src/entities/tag";
-import {useDebouncedCallback} from "#src/shared/hooks";
+import {useDebouncedCallback, useObserver} from "#src/shared/hooks";
 import {PlusIcon} from "@heroicons/react/24/solid";
 import {Autocomplete, AutocompleteItem, Button, Chip} from "@nextui-org/react";
-import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
-import {KeyboardEvent, useEffect, useMemo, useState} from "react";
+import {KeyboardEvent, useEffect, useMemo, useRef, useState} from "react";
 import {useFormContext} from "react-hook-form";
 import {FormValues} from "../../../types";
 
@@ -17,11 +16,15 @@ const TagsField = () => {
 
 	const [autocompleteIsOpen, setAutocompleteIsOpen] = useState(false);
 	const [autocompleteValue, setAutocompleteValue] = useState("");
-	const [, scrollerRef] = useInfiniteScroll({
+
+	const rootRef = useRef(null);
+	const targetRef = useRef(null);
+	useObserver(targetRef, {
 		hasMore,
-		isEnabled: autocompleteIsOpen,
-		shouldUseLoader: false,
-		onLoadMore: () => fetchMore({search: autocompleteValue})
+		isEnabled: autocompleteIsOpen && !isFetching,
+		rootRef,
+		rootMargin: "0px 0px 75px 0px",
+		onIntersect: () => fetchMore({search: autocompleteValue})
 	});
 
 	const fetchFirstPageWithDebounce = useDebouncedCallback(fetchFirstPage);
@@ -60,13 +63,12 @@ const TagsField = () => {
 		<div>
 			<div className="flex items-start gap-4">
 				<Autocomplete
-					classNames={{listboxWrapper: "max-h-[100px]"}}
 					label="Tags"
 					placeholder="Enter tag"
 					isLoading={isFetching}
 					items={tags}
 					allowsCustomValue
-					scrollRef={scrollerRef}
+					scrollRef={rootRef}
 					onOpenChange={setAutocompleteIsOpen}
 					inputValue={autocompleteValue}
 					onInputChange={setAutocompleteValue}
@@ -74,9 +76,20 @@ const TagsField = () => {
 					errorMessage={formState.errors.tags?.message}
 					onKeyDown={handleKeyDown}
 				>
-					{item => (
-						<AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
-					)}
+					{item => {
+						if (item.id === tags[tags.length - 1].id) {
+							return (
+								<AutocompleteItem key={item.id}>
+									{item.name}
+									<div ref={targetRef} className="invisible" />
+								</AutocompleteItem>
+							);
+						}
+
+						return (
+							<AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
+						);
+					}}
 				</Autocomplete>
 				<Button
 					isIconOnly

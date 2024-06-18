@@ -1,5 +1,12 @@
 import {ApiError} from "#src/lib";
 import {githubService, jwtService} from "#src/services";
+import {
+	parsePageString,
+	parseLimitString,
+	parseSearchString,
+	calcTotalPages,
+	Header
+} from "#src/utils";
 import {NextFunction, Request, Response} from "express";
 
 const getAuthUrlAndCsrfToken = (
@@ -70,8 +77,36 @@ const getReposForUser = async (
 			throw new ApiError(401, "Unauthorized");
 		}
 
-		const repos = await githubService.getReposByUserId(userId);
+		const {page, limit, search} = req.query;
 
+		if (page && typeof page !== "string") {
+			throw new ApiError(400, '"page" param must be a string');
+		}
+
+		if (limit && typeof limit !== "string") {
+			throw new ApiError(400, '"limit" param must be a string');
+		}
+
+		if (search && typeof search !== "string") {
+			throw new ApiError(400, '"search" param must be a string');
+		}
+
+		const parsedPage = parsePageString(page);
+		const parsedLimit = parseLimitString(limit);
+		const parsedSearch = parseSearchString(search);
+
+		const {repos, totalCount} = await githubService.getReposByUserId(userId, {
+			page: parsedPage,
+			limit: parsedLimit,
+			search: parsedSearch
+		});
+
+		res.set({
+			[Header.TOTAL_COUNT]: totalCount,
+			[Header.PAGE]: parsedPage,
+			[Header.PAGE_LIMIT]: parsedLimit,
+			[Header.TOTAL_PAGES]: calcTotalPages(totalCount, parsedLimit)
+		});
 		res.json(repos);
 	} catch (e) {
 		next(e);

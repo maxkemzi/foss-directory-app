@@ -12,4 +12,5 @@ const populateMany = <T extends PopulatableDocument<any>>(
 	return Promise.all(documents.map(d => d.populate(client)));
 };
 
-export default {populateMany};
+const dbHelpers = {populateMany};
+export default dbHelpers;

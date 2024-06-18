@@ -10,7 +10,8 @@ import {
 	RefreshTokenFromDb,
 	RoleFromDb,
 	TagFromDb,
-	UserFromDb
+	UserFromDb,
+	GithubRateLimitFromDb
 } from "./rows";
 
 interface DocumentObject {
@@ -26,6 +27,12 @@ interface PopulatableDocument<PopulatedDocument extends DocumentObject> {
 interface GithubConnectionDocument extends DocumentObject {
 	userId: GithubConnectionFromDb["user_account_id"];
 	token: GithubConnectionFromDb["token"];
+}
+
+interface GithubRateLimitDocument extends DocumentObject {
+	connectionId: GithubRateLimitFromDb["github_connection_id"];
+	resource: GithubRateLimitFromDb["resource"];
+	resetTime: GithubRateLimitFromDb["reset_time"];
 }
 
 interface BaseProjectDocument extends DocumentObject {
@@ -140,6 +147,7 @@ export type {
 	DocumentObject,
 	GithubConnectionDocument,
 	PopulatableDocument,
+	GithubRateLimitDocument,
 	PopulatedProjectDocument,
 	PopulatedProjectMessageDocument,
 	PopulatedProjectRequestDocument,
