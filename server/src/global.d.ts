@@ -1,8 +1,8 @@
+import {GithubConnectionDto, UserDto} from "#src/dtos";
 import "express";
-import {UserDto} from "#src/dtos";
 
 declare module "express" {
 	export interface Response {
-		locals: {user?: UserDto};
+		locals: {user?: UserDto; githubConnection?: GithubConnectionDto};
 	}
 }

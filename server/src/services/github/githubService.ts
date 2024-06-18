@@ -7,6 +7,7 @@ import {
 } from "#src/db";
 import {GithubRepoDto} from "#src/dtos";
 import {ApiError} from "#src/lib";
+import aesCipherService from "../aesCipherService";
 import {GetReposOptions, GetReposReturn} from "./types";
 
 const PUBLIC_SERVER_URL = process.env.PUBLIC_SERVER_URL as string;
@@ -40,9 +41,11 @@ const createConnection = async ({
 
 		const {accessToken} = await githubApi.fetchOAuthToken(code);
 
+		const encryptedToken = aesCipherService.encrypt(accessToken);
+
 		await githubConnectionModel.insert(client, {
 			userId,
-			token: accessToken
+			token: encryptedToken
 		});
 	} finally {
 		client.release();
@@ -55,7 +58,7 @@ const getConnectionByUserId = async (id: string) => {
 	try {
 		const connection = await githubConnectionModel.findByUserId(client, id);
 		if (!connection) {
-			throw new ApiError(404, "Your are not connected to github");
+			throw new ApiError(401, "Your must be connected to GitHub.");
 		}
 
 		return connection;
@@ -66,10 +69,9 @@ const getConnectionByUserId = async (id: string) => {
 
 const getReposByToken = async (
 	token: string,
-	userId: string,
 	opts: GetReposOptions
 ): Promise<GetReposReturn> => {
-	const {limit, page, search} = opts;
+	const {limit, page, search, userId} = opts;
 
 	const client = await db.getClient();
 
@@ -98,30 +100,35 @@ const getReposByToken = async (
 			);
 		}
 
-		const {data, totalCount} = await githubApi.fetchReposByToken(token, {
-			limit,
-			page,
-			search,
-			onRateLimitExceeded: async ({resource, resetTime}) => {
-				const connection = await githubConnectionModel.findByUserId(
-					client,
-					userId
-				);
+		const decryptedToken = aesCipherService.decrypt(token);
 
-				if (!connection) {
-					throw new ApiError(
-						401,
-						"GitHub connection was not found. Try to connect to GitHub again."
+		const {data, totalCount} = await githubApi.fetchReposByToken(
+			decryptedToken,
+			{
+				limit,
+				page,
+				search,
+				onRateLimitExceeded: async ({resource, resetTime}) => {
+					const connection = await githubConnectionModel.findByUserId(
+						client,
+						userId
 					);
-				}
 
-				await githubRateLimitModel.upsert(client, {
-					connectionId: connection.id,
-					resetTime,
-					resource
-				});
+					if (!connection) {
+						throw new ApiError(
+							401,
+							"GitHub connection was not found. Try to connect to GitHub again."
+						);
+					}
+
+					await githubRateLimitModel.upsert(client, {
+						connectionId: connection.id,
+						resetTime,
+						resource
+					});
+				}
 			}
-		});
+		);
 
 		return {repos: data.map(r => new GithubRepoDto(r)), totalCount};
 	} finally {
@@ -129,17 +136,9 @@ const getReposByToken = async (
 	}
 };
 
-const getReposByUserId = async (
-	id: string,
-	opts: GetReposOptions
-): Promise<GetReposReturn> => {
-	const {token} = await getConnectionByUserId(id);
-
-	return getReposByToken(token, id, opts);
-};
-
 export default {
 	getOAuthUrl,
+	getConnectionByUserId,
 	createConnection,
-	getReposByUserId
+	getReposByToken
 };

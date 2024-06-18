@@ -77,6 +77,11 @@ const getReposForUser = async (
 			throw new ApiError(401, "Unauthorized");
 		}
 
+		const token = res.locals.githubConnection?.token;
+		if (!token) {
+			throw new ApiError(401, "Unauthorized");
+		}
+
 		const {page, limit, search} = req.query;
 
 		if (page && typeof page !== "string") {
@@ -95,7 +100,8 @@ const getReposForUser = async (
 		const parsedLimit = parseLimitString(limit);
 		const parsedSearch = parseSearchString(search);
 
-		const {repos, totalCount} = await githubService.getReposByUserId(userId, {
+		const {repos, totalCount} = await githubService.getReposByToken(token, {
+			userId,
 			page: parsedPage,
 			limit: parsedLimit,
 			search: parsedSearch

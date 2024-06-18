@@ -1,4 +1,5 @@
 import GithubRepoDto from "./GithubRepoDto";
+import GithubConnectionDto from "./GithubConnectionDto";
 import ProjectDto from "./ProjectDto";
 import ProjectUserDto from "./ProjectUserDto";
 import RoleDto from "./RoleDto";
@@ -17,5 +18,6 @@ export {
 	ProjectRequestDto,
 	RoleDto,
 	TagDto,
-	UserDto
+	UserDto,
+	GithubConnectionDto
 };

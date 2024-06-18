@@ -4,6 +4,7 @@ interface GetReposOptions {
 	search?: string;
 	limit: number;
 	page: number;
+	userId: string;
 }
 
 interface GetReposReturn {
