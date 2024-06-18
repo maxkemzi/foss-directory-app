@@ -20,6 +20,7 @@ class ProjectChatMessageDto {
 	text: PopulatedProjectMessageDocument["text"];
 	type: PopulatedProjectMessageDocument["type"];
 	createdAt: PopulatedProjectMessageDocument["createdAt"];
+	isSequential: PopulatedProjectMessageDocument["isSequential"];
 
 	constructor(doc: PopulatedProjectMessageDocument) {
 		this.id = doc.id;
@@ -39,6 +40,7 @@ class ProjectChatMessageDto {
 		this.text = doc.text;
 		this.type = doc.type;
 		this.createdAt = doc.createdAt;
+		this.isSequential = doc.isSequential;
 	}
 }
 

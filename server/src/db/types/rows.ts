@@ -27,6 +27,7 @@ interface ProjectMessageFromDb extends RowFromDb {
 	user_account_id?: string | null;
 	text: string;
 	type: "regular" | "join" | "leave";
+	is_sequential: boolean;
 }
 
 interface ProjectRequestFromDb extends RowFromDb {

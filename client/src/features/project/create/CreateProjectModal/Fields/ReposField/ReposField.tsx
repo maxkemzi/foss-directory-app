@@ -4,25 +4,28 @@ import {Autocomplete, AutocompleteItem} from "@nextui-org/react";
 import {
 	FC,
 	Key,
+	KeyboardEvent,
 	KeyboardEventHandler,
 	useEffect,
 	useRef,
 	useState
 } from "react";
 import {useFormContext} from "react-hook-form";
+import {INITIAL_FIELD_VALUES} from "../../../constants";
+import {FormValues} from "../../../types";
 
 interface Props {
 	onKeyDown: KeyboardEventHandler<HTMLInputElement>;
 }
 
 const ReposField: FC<Props> = ({onKeyDown}) => {
-	const form = useFormContext();
+	const form = useFormContext<FormValues>();
 
 	const {repos, hasMore, isFetching, fetchFirstPage, fetchMore} =
 		useGithubRepoList();
+	const [search, setSearch] = useState("");
 
 	const [autocompleteIsOpen, setAutocompleteIsOpen] = useState(false);
-	const [autocompleteValue, setAutocompleteValue] = useState("");
 
 	const rootRef = useRef(null);
 	const targetRef = useRef(null);
@@ -31,26 +34,43 @@ const ReposField: FC<Props> = ({onKeyDown}) => {
 		isEnabled: autocompleteIsOpen && !isFetching,
 		rootRef,
 		rootMargin: "0px 0px 75px 0px",
-		onIntersect: () => fetchMore({search: autocompleteValue})
+		onIntersect: () => fetchMore({search})
 	});
 
 	const fetchFirstPageWithDebounce = useDebouncedCallback(fetchFirstPage);
 	useEffect(() => {
-		fetchFirstPageWithDebounce({search: autocompleteValue});
-	}, [autocompleteValue, fetchFirstPageWithDebounce]);
+		fetchFirstPageWithDebounce({search});
+	}, [search, fetchFirstPageWithDebounce]);
+
+	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+		const target = e.target as HTMLInputElement;
+		setSearch(target.value);
+
+		onKeyDown(e);
+	};
 
 	const handleSelectionChange = (id: Key) => {
-		form.reset();
+		setSearch("");
 
-		const repo = repos.find(r => r.id === Number(id));
-		if (!repo) {
-			return;
+		if (id === null) {
+			form.reset(INITIAL_FIELD_VALUES);
 		}
 
-		form.setValue("name", repo.name, {shouldValidate: true});
-		form.setValue("description", repo.description, {shouldValidate: true});
-		form.setValue("repoUrl", repo.url, {shouldValidate: true});
-		form.setValue("tags", repo.topics, {shouldValidate: true});
+		const repo = repos.find(r => r.id === Number(id));
+		if (repo) {
+			form.reset({
+				...INITIAL_FIELD_VALUES,
+				name: repo.name,
+				description: repo.description || INITIAL_FIELD_VALUES.description,
+				repoUrl: repo.url,
+				tags: repo.topics
+			});
+			form.trigger();
+		}
+	};
+
+	const handleClear = () => {
+		setSearch("");
 	};
 
 	return (
@@ -62,23 +82,14 @@ const ReposField: FC<Props> = ({onKeyDown}) => {
 			allowsCustomValue
 			scrollRef={rootRef}
 			onOpenChange={setAutocompleteIsOpen}
-			inputValue={autocompleteValue}
-			onInputChange={setAutocompleteValue}
+			onKeyDown={handleKeyDown}
 			onSelectionChange={handleSelectionChange}
-			onKeyDown={onKeyDown}
-		>
-			{item => {
-				if (item.id === repos[repos.length - 1].id) {
-					return (
-						<AutocompleteItem key={item.id}>
-							{item.name}
-							<div ref={targetRef} className="invisible" />
-						</AutocompleteItem>
-					);
-				}
-
-				return <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>;
+			clearButtonProps={{onClick: handleClear}}
+			listboxProps={{
+				bottomContent: <div ref={targetRef} className="invisible" />
 			}}
+		>
+			{item => <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>}
 		</Autocomplete>
 	);
 };

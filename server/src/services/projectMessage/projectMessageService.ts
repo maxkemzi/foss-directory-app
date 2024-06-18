@@ -9,8 +9,10 @@ import {ProjectMessageDto} from "#src/dtos";
 import {ApiError} from "#src/lib";
 import {GetByProjectIdOptions, GetByProjectIdReturn} from "./types";
 
+type OmitFromUnion<T, K extends keyof any> = T extends any ? Omit<T, K> : never;
+
 const create = async (
-	payload: ProjectMessagePayload,
+	payload: OmitFromUnion<ProjectMessagePayload, "isSequential">,
 	userId: string
 ): Promise<ProjectMessageDto> => {
 	const client = await db.getClient();
@@ -24,7 +26,19 @@ const create = async (
 			throw new ApiError(403, "You are not the member of this project");
 		}
 
-		const message = await projectMessageModel.insert(client, payload);
+		const latestMessage = await projectMessageModel.findLatestByProjectId(
+			client,
+			payload.projectId
+		);
+
+		const isSequential = latestMessage
+			? latestMessage.type === "regular" && latestMessage.userId === userId
+			: false;
+
+		const message = await projectMessageModel.insert(client, {
+			...payload,
+			isSequential
+		});
 
 		const populatedMessage = await message.populate(client);
 

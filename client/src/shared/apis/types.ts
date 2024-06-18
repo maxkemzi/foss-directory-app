@@ -55,7 +55,7 @@ interface UserFromApi {
 interface RepoFromApi {
 	id: number;
 	name: string;
-	description: string;
+	description: string | null;
 	url: string;
 	topics: string[];
 }
@@ -99,6 +99,7 @@ type BaseProjectMessageFromApi = {
 		isOwner: boolean;
 	} | null;
 	createdAt: string;
+	isSequential: boolean;
 };
 type ProjectMessageFromApi = BaseProjectMessageFromApi &
 	({text: string; type: "regular"} | {text: null; type: "join" | "leave"});

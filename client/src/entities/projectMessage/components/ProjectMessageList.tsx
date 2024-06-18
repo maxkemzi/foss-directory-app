@@ -93,10 +93,10 @@ const ProjectMessageList = forwardRef<ListRef, Props>(
 			return insertDateMessages(messages);
 		}, [withStartDate, messages]);
 
-		const projectMessages = useMemo<ProjectMessageProps[]>(() => {
+		const projectMessages = useMemo(() => {
 			const isMine = (message: ProjectMessageFromApi | ProjectDateMessage) => {
 				if (
-					message.type === "date" ||
+					message.type !== "regular" ||
 					message.sender === null ||
 					session === null
 				) {
@@ -106,30 +106,8 @@ const ProjectMessageList = forwardRef<ListRef, Props>(
 				return message.sender.user.id === session.user.id;
 			};
 
-			const isSequential = (
-				message: ProjectMessageFromApi | ProjectDateMessage,
-				prevMessage: ProjectMessageFromApi | ProjectDateMessage
-			) => {
-				if (
-					message.type !== "regular" ||
-					prevMessage.type !== "regular" ||
-					message.sender === null ||
-					prevMessage.sender === null
-				) {
-					return false;
-				}
-
-				return prevMessage.sender.user.id === message.sender.user.id;
-			};
-
-			return messagesWithDates.map((message, index, arr) => {
-				const prevMessage = arr[index + 1];
-
-				return {
-					message,
-					isMine: isMine(message),
-					isSequential: prevMessage ? isSequential(message, prevMessage) : false
-				};
+			return messagesWithDates.map(message => {
+				return {message, isMine: isMine(message)};
 			});
 		}, [messagesWithDates, session]);
 

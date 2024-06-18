@@ -13,6 +13,7 @@ const TagsField = () => {
 	const tagsValue = form.watch("tags");
 
 	const {tags, hasMore, isFetching, fetchFirstPage, fetchMore} = useTagList();
+	const [search, setSearch] = useState("");
 
 	const [autocompleteIsOpen, setAutocompleteIsOpen] = useState(false);
 	const [autocompleteValue, setAutocompleteValue] = useState("");
@@ -24,13 +25,13 @@ const TagsField = () => {
 		isEnabled: autocompleteIsOpen && !isFetching,
 		rootRef,
 		rootMargin: "0px 0px 75px 0px",
-		onIntersect: () => fetchMore({search: autocompleteValue})
+		onIntersect: () => fetchMore({search})
 	});
 
 	const fetchFirstPageWithDebounce = useDebouncedCallback(fetchFirstPage);
 	useEffect(() => {
-		fetchFirstPageWithDebounce({search: autocompleteValue});
-	}, [autocompleteValue, fetchFirstPageWithDebounce]);
+		fetchFirstPageWithDebounce({search});
+	}, [search, fetchFirstPageWithDebounce]);
 
 	const submitIsDisabled = useMemo(
 		() =>
@@ -42,6 +43,7 @@ const TagsField = () => {
 		const updatedTags = [...tagsValue, autocompleteValue];
 		form.setValue("tags", updatedTags, {shouldValidate: true});
 		setAutocompleteValue("");
+		setSearch("");
 	};
 
 	const removeTag = (tag: string) => {
@@ -50,6 +52,9 @@ const TagsField = () => {
 	};
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+		const target = e.target as HTMLInputElement;
+		setSearch(target.value);
+
 		if (e.key === "Enter") {
 			e.preventDefault();
 
@@ -57,6 +62,10 @@ const TagsField = () => {
 				addTag();
 			}
 		}
+	};
+
+	const handleClear = () => {
+		setSearch("");
 	};
 
 	return (
@@ -75,21 +84,14 @@ const TagsField = () => {
 					isInvalid={"tags" in formState.errors}
 					errorMessage={formState.errors.tags?.message}
 					onKeyDown={handleKeyDown}
-				>
-					{item => {
-						if (item.id === tags[tags.length - 1].id) {
-							return (
-								<AutocompleteItem key={item.id}>
-									{item.name}
-									<div ref={targetRef} className="invisible" />
-								</AutocompleteItem>
-							);
-						}
-
-						return (
-							<AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
-						);
+					clearButtonProps={{onClick: handleClear}}
+					listboxProps={{
+						bottomContent: <div ref={targetRef} className="invisible" />
 					}}
+				>
+					{item => (
+						<AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
+					)}
 				</Autocomplete>
 				<Button
 					isIconOnly

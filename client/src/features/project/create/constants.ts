@@ -37,7 +37,7 @@ const INITIAL_FIELD_VALUES = {
 	repoUrl: "",
 	role: "",
 	tags: [],
-	roles: {}
+	roles: []
 };
 
 export {VALIDATION_SCHEMA, INITIAL_FIELD_VALUES};

@@ -39,21 +39,24 @@ interface ProjectPayload {
 
 interface BaseProjectMessagePayload {
 	projectId: ProjectMessageFromDb["project_id"];
+	isSequential: ProjectMessageFromDb["is_sequential"];
 }
 
-type ProjectMessagePayload = BaseProjectMessagePayload &
-	(
-		| {
-				userId: NonNullable<ProjectMessageFromDb["user_account_id"]>;
-				text: ProjectMessageFromDb["text"];
-				type: "regular";
-		  }
-		| {
-				userId?: ProjectMessageFromDb["user_account_id"];
-				text?: never;
-				type: "join" | "leave";
-		  }
-	);
+type RegularProjectMessagePayload = BaseProjectMessagePayload & {
+	userId: NonNullable<ProjectMessageFromDb["user_account_id"]>;
+	text: ProjectMessageFromDb["text"];
+	type: "regular";
+};
+
+type JoinOrLeaveProjectMessagePayload = BaseProjectMessagePayload & {
+	userId?: ProjectMessageFromDb["user_account_id"];
+	text?: never;
+	type: "join" | "leave";
+};
+
+type ProjectMessagePayload =
+	| RegularProjectMessagePayload
+	| JoinOrLeaveProjectMessagePayload;
 
 interface ProjectUserPayload {
 	userId: ProjectUserFromDb["user_account_id"];

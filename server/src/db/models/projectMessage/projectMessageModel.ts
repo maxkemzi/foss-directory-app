@@ -8,13 +8,13 @@ const insert = async (
 	client: PoolClient,
 	payload: ProjectMessagePayload
 ): Promise<ProjectMessageDocument> => {
-	const {projectId, userId, text, type} = payload;
+	const {projectId, userId, text, type, isSequential} = payload;
 
 	const {
 		rows: [message]
 	} = await client.query<ProjectMessageFromDb>(
-		"INSERT INTO project_messages(project_id, user_account_id, text, type) VALUES($1, $2, $3, $4) RETURNING *;",
-		[projectId, userId, text, type]
+		"INSERT INTO project_messages(project_id, user_account_id, text, type, is_sequential) VALUES($1, $2, $3, $4, $5) RETURNING *;",
+		[projectId, userId, text, type, isSequential]
 	);
 
 	return new ProjectMessageDocument(message);
@@ -72,4 +72,27 @@ const findById = async (
 	return message ? new ProjectMessageDocument(message) : null;
 };
 
-export default {findById, findByProjectId, countByProjectId, insert};
+const findLatestByProjectId = async (
+	client: PoolClient,
+	id: string
+): Promise<ProjectMessageDocument | null> => {
+	const {
+		rows: [message]
+	} = await client.query<ProjectMessageFromDb>(
+		`
+		SELECT * FROM project_messages
+		WHERE project_id = $1 AND serial_id = (SELECT MAX(serial_id) FROM project_messages);
+		`,
+		[id]
+	);
+
+	return message ? new ProjectMessageDocument(message) : null;
+};
+
+export default {
+	findById,
+	findByProjectId,
+	countByProjectId,
+	insert,
+	findLatestByProjectId
+};

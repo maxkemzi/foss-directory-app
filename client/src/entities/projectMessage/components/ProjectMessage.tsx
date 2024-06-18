@@ -13,10 +13,9 @@ import LeaveMessage from "./LeaveMessage";
 interface Props {
 	message: ProjectMessageFromApi | ProjectDateMessage;
 	isMine?: boolean;
-	isSequential?: boolean;
 }
 
-const ProjectMessage: FC<Props> = ({message, isMine, isSequential}) => {
+const ProjectMessage: FC<Props> = ({message, isMine}) => {
 	const {type} = message;
 
 	if (type === "join") {
@@ -35,6 +34,7 @@ const ProjectMessage: FC<Props> = ({message, isMine, isSequential}) => {
 		return <YourMessage message={message} />;
 	}
 
+	const {isSequential} = message;
 	if (isSequential) {
 		return <SequentialMessage message={message} />;
 	}

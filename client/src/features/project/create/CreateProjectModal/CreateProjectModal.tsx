@@ -17,7 +17,7 @@ import {useRouter} from "next/navigation";
 import {FC} from "react";
 import {FormProvider, useForm} from "react-hook-form";
 import {safeCreateProject} from "../actions";
-import {VALIDATION_SCHEMA} from "../constants";
+import {INITIAL_FIELD_VALUES, VALIDATION_SCHEMA} from "../constants";
 import {FormValues} from "../types";
 import Fields from "./Fields/Fields";
 
@@ -29,14 +29,7 @@ const CreateProjectModal: FC<Props> = ({onClose}) => {
 
 	const form = useForm<FormValues>({
 		resolver: zodResolver(VALIDATION_SCHEMA),
-		defaultValues: {
-			name: "",
-			description: "",
-			repoUrl: "",
-			role: "",
-			tags: [],
-			roles: []
-		}
+		defaultValues: INITIAL_FIELD_VALUES
 	});
 
 	const {execute, isPending} = useSafeAction(safeCreateProject, {

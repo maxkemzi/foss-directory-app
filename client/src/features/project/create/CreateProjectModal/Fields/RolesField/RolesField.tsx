@@ -21,6 +21,7 @@ const RolesField = () => {
 	const rolesValue = form.watch("roles");
 
 	const {roles, hasMore, isFetching, fetchFirstPage, fetchMore} = useRoleList();
+	const [search, setSearch] = useState("");
 
 	const [autocompleteIsOpen, setAutocompleteIsOpen] = useState(false);
 	const [autocompleteValue, setAutocompleteValue] = useState("");
@@ -32,13 +33,13 @@ const RolesField = () => {
 		isEnabled: autocompleteIsOpen && !isFetching,
 		rootRef,
 		rootMargin: "0px 0px 75px 0px",
-		onIntersect: () => fetchMore({search: autocompleteValue})
+		onIntersect: () => fetchMore({search})
 	});
 
 	const fetchFirstPageWithDebounce = useDebouncedCallback(fetchFirstPage);
 	useEffect(() => {
-		fetchFirstPageWithDebounce({search: autocompleteValue});
-	}, [autocompleteValue, fetchFirstPageWithDebounce]);
+		fetchFirstPageWithDebounce({search});
+	}, [search, fetchFirstPageWithDebounce]);
 
 	const submitIsDisabled = useMemo(
 		() =>
@@ -52,6 +53,7 @@ const RolesField = () => {
 		const newRoles = [...rolesValue, newRole];
 		form.setValue("roles", newRoles, {shouldValidate: true});
 		setAutocompleteValue("");
+		setSearch("");
 	};
 
 	const removeRole = (role: string) => {
@@ -59,7 +61,17 @@ const RolesField = () => {
 		form.setValue("roles", updatedRoles, {shouldValidate: true});
 	};
 
+	const changeRoleCount = (role: string, count: number) => {
+		const updatedRoles = [...rolesValue];
+		const indexToUpdate = updatedRoles.findIndex(r => r[0] === role);
+		updatedRoles[indexToUpdate][1] = count;
+		form.setValue("roles", updatedRoles);
+	};
+
 	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+		const target = e.target as HTMLInputElement;
+		setSearch(target.value);
+
 		if (e.key === "Enter") {
 			e.preventDefault();
 
@@ -69,11 +81,8 @@ const RolesField = () => {
 		}
 	};
 
-	const changeRoleCount = (role: string, count: number) => {
-		const updatedRoles = [...rolesValue];
-		const indexToUpdate = updatedRoles.findIndex(r => r[0] === role);
-		updatedRoles[indexToUpdate][1] = count;
-		form.setValue("roles", updatedRoles);
+	const handleClear = () => {
+		setSearch("");
 	};
 
 	return (
@@ -92,21 +101,14 @@ const RolesField = () => {
 					onInputChange={setAutocompleteValue}
 					isInvalid={"roles" in formState.errors}
 					errorMessage={formState.errors.roles?.message}
-				>
-					{item => {
-						if (item.id === roles[roles.length - 1].id) {
-							return (
-								<AutocompleteItem key={item.id}>
-									{item.name}
-									<div ref={targetRef} className="invisible" />
-								</AutocompleteItem>
-							);
-						}
-
-						return (
-							<AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
-						);
+					clearButtonProps={{onClick: handleClear}}
+					listboxProps={{
+						bottomContent: <div ref={targetRef} className="invisible" />
 					}}
+				>
+					{item => (
+						<AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
+					)}
 				</Autocomplete>
 				<Button
 					isIconOnly

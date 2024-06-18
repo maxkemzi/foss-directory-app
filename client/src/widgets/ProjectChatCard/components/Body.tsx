@@ -71,12 +71,11 @@ const Body: FC<Props> = ({project, messages, session}) => {
 					}
 				>
 					{items =>
-						items.map(({message, isMine, isSequential}) => (
+						items.map(({message, isMine}) => (
 							<ProjectMessage
 								key={message.id}
 								message={message}
 								isMine={isMine}
-								isSequential={isSequential}
 							/>
 						))
 					}

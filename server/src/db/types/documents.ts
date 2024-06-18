@@ -131,6 +131,7 @@ interface ProjectMessageDocument extends DocumentObject {
 	userId: ProjectMessageFromDb["user_account_id"];
 	text: ProjectMessageFromDb["text"];
 	type: ProjectMessageFromDb["type"];
+	isSequential: ProjectMessageFromDb["is_sequential"];
 }
 interface PopulatedProjectMessageDocument extends DocumentObject {
 	project: ProjectDocument;
@@ -141,6 +142,7 @@ interface PopulatedProjectMessageDocument extends DocumentObject {
 	} | null;
 	text: ProjectMessageFromDb["text"];
 	type: ProjectMessageFromDb["type"];
+	isSequential: ProjectMessageFromDb["is_sequential"];
 }
 
 export type {
