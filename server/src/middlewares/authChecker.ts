@@ -1,4 +1,4 @@
-import {UserDto} from "#src/dtos";
+import {ExtendedUserDto} from "#src/dtos";
 import {ApiError} from "#src/lib";
 import {jwtService} from "#src/services";
 import {NextFunction, Request, Response} from "express";
@@ -15,7 +15,8 @@ const authChecker = (req: Request, res: Response, next: NextFunction) => {
 			throw new Error();
 		}
 
-		const userPayload = jwtService.verifyAccessToken<UserDto>(accessToken);
+		const userPayload =
+			jwtService.verifyAccessToken<ExtendedUserDto>(accessToken);
 		if (!userPayload) {
 			throw new Error();
 		}

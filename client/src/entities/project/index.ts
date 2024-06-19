@@ -6,8 +6,8 @@ import ProjectChatHeader from "./components/ProjectChatHeader";
 import ProjectChatLayout from "./components/ProjectChatLayout";
 import ProjectChatList from "./components/ProjectChatList";
 import ProjectChatSidebar from "./components/ProjectChatSidebar";
-import {parseProjectMemberCount} from "./helpers";
 
+export * as projectHelpers from "./helpers";
 export * as projectActions from "./actions";
 export {useProjectList} from "./hooks";
 export {
@@ -18,6 +18,5 @@ export {
 	ProjectChatHeader,
 	ProjectChatLayout,
 	ProjectChatList,
-	ProjectChatSidebar,
-	parseProjectMemberCount
+	ProjectChatSidebar
 };

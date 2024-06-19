@@ -1,5 +1,5 @@
-import {ProjectPayload} from "#src/db";
-import {ProjectWithDetailsDto} from "#src/dtos";
+import {PopulatedProjectDocument, ProjectPayload} from "#src/db";
+import {ExtendedProjectDto} from "#src/dtos";
 
 interface CreateProjectPayload extends ProjectPayload {
 	role: string;
@@ -14,7 +14,7 @@ interface GetAllOptions {
 }
 
 interface GetAllReturn {
-	projects: ProjectWithDetailsDto[];
+	projects: ExtendedProjectDto[];
 	totalCount: number;
 }
 
@@ -25,7 +25,7 @@ interface GetByOwnerUserIdOptions {
 }
 
 interface GetByOwnerUserIdReturn {
-	projects: ProjectWithDetailsDto[];
+	projects: ExtendedProjectDto[];
 	totalCount: number;
 }
 
@@ -36,8 +36,13 @@ interface GetByMemberUserIdOptions {
 }
 
 interface GetByMemberUserIdReturn {
-	projects: ProjectWithDetailsDto[];
+	projects: ExtendedProjectDto[];
 	totalCount: number;
+}
+
+interface ExtendedProject extends PopulatedProjectDocument {
+	memberCount: number;
+	isRequestable: boolean;
 }
 
 export type {
@@ -47,5 +52,6 @@ export type {
 	GetByOwnerUserIdOptions,
 	GetByOwnerUserIdReturn,
 	GetByMemberUserIdOptions,
-	GetByMemberUserIdReturn
+	GetByMemberUserIdReturn,
+	ExtendedProject
 };

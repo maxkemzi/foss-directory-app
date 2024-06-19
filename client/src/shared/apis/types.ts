@@ -30,8 +30,7 @@ interface ProjectFromApi {
 	tags: {id: string; name: string}[];
 	roles: {id: string; name: string; placesAvailable: number}[];
 	memberCount: number;
-	isOwner: boolean;
-	isMember: boolean;
+	isRequestable: boolean;
 }
 
 interface TagFromApi {

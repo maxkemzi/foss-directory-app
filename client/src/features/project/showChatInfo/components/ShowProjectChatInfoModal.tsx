@@ -1,6 +1,6 @@
 "use client";
 
-import {parseProjectMemberCount} from "#src/entities/project";
+import {projectHelpers} from "#src/entities/project";
 import {useProjectUserList} from "#src/entities/projectUser";
 import {FetchMoreButton} from "#src/features/fetchMore";
 import {ModalProps} from "#src/shared/modal";
@@ -41,7 +41,7 @@ const ShowProjectChatInfoModal: FC<Props> = ({onClose, projectId}) => {
 				<ModalBody>
 					{!isFetching || hasMore ? (
 						<>
-							<h3>{parseProjectMemberCount(users.length)}</h3>
+							<h3>{projectHelpers.parseMemberCount(users.length)}</h3>
 							<ul className="flex flex-col gap-2">
 								{users.map(pu => {
 									const avatarJsx = (

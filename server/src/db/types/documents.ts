@@ -111,7 +111,6 @@ interface UserDocument extends DocumentObject {
 	email: UserFromDb["email"];
 	password: UserFromDb["password"];
 	avatar: UserFromDb["avatar"];
-	githubIsConnected: UserFromDb["github_connected"];
 }
 
 interface ProjectUserDocument extends DocumentObject {

@@ -1,5 +1,5 @@
 import {db, refreshTokenModel, userModel} from "#src/db";
-import {UserDto} from "#src/dtos";
+import {ExtendedUserDto} from "#src/dtos";
 import {ApiError} from "#src/lib";
 import bcryptjs from "bcryptjs";
 import jwtService from "./jwtService";
@@ -28,7 +28,12 @@ const signUp = async ({username, email, password}: any) => {
 			password: hashedPassword
 		});
 
-		const userDto = new UserDto(user);
+		const githubIsConnected = await userModel.isConnectedToGithub(
+			client,
+			user.id
+		);
+
+		const userDto = new ExtendedUserDto({...user, githubIsConnected});
 		const tokens = jwtService.generateAccessAndRefreshTokens({...userDto});
 
 		await refreshTokenModel.upsert(client, {
@@ -56,7 +61,12 @@ const logIn = async ({email, password}: any) => {
 			throw new ApiError(400, "Wrong password");
 		}
 
-		const userDto = new UserDto(user);
+		const githubIsConnected = await userModel.isConnectedToGithub(
+			client,
+			user.id
+		);
+
+		const userDto = new ExtendedUserDto({...user, githubIsConnected});
 		const tokens = jwtService.generateAccessAndRefreshTokens({...userDto});
 
 		await refreshTokenModel.upsert(client, {
@@ -74,7 +84,8 @@ const refresh = async (refreshToken: string) => {
 	const client = await db.getClient();
 
 	try {
-		const userPayload = jwtService.verifyRefreshToken<UserDto>(refreshToken);
+		const userPayload =
+			jwtService.verifyRefreshToken<ExtendedUserDto>(refreshToken);
 		const tokenFromDb = await refreshTokenModel.findByToken(
 			client,
 			refreshToken
@@ -88,7 +99,12 @@ const refresh = async (refreshToken: string) => {
 			throw new ApiError(400, "User doesn't exist");
 		}
 
-		const userDto = new UserDto(user);
+		const githubIsConnected = await userModel.isConnectedToGithub(
+			client,
+			user.id
+		);
+
+		const userDto = new ExtendedUserDto({...user, githubIsConnected});
 		const accessToken = jwtService.generateAccessToken({...userDto});
 
 		return {

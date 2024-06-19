@@ -76,7 +76,6 @@ interface UserFromDb extends RowFromDb {
 	email: string;
 	password: string;
 	avatar: string | null;
-	github_connected: boolean;
 }
 
 export type {

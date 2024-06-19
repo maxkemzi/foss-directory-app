@@ -7,7 +7,6 @@ class UserDocument extends Document<UserDocumentType> {
 	email: UserDocumentType["email"];
 	password: UserDocumentType["password"];
 	avatar: UserDocumentType["avatar"];
-	githubIsConnected: UserDocumentType["githubIsConnected"];
 
 	constructor(user: UserFromDb) {
 		super(user);
@@ -15,7 +14,6 @@ class UserDocument extends Document<UserDocumentType> {
 		this.email = user.email;
 		this.password = user.password;
 		this.avatar = user.avatar;
-		this.githubIsConnected = user.github_connected;
 	}
 
 	toObject(): UserDocumentType {
@@ -24,8 +22,7 @@ class UserDocument extends Document<UserDocumentType> {
 			username: this.username,
 			email: this.email,
 			password: this.password,
-			avatar: this.avatar,
-			githubIsConnected: this.githubIsConnected
+			avatar: this.avatar
 		};
 	}
 }

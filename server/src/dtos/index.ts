@@ -7,17 +7,19 @@ import TagDto from "./TagDto";
 import UserDto from "./UserDto";
 import ProjectMessageDto from "./ProjectMessageDto";
 import ProjectRequestDto from "./ProjectRequestDto";
-import ProjectWithDetailsDto from "./ProjectWithDetailsDto";
+import ExtendedProjectDto from "./ExtendedProjectDto";
+import ExtendedUserDto from "./ExtendedUserDto";
 
 export {
 	GithubRepoDto,
 	ProjectUserDto,
 	ProjectMessageDto,
 	ProjectDto,
-	ProjectWithDetailsDto,
+	ExtendedProjectDto,
 	ProjectRequestDto,
 	RoleDto,
 	TagDto,
 	UserDto,
-	GithubConnectionDto
+	GithubConnectionDto,
+	ExtendedUserDto
 };

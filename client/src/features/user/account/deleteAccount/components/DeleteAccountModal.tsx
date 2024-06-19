@@ -1,6 +1,5 @@
 "use client";
 
-import {logOut} from "#src/shared/auth";
 import {useSafeAction} from "#src/shared/hooks";
 import {ModalProps} from "#src/shared/modal";
 import {useToast} from "#src/shared/toast";
@@ -21,7 +20,6 @@ const DeleteAccountModal: FC<Props> = ({onClose}) => {
 	const {showToast} = useToast();
 	const {execute, isPending} = useSafeAction(safeDeleteAccount, {
 		onSuccess: async result => {
-			await logOut();
 			showToast({variant: "success", message: result.success});
 			onClose();
 		},

@@ -7,6 +7,8 @@ import {Session} from "./types";
 import {SessionOption} from "./constants";
 import {fetchApi} from "../apis";
 import authApi, {LoginBody} from "../apis/auth";
+import {AppError} from "../error";
+import {isApiError} from "../apis/lib";
 
 const getServerSession = async (): Promise<Session | null> => {
 	const cookieStore = cookies();
@@ -49,7 +51,8 @@ const logOut = async () => {
 	try {
 		await authApi.logOut(session.tokens.refresh);
 	} catch (e) {
-		console.log("Error logging out");
+		const message = isApiError(e) ? e.message : "Error logging out";
+		throw new AppError(message);
 	}
 
 	await clearServerSession();

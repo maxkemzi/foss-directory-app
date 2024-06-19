@@ -1,4 +1,4 @@
-const parseProjectMemberCount = (count: number) =>
+const parseMemberCount = (count: number) =>
 	count === 1 ? `${count} member` : `${count} members`;
 
-export {parseProjectMemberCount};
+export {parseMemberCount};

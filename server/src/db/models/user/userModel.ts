@@ -134,6 +134,20 @@ const isProjectRequestReceiver = async (
 	return Number(count) > 0;
 };
 
+const isConnectedToGithub = async (
+	client: PoolClient,
+	userId: string
+): Promise<boolean> => {
+	const {
+		rows: [{count}]
+	} = await client.query<{count: string}>(
+		"SELECT COUNT(*) FROM github_connection WHERE user_account_id = $1;",
+		[userId]
+	);
+
+	return Number(count) > 0;
+};
+
 export default {
 	deleteById,
 	findByEmail,
@@ -142,5 +156,6 @@ export default {
 	insert,
 	isProjectMember,
 	isProjectOwner,
-	isProjectRequestReceiver
+	isProjectRequestReceiver,
+	isConnectedToGithub
 };

@@ -1,5 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import {
+	PopulatedProjectDocument,
 	db,
 	dbHelpers,
 	projectModel,
@@ -10,11 +11,12 @@ import {
 	tagModel,
 	userModel
 } from "#src/db";
-import {ProjectDto, ProjectWithDetailsDto} from "#src/dtos";
+import {ExtendedProjectDto, ProjectDto} from "#src/dtos";
 import {ApiError} from "#src/lib";
 import {PoolClient} from "pg";
 import {
 	CreateProjectPayload,
+	ExtendedProject,
 	GetAllOptions,
 	GetAllReturn,
 	GetByMemberUserIdOptions,
@@ -23,24 +25,24 @@ import {
 	GetByOwnerUserIdReturn
 } from "./types";
 
-const getDetailsById = async (
+const extend = async (
 	client: PoolClient,
-	id: string,
+	project: PopulatedProjectDocument,
 	userId: string
-) => {
+): Promise<ExtendedProject> => {
 	const [memberCount, isOwner, isMember] = await Promise.all([
-		projectUserModel.countByProjectId(client, id),
+		projectUserModel.countByProjectId(client, project.id),
 		userModel.isProjectOwner(client, {
-			projectId: id,
+			projectId: project.id,
 			userId
 		}),
 		userModel.isProjectMember(client, {
-			projectId: id,
+			projectId: project.id,
 			userId
 		})
 	]);
 
-	return {memberCount, isOwner, isMember};
+	return {...project, memberCount, isRequestable: !isOwner && !isMember};
 };
 
 const create = async ({
@@ -128,15 +130,12 @@ const getAll = async (
 
 		const populatedProjects = await dbHelpers.populateMany(client, projects);
 
-		const projectsWithDetails = await Promise.all(
-			populatedProjects.map(async pp => ({
-				...pp,
-				...(await getDetailsById(client, pp.id, userId))
-			}))
+		const extendedProjects = await Promise.all(
+			populatedProjects.map(pp => extend(client, pp, userId))
 		);
 
 		return {
-			projects: projectsWithDetails.map(pwd => new ProjectWithDetailsDto(pwd)),
+			projects: extendedProjects.map(ep => new ExtendedProjectDto(ep)),
 			totalCount
 		};
 	} finally {
@@ -160,15 +159,12 @@ const getByOwnerUserId = async (
 
 		const populatedProjects = await dbHelpers.populateMany(client, projects);
 
-		const projectsWithDetails = await Promise.all(
-			populatedProjects.map(async pp => ({
-				...pp,
-				...(await getDetailsById(client, pp.id, id))
-			}))
+		const extendedProjects = await Promise.all(
+			populatedProjects.map(pp => extend(client, pp, id))
 		);
 
 		return {
-			projects: projectsWithDetails.map(pwd => new ProjectWithDetailsDto(pwd)),
+			projects: extendedProjects.map(ep => new ExtendedProjectDto(ep)),
 			totalCount
 		};
 	} finally {
@@ -192,15 +188,12 @@ const getByMemberUserId = async (
 
 		const populatedProjects = await dbHelpers.populateMany(client, projects);
 
-		const projectsWithDetails = await Promise.all(
-			populatedProjects.map(async pp => ({
-				...pp,
-				...(await getDetailsById(client, pp.id, id))
-			}))
+		const extendedProjects = await Promise.all(
+			populatedProjects.map(pp => extend(client, pp, id))
 		);
 
 		return {
-			projects: projectsWithDetails.map(pwd => new ProjectWithDetailsDto(pwd)),
+			projects: extendedProjects.map(ep => new ExtendedProjectDto(ep)),
 			totalCount
 		};
 	} finally {
@@ -234,7 +227,7 @@ const deleteById = async (id: string, userId: string) => {
 const getById = async (
 	id: string,
 	userId: string
-): Promise<ProjectWithDetailsDto> => {
+): Promise<ExtendedProjectDto> => {
 	const client = await db.getClient();
 
 	try {
@@ -245,11 +238,9 @@ const getById = async (
 
 		const populatedProject = await project.populate(client);
 
-		const details = await getDetailsById(client, id, userId);
+		const extendedProject = await extend(client, populatedProject, userId);
 
-		const projectWithDetails = {...populatedProject, ...details};
-
-		return new ProjectWithDetailsDto(projectWithDetails);
+		return new ExtendedProjectDto(extendedProject);
 	} finally {
 		client.release();
 	}

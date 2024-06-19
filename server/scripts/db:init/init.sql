@@ -7,7 +7,6 @@ CREATE TABLE IF NOT EXISTS user_account (
 	email TEXT UNIQUE NOT NULL,
 	password TEXT NOT NULL,
 	avatar TEXT,
-	github_connected BOOLEAN NOT NULL DEFAULT FALSE,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -135,44 +134,6 @@ CREATE TABLE IF NOT EXISTS project_messages (
 	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
--- github_connection triggers
-
-CREATE OR REPLACE FUNCTION github_connection_after_insert()
-RETURNS TRIGGER AS $$
-BEGIN
-	UPDATE user_account
-	SET github_connected = TRUE
-	WHERE id = NEW.user_account_id;
-
-	RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE TRIGGER github_connection_after_insert
-AFTER INSERT ON github_connection
-FOR EACH ROW
-EXECUTE FUNCTION github_connection_after_insert();
-
-CREATE OR REPLACE FUNCTION github_connection_after_delete()
-RETURNS TRIGGER AS $$
-BEGIN
-	IF (NOT EXISTS (SELECT 1 FROM user_account WHERE id = OLD.user_account_id)) THEN
-		RETURN OLD;
-	END IF;
-
-	UPDATE user_account
-	SET github_connected = FALSE
-	WHERE id = OLD.user_account_id;
-
-	RETURN OLD;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE TRIGGER github_connection_after_delete
-AFTER DELETE ON github_connection
-FOR EACH ROW
-EXECUTE FUNCTION github_connection_after_delete();
 
 -- project_user_accounts triggers
 
