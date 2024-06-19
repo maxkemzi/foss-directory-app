@@ -63,17 +63,19 @@ const fetchApiWithAuth = async (
 	url: Args[0],
 	opts: Args[1] = {}
 ): Promise<Response> => {
+	const {headers, ...restOpts} = opts;
+
 	const session = await getServerSession();
 	if (!session) {
 		return logOut();
 	}
 
 	const response = await fetchApi(url, {
-		...opts,
 		headers: {
-			...opts.headers,
+			...headers,
 			Authorization: `Bearer ${session.tokens.access}`
-		}
+		},
+		...restOpts
 	});
 	return response;
 };

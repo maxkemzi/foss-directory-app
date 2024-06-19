@@ -26,4 +26,26 @@ const fetchApi = async (
 	return response;
 };
 
-export {fetchApi};
+const withRetry = <Args extends any[], Return extends Response>(
+	fetchFn: (...args: Args) => Promise<Return>,
+	retries = 3,
+	backoff = 1000
+) => {
+	return async (...args: Args): Promise<Return> => {
+		try {
+			const response = await fetchFn(...args);
+			return response;
+		} catch (e) {
+			if (retries > 0) {
+				await new Promise(resolve => {
+					setTimeout(resolve, backoff);
+				});
+				return withRetry(fetchFn, retries - 1, backoff * 2)(...args);
+			}
+
+			throw e;
+		}
+	};
+};
+
+export {fetchApi, withRetry};

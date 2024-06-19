@@ -1,4 +1,4 @@
-import {fetchApi} from "../actions";
+import {fetchApi, withRetry} from "../actions";
 import {
 	LoginBody,
 	LoginResponse,
@@ -13,6 +13,8 @@ const BASE_URL = "/auth";
 const fetchAuthApi = (url: string, options: RequestInit = {}) => {
 	return fetchApi(`${BASE_URL}${url}`, {cache: "no-store", ...options});
 };
+
+const fetchAuthApiWithRetry = withRetry(fetchAuthApi);
 
 const signUp = async (body: SignupBody): Promise<SignupResponse> => {
 	const response = await fetchAuthApi("/signup", {
@@ -37,7 +39,7 @@ const logIn = async (body: LoginBody): Promise<LoginResponse> => {
 };
 
 const logOut = async (refreshToken: string): Promise<LogoutResponse> => {
-	const response = await fetchAuthApi("/logout", {
+	const response = await fetchAuthApiWithRetry("/logout", {
 		method: "POST",
 		headers: {Cookie: `refreshToken=${refreshToken}`}
 	});
@@ -47,7 +49,7 @@ const logOut = async (refreshToken: string): Promise<LogoutResponse> => {
 };
 
 const refresh = async (refreshToken: string): Promise<RefreshResponse> => {
-	const response = await fetchAuthApi("/refresh", {
+	const response = await fetchAuthApiWithRetry("/refresh", {
 		method: "POST",
 		headers: {Cookie: `refreshToken=${refreshToken}`}
 	});
