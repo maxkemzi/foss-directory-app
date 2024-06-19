@@ -25,11 +25,10 @@ services:
       - backend
 
   frontend:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
+    image: maxkyrychenko/foss-directory-client:latest
     container_name: frontend
     restart: always
+    env_file: "./client/.env"
     depends_on:
       - backend
     networks:
