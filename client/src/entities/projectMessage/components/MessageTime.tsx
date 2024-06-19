@@ -1,7 +1,6 @@
 "use client";
 
 import {ProjectMessageFromApi} from "#src/shared/apis";
-import dynamic from "next/dynamic";
 import {FC} from "react";
 
 interface Props {
@@ -24,7 +23,4 @@ const MessageTime: FC<Props> = ({createdAt}) => {
 	);
 };
 
-export default dynamic(() => Promise.resolve(MessageTime), {
-	ssr: false,
-	loading: () => <p className={CLASS_NAMES}>...</p>
-});
+export default MessageTime;

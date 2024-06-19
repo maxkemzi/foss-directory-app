@@ -1,14 +1,13 @@
 "use client";
 
 import {Chip} from "@nextui-org/react";
-import dynamic from "next/dynamic";
 import {FC, PropsWithChildren} from "react";
-import {ProjectDateMessage} from "../types";
+import {DateMessage as DateMessageType} from "../types";
 import MessageContainer from "./MessageContainer";
 import MessageText from "./MessageText";
 
 interface Props {
-	message: ProjectDateMessage;
+	message: DateMessageType;
 }
 
 const DateMessageContent: FC<PropsWithChildren> = ({children}) => {
@@ -47,7 +46,4 @@ const DateMessage: FC<Props> = ({message}) => {
 	);
 };
 
-export default dynamic(() => Promise.resolve(DateMessage), {
-	ssr: false,
-	loading: () => <DateMessageContent>...</DateMessageContent>
-});
+export default DateMessage;

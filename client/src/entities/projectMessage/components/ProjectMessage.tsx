@@ -1,21 +1,19 @@
 "use client";
 
-import {ProjectMessageFromApi} from "#src/shared/apis";
 import {FC} from "react";
+import {ExtendedProjectMessage, DateMessage as DateMessageType} from "../types";
 import DateMessage from "./DateMessage";
 import JoinMessage from "./JoinMessage";
+import LeaveMessage from "./LeaveMessage";
 import SequentialMessage from "./SequentialMessage";
 import UserMessage from "./UserMessage/UserMessage";
 import YourMessage from "./YourMessage";
-import {ProjectDateMessage} from "../types";
-import LeaveMessage from "./LeaveMessage";
 
 interface Props {
-	message: ProjectMessageFromApi | ProjectDateMessage;
-	isMine?: boolean;
+	message: ExtendedProjectMessage | DateMessageType;
 }
 
-const ProjectMessage: FC<Props> = ({message, isMine}) => {
+const ProjectMessage: FC<Props> = ({message}) => {
 	const {type} = message;
 
 	if (type === "join") {
@@ -30,11 +28,12 @@ const ProjectMessage: FC<Props> = ({message, isMine}) => {
 		return <DateMessage message={message} />;
 	}
 
-	if (isMine) {
+	const {isOwn, isSequential} = message;
+
+	if (isOwn) {
 		return <YourMessage message={message} />;
 	}
 
-	const {isSequential} = message;
 	if (isSequential) {
 		return <SequentialMessage message={message} />;
 	}
