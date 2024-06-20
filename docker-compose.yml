@@ -13,11 +13,10 @@ services:
       - backend
 
   backend:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
+    image: maxkemzi/foss-directory-server:latest
     container_name: backend
     restart: always
+    env_file: "./server/.env"
     depends_on:
       - postgres
     networks:
@@ -25,7 +24,7 @@ services:
       - backend
 
   frontend:
-    image: maxkyrychenko/foss-directory-client:latest
+    image: maxkemzi/foss-directory-client:latest
     container_name: frontend
     restart: always
     env_file: "./client/.env"
