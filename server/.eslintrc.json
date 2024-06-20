@@ -17,7 +17,7 @@
 	],
 	"parserOptions": {
 		"ecmaVersion": "latest",
-		"project": "./tsconfig.json"
+		"project": "./eslint.tsconfig.json"
 	},
 	"rules": {
 		"@typescript-eslint/lines-between-class-members": "off",

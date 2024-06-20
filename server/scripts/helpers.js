@@ -1,7 +1,7 @@
-import "dotenv/config";
-import fs from "node:fs/promises";
-import path from "node:path";
-import {Client} from "pg";
+require("dotenv").config();
+const fs = require("node:fs/promises");
+const path = require("node:path");
+const {Client} = require("pg");
 
 const {
 	POSTGRES_HOST,
@@ -25,15 +25,15 @@ if (
 
 const getDbClient = () => {
 	return new Client({
-		host: POSTGRES_HOST as string,
-		user: POSTGRES_USER as string,
-		password: POSTGRES_PASSWORD as string,
-		database: POSTGRES_DATABASE as string,
-		port: Number(POSTGRES_PORT as string)
+		host: POSTGRES_HOST,
+		user: POSTGRES_USER,
+		password: POSTGRES_PASSWORD,
+		database: POSTGRES_DATABASE,
+		port: Number(POSTGRES_PORT)
 	});
 };
 
-const readSqlFile = async (...paths: string[]): Promise<string> => {
+const readSqlFile = async (...paths) => {
 	const filePath = path.join(...paths);
 
 	const data = await fs.readFile(filePath, "utf-8");
