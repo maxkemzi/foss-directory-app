@@ -9,7 +9,7 @@ import List from "./List";
 
 const Projects = async () => {
 	const LIMIT = 6;
-	const response = await projectActions.getAll({limit: LIMIT});
+	const response = await projectActions.getByVariant("all", {limit: LIMIT});
 
 	return (
 		<PageSection>

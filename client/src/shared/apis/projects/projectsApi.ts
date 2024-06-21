@@ -7,8 +7,9 @@ import {
 	CreateProjectBody,
 	CreateProjectResponse,
 	FetchProjectResponse,
+	FetchProjectsOptions,
 	FetchProjectsResponse,
-	FetchProjectsSearchParams
+	FetchProjectsVariant
 } from "./types";
 
 const BASE_URL = "/projects";
@@ -26,58 +27,13 @@ const create = async (
 	return {data};
 };
 
-const fetchAll = async (
-	params?: FetchProjectsSearchParams
+const fetchByVariant = async (
+	variant: FetchProjectsVariant,
+	opts: FetchProjectsOptions = {}
 ): Promise<FetchProjectsResponse> => {
 	const response = await fetchApiWithAuth(BASE_URL, {
 		next: {tags: [CacheTag.PROJECTS]},
-		params
-	});
-
-	const data = await response.json();
-
-	const {headers} = response;
-	const {totalCount, page, limit, totalPages} =
-		getPaginationHeaderValues(headers);
-
-	return {
-		data,
-		totalCount,
-		page,
-		limit,
-		hasMore: calcHasMore(page, totalPages)
-	};
-};
-
-const fetchByOwnership = async (
-	params?: FetchProjectsSearchParams
-): Promise<FetchProjectsResponse> => {
-	const response = await fetchApiWithAuth(`${BASE_URL}/owned`, {
-		next: {tags: [CacheTag.PROJECTS]},
-		params
-	});
-
-	const data = await response.json();
-
-	const {headers} = response;
-	const {totalCount, page, limit, totalPages} =
-		getPaginationHeaderValues(headers);
-
-	return {
-		data,
-		totalCount,
-		page,
-		limit,
-		hasMore: calcHasMore(page, totalPages)
-	};
-};
-
-const fetchByMembership = async (
-	params?: FetchProjectsSearchParams
-): Promise<FetchProjectsResponse> => {
-	const response = await fetchApiWithAuth(`${BASE_URL}/membership`, {
-		next: {tags: [CacheTag.PROJECTS]},
-		params
+		params: {variant, page: opts.page, limit: opts.limit, search: opts.search}
 	});
 
 	const data = await response.json();
@@ -117,12 +73,4 @@ const leaveById = async (projectId: string): Promise<void> => {
 	});
 };
 
-export {
-	create,
-	deleteById,
-	fetchAll,
-	fetchById,
-	fetchByMembership,
-	fetchByOwnership,
-	leaveById
-};
+export {create, deleteById, fetchById, fetchByVariant, leaveById};

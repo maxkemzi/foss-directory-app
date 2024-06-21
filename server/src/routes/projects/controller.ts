@@ -9,6 +9,8 @@ import {
 	parseSearchString
 } from "#src/utils";
 import {NextFunction, Request, Response} from "express";
+import {parseVariant} from "./helpers";
+import {Variant} from "./types";
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -35,6 +37,14 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
 	}
 };
 
+const VARIANT_TO_SERVICE_FN_MAPPING: {
+	[key in Variant]: (...args: any[]) => Promise<any>;
+} = {
+	all: projectService.getAll,
+	owned: projectService.getByOwnerUserId,
+	member: projectService.getByMemberUserId
+};
+
 const getAll = async (
 	req: Request<{}, {}, {}, any>,
 	res: Response,
@@ -46,7 +56,11 @@ const getAll = async (
 			throw new ApiError(401, "Unauthorized");
 		}
 
-		const {page, limit, search} = req.query;
+		const {variant, page, limit, search} = req.query;
+
+		if (variant && typeof variant !== "string") {
+			throw new ApiError(400, '"variant" param must be a string');
+		}
 
 		if (page && typeof page !== "string") {
 			throw new ApiError(400, '"page" param must be a string');
@@ -60,13 +74,15 @@ const getAll = async (
 			throw new ApiError(400, '"search" param must be a string');
 		}
 
+		const parsedVariant = parseVariant(variant);
 		const parsedPage = parsePageString(page);
 		const parsedLimit = parseLimitString(limit);
 		const parsedSearch = parseSearchString(search);
 
 		const offset = calcOffset(parsedPage, parsedLimit);
 
-		const {projects, totalCount} = await projectService.getAll(userId, {
+		const serviceFn = VARIANT_TO_SERVICE_FN_MAPPING[parsedVariant];
+		const {projects, totalCount} = await serviceFn(userId, {
 			limit: parsedLimit,
 			search: parsedSearch,
 			offset

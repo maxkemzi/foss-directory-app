@@ -5,7 +5,12 @@ import {
 	ProjectFromApi
 } from "../types";
 
-type FetchProjectsSearchParams = PaginationSearchParams & {search?: string};
+type FetchProjectsVariant = "all" | "owned" | "member";
+type FetchProjectsSearchParams = PaginationSearchParams & {
+	search?: string;
+	variant?: FetchProjectsVariant;
+};
+type FetchProjectsOptions = Omit<FetchProjectsSearchParams, "variant">;
 
 type FetchProjectsResponseData = ProjectFromApi[];
 type FetchProjectsResponse =
@@ -27,8 +32,10 @@ type CreateProjectResponse = ApiResponse<CreateProjectResponseData>;
 
 export type {
 	FetchProjectsSearchParams,
+	FetchProjectsOptions,
 	CreateProjectBody,
 	CreateProjectResponse,
 	FetchProjectResponse,
-	FetchProjectsResponse
+	FetchProjectsResponse,
+	FetchProjectsVariant
 };

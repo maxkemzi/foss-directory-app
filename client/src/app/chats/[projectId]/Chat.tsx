@@ -32,8 +32,7 @@ const Chat: FC<Props> = ({
 	const pathname = usePathname();
 	const router = useRouter();
 
-	const projectList = useProjectList("membership", projectsResponse);
-
+	const projectList = useProjectList("member", projectsResponse);
 	const projectMessageList = useProjectMessageList(projectId, messagesResponse);
 
 	const getChatPathByProjectId = (id: string) => `${Pathname.CHATS}/${id}`;

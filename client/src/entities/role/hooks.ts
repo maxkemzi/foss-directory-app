@@ -1,57 +1,37 @@
 "use client";
 
-import {RoleFromApi} from "#src/shared/apis";
-import {FetchTagsSearchParams} from "#src/shared/apis/tags";
-import {useSafeAction} from "#src/shared/hooks";
-import {useToast} from "#src/shared/toast";
-import {useCallback, useState} from "react";
+import {
+	FetchRolesResponse,
+	FetchRolesSearchParams
+} from "#src/shared/apis/roles";
+import {useList} from "#src/shared/hooks";
+import {useCallback} from "react";
 import {safeGetAll} from "./actions";
 
-const LIMIT = 10;
-
-const useRoleList = () => {
-	const {showToast} = useToast();
-	const [roles, setRoles] = useState<RoleFromApi[]>([]);
-	const [page, setPage] = useState(1);
-	const [hasMore, setHasMore] = useState<boolean>(false);
-
-	const {execute, isPending: isFetching} = useSafeAction(safeGetAll, {
-		onSuccess: result => {
-			const {data: response} = result;
-
-			if (response.page === 1) {
-				setRoles(response.data);
-			} else {
-				setRoles(prev => [...prev, ...response.data]);
-			}
-
-			setPage(response.page);
-			setHasMore(response.hasMore);
-		},
-		onError: result => {
-			showToast({variant: "error", message: result.error});
-		}
-	});
+const useRoleList = (serverResponse?: FetchRolesResponse) => {
+	const {fetchData, isFetching, response} = useList(safeGetAll, serverResponse);
 
 	const fetchFirstPage = useCallback(
-		({search}: Pick<FetchTagsSearchParams, "search"> = {}) => {
-			execute({page: 1, limit: LIMIT, search});
+		({search}: Pick<FetchRolesSearchParams, "search"> = {}) => {
+			fetchData({page: 1, limit: response.limit, search});
 		},
-		[execute]
+		[fetchData, response.limit]
 	);
 
 	const fetchMore = useCallback(
-		({search}: Pick<FetchTagsSearchParams, "search"> = {}) => {
-			execute({
-				page: page + 1,
-				search,
-				limit: LIMIT
-			});
+		({search}: Pick<FetchRolesSearchParams, "search"> = {}) => {
+			fetchData({page: response.page + 1, search, limit: response.limit});
 		},
-		[execute, page]
+		[fetchData, response.limit, response.page]
 	);
 
-	return {roles, hasMore, isFetching, fetchFirstPage, fetchMore};
+	return {
+		roles: response.data,
+		hasMore: response.hasMore,
+		isFetching,
+		fetchFirstPage,
+		fetchMore
+	};
 };
 
 export {useRoleList};

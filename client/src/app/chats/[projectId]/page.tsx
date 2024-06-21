@@ -16,7 +16,7 @@ const ChatsChat = async ({params}: {params: {projectId: string}}) => {
 
 	const [projectsResponse, messagesResponse, projectResponse] =
 		await Promise.all([
-			projectActions.getByMembership({limit: PROJECTS_LIMIT}),
+			projectActions.getByVariant("member", {limit: PROJECTS_LIMIT}),
 			projectMessageActions.getByProjectId(projectId, {
 				limit: MESSAGES_LIMIT
 			}),

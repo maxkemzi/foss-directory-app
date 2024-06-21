@@ -5,5 +5,6 @@ export type {
 	FetchProjectsSearchParams,
 	CreateProjectBody,
 	FetchProjectsResponse,
-	FetchProjectResponse
+	FetchProjectResponse,
+	FetchProjectsVariant
 } from "./types";

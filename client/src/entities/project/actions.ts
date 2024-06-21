@@ -3,36 +3,19 @@
 import {isApiError} from "#src/shared/apis/lib";
 import projectsApi, {
 	FetchProjectsResponse,
-	FetchProjectsSearchParams
+	FetchProjectsVariant
 } from "#src/shared/apis/projects";
+import {FetchProjectsOptions} from "#src/shared/apis/projects/types";
 import {AppError} from "#src/shared/error";
 import {getErrorMessage} from "#src/shared/helpers";
 import {SafeAction} from "#src/shared/hooks";
 
-const getAll = async (params?: FetchProjectsSearchParams) => {
-	try {
-		const response = await projectsApi.fetchAll(params);
-		return response;
-	} catch (e) {
-		const message = isApiError(e) ? e.message : "Error fetching projects";
-		throw new AppError(message);
-	}
-};
-
-const safeGetAll: SafeAction<typeof getAll, FetchProjectsResponse> = async (
-	params?
+const getByVariant = async (
+	variant: FetchProjectsVariant,
+	opts?: FetchProjectsOptions
 ) => {
 	try {
-		const response = await getAll(params);
-		return {success: "Projects have been fetched", data: response};
-	} catch (e) {
-		return {error: getErrorMessage(e)};
-	}
-};
-
-const getByOwnership = async (params?: FetchProjectsSearchParams) => {
-	try {
-		const response = await projectsApi.fetchByOwnership(params);
+		const response = await projectsApi.fetchByVariant(variant, opts);
 		return response;
 	} catch (e) {
 		const message = isApiError(e) ? e.message : "Error fetching projects";
@@ -40,34 +23,12 @@ const getByOwnership = async (params?: FetchProjectsSearchParams) => {
 	}
 };
 
-const safeGetByOwnership: SafeAction<
-	typeof getByOwnership,
+const safeGetByVariant: SafeAction<
+	typeof getByVariant,
 	FetchProjectsResponse
-> = async (params?) => {
+> = async (variant, opts?) => {
 	try {
-		const response = await getByOwnership(params);
-		return {success: "Projects have been fetched", data: response};
-	} catch (e) {
-		return {error: getErrorMessage(e)};
-	}
-};
-
-const getByMembership = async (params?: FetchProjectsSearchParams) => {
-	try {
-		const response = await projectsApi.fetchByMembership(params);
-		return response;
-	} catch (e) {
-		const message = isApiError(e) ? e.message : "Error fetching projects";
-		throw new AppError(message);
-	}
-};
-
-const safeGetByMembership: SafeAction<
-	typeof getByMembership,
-	FetchProjectsResponse
-> = async (params?) => {
-	try {
-		const response = await getByMembership(params);
+		const response = await getByVariant(variant, opts);
 		return {success: "Projects have been fetched", data: response};
 	} catch (e) {
 		return {error: getErrorMessage(e)};
@@ -84,12 +45,4 @@ const getById = async (id: string) => {
 	}
 };
 
-export {
-	getAll,
-	safeGetAll,
-	getById,
-	getByMembership,
-	getByOwnership,
-	safeGetByOwnership,
-	safeGetByMembership
-};
+export {getById, getByVariant, safeGetByVariant};
