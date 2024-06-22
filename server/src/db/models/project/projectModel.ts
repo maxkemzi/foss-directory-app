@@ -3,14 +3,7 @@ import {PoolClient} from "pg";
 import {ProjectPayload} from "../../types/payloads";
 import {ProjectFromDb} from "../../types/rows";
 import ProjectDocument from "./ProjectDocument";
-import {
-	CountAllOptions,
-	CountByMemberUserIdOptions,
-	CountByOwnerUserIdOptions,
-	FindAllOptions,
-	FindByMemberUserIdOptions,
-	FindByOwnerUserIdOptions
-} from "./types";
+import {FindOptions, CountOptions} from "./types";
 import {createSearchCondition} from "./helpers";
 
 const insert = async (
@@ -35,7 +28,7 @@ const deleteById = async (client: PoolClient, id: string): Promise<void> => {
 
 const findAll = async (
 	client: PoolClient,
-	opts: FindAllOptions = {}
+	opts: FindOptions = {}
 ): Promise<ProjectDocument[]> => {
 	const {search, limit, offset} = opts;
 
@@ -62,7 +55,7 @@ const findAll = async (
 
 const countAll = async (
 	client: PoolClient,
-	opts: CountAllOptions = {}
+	opts: CountOptions = {}
 ): Promise<number> => {
 	const {search} = opts;
 
@@ -82,7 +75,7 @@ const countAll = async (
 const findByOwnerUserId = async (
 	client: PoolClient,
 	id: string,
-	opts: FindByOwnerUserIdOptions = {}
+	opts: FindOptions = {}
 ): Promise<ProjectDocument[]> => {
 	const {search, limit, offset} = opts;
 
@@ -110,7 +103,7 @@ const findByOwnerUserId = async (
 const countByOwnerUserId = async (
 	client: PoolClient,
 	id: string,
-	opts: CountByOwnerUserIdOptions = {}
+	opts: CountOptions = {}
 ): Promise<number> => {
 	const {search} = opts;
 
@@ -130,7 +123,7 @@ const countByOwnerUserId = async (
 const findByMemberUserId = async (
 	client: PoolClient,
 	id: string,
-	opts: FindByMemberUserIdOptions = {}
+	opts: FindOptions = {}
 ): Promise<ProjectDocument[]> => {
 	const {search, limit, offset} = opts;
 
@@ -165,7 +158,7 @@ const findByMemberUserId = async (
 const countByMemberUserId = async (
 	client: PoolClient,
 	id: string,
-	opts: CountByMemberUserIdOptions = {}
+	opts: CountOptions = {}
 ): Promise<number> => {
 	const {search} = opts;
 

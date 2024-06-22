@@ -1,6 +1,6 @@
 import {PoolClient} from "pg";
 import {ProjectTagPayload} from "../../types/payloads";
-import {ProjectTagFromDb} from "../../types/rows";
+import {ProjectFromDb, ProjectTagFromDb} from "../../types/rows";
 import ProjectTagDocument from "./ProjectTagDocument";
 
 const insert = async (client: PoolClient, payload: ProjectTagPayload) => {
@@ -21,4 +21,16 @@ const insert = async (client: PoolClient, payload: ProjectTagPayload) => {
 	return new ProjectTagDocument(projectTag);
 };
 
-export default {insert};
+const findByProjectId = async (
+	client: PoolClient,
+	id: ProjectFromDb["id"]
+): Promise<ProjectTagDocument[]> => {
+	const {rows} = await client.query<ProjectTagFromDb>(
+		"SELECT * FROM project_tags WHERE project_id = $1 ORDER BY created_at ASC, serial_id ASC;",
+		[id]
+	);
+
+	return rows.map(r => new ProjectTagDocument(r));
+};
+
+export default {insert, findByProjectId};

@@ -5,15 +5,10 @@ import {
 	PopulatedProjectRequestDocument,
 	ProjectRequestDocument as ProjectRequestDocumentType
 } from "../../types/documents";
-import {
-	ProjectFromDb,
-	ProjectRequestFromDb,
-	RoleFromDb,
-	UserFromDb
-} from "../../types/rows";
-import ProjectDocument from "../project/ProjectDocument";
-import RoleDocument from "../role/RoleDocument";
-import UserDocument from "../user/UserDocument";
+import {ProjectRequestFromDb} from "../../types/rows";
+import projectModel from "../project/projectModel";
+import projectRoleModel from "../projectRole/projectRoleModel";
+import userModel from "../user/userModel";
 
 class ProjectRequestDocument
 	extends Document<ProjectRequestDocumentType>
@@ -40,47 +35,21 @@ class ProjectRequestDocument
 	}
 
 	async populate(client: PoolClient): Promise<PopulatedProjectRequestDocument> {
-		const {userId, projectRoleId} = this;
+		const {userId, projectRoleId, projectId} = this;
 
-		const [userResult, projectResult, roleResult] = await Promise.all([
-			client.query<UserFromDb>("SELECT * FROM user_account WHERE id = $1;", [
-				userId
-			]),
-			client.query<ProjectFromDb>(
-				`
-				SELECT p.*
-				FROM project_roles pr
-				JOIN project p ON pr.project_id = p.id
-				WHERE pr.id = $1;
-				`,
-				[projectRoleId]
-			),
-			client.query<RoleFromDb & {places_available: number}>(
-				`
-				SELECT *
-				FROM (
-					SELECT pr.id, r.name, pr.places_available, pr.created_at, pr.updated_at
-					FROM project_roles pr
-					JOIN role r ON pr.role_id = r.id
-					WHERE pr.id = $1 AND pr.places_available > 0
-					UNION ALL
-					SELECT id, name, places_available, created_at, updated_at
-					FROM project_roles
-					WHERE id = $1 AND role_id IS NULL AND places_available > 0
-				);
-			`,
-				[projectRoleId]
-			)
+		const [user, project, role] = await Promise.all([
+			userModel.findById(client, userId),
+			projectModel.findById(client, projectId),
+			projectRoleModel
+				.findById(client, projectRoleId)
+				.then(r => (r ? r.populate(client) : r))
 		]);
 
 		return {
 			...this.toObject(),
-			user: new UserDocument(userResult.rows[0]).toObject(),
-			project: new ProjectDocument(projectResult.rows[0]).toObject(),
-			role: {
-				...new RoleDocument(roleResult.rows[0]).toObject(),
-				placesAvailable: roleResult.rows[0].places_available
-			}
+			user: user!,
+			project: project!,
+			role: role!
 		};
 	}
 }

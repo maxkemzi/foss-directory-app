@@ -7,35 +7,14 @@ interface CreateProjectPayload extends ProjectPayload {
 	roles: {[name: string]: number};
 }
 
-interface GetAllOptions {
+interface GetOptions {
 	search?: string;
+	tagsToSearch?: string[];
 	limit: number;
 	offset: number;
 }
 
-interface GetAllReturn {
-	projects: ExtendedProjectDto[];
-	totalCount: number;
-}
-
-interface GetByOwnerUserIdOptions {
-	search?: string;
-	limit: number;
-	offset: number;
-}
-
-interface GetByOwnerUserIdReturn {
-	projects: ExtendedProjectDto[];
-	totalCount: number;
-}
-
-interface GetByMemberUserIdOptions {
-	search?: string;
-	limit: number;
-	offset: number;
-}
-
-interface GetByMemberUserIdReturn {
+interface GetReturn {
 	projects: ExtendedProjectDto[];
 	totalCount: number;
 }
@@ -45,13 +24,4 @@ interface ExtendedProject extends PopulatedProjectDocument {
 	isRequestable: boolean;
 }
 
-export type {
-	CreateProjectPayload,
-	GetAllOptions,
-	GetAllReturn,
-	GetByOwnerUserIdOptions,
-	GetByOwnerUserIdReturn,
-	GetByMemberUserIdOptions,
-	GetByMemberUserIdReturn,
-	ExtendedProject
-};
+export type {CreateProjectPayload, GetOptions, GetReturn, ExtendedProject};

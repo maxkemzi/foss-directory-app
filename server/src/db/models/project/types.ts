@@ -1,38 +1,11 @@
-interface FindAllOptions {
+interface FindOptions {
 	search?: string;
 	limit?: number;
 	offset?: number;
 }
 
-interface CountAllOptions {
+interface CountOptions {
 	search?: string;
 }
 
-interface FindByOwnerUserIdOptions {
-	search?: string;
-	limit?: number;
-	offset?: number;
-}
-
-interface CountByOwnerUserIdOptions {
-	search?: string;
-}
-
-interface FindByMemberUserIdOptions {
-	search?: string;
-	limit?: number;
-	offset?: number;
-}
-
-interface CountByMemberUserIdOptions {
-	search?: string;
-}
-
-export type {
-	FindAllOptions,
-	CountAllOptions,
-	FindByOwnerUserIdOptions,
-	CountByOwnerUserIdOptions,
-	FindByMemberUserIdOptions,
-	CountByMemberUserIdOptions
-};
+export type {FindOptions, CountOptions};

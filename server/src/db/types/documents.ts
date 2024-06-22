@@ -1,17 +1,18 @@
 import {PoolClient} from "pg";
 import {
-	RowFromDb,
 	GithubConnectionFromDb,
+	GithubRateLimitFromDb,
 	ProjectFromDb,
 	ProjectMessageFromDb,
 	ProjectRequestFromDb,
+	ProjectRoleFromDb,
 	ProjectTagFromDb,
 	ProjectUserFromDb,
 	RefreshTokenFromDb,
 	RoleFromDb,
+	RowFromDb,
 	TagFromDb,
-	UserFromDb,
-	GithubRateLimitFromDb
+	UserFromDb
 } from "./rows";
 
 interface DocumentObject {
@@ -45,10 +46,8 @@ interface ProjectDocument extends BaseProjectDocument {
 }
 interface PopulatedProjectDocument extends BaseProjectDocument {
 	ownerUser: UserDocument;
-	tags: TagDocument[];
-	roles: (RoleDocument & {
-		placesAvailable: ProjectRoleDocument["placesAvailable"];
-	})[];
+	tags: PopulatedProjectTagDocument[];
+	roles: PopulatedProjectRoleDocument[];
 }
 
 interface ProjectTagDocument extends DocumentObject {
@@ -58,27 +57,22 @@ interface ProjectTagDocument extends DocumentObject {
 	isCustom: ProjectTagFromDb["is_custom"];
 }
 type PopulatedProjectTagDocument = DocumentObject & {
-	Project: ProjectDocument;
+	id: ProjectTagFromDb["id"];
 	name: ProjectTagFromDb["name"];
-	isCustom: ProjectTagFromDb["is_custom"];
-} & ({tagId: null} | {Tag: TagDocument; tagId: string});
+};
 
 interface ProjectRoleDocument extends DocumentObject {
-	projectId: string;
-	placesAvailable: number;
-	roleId: string | null;
-	name: string | null;
-	isCustom: boolean;
+	projectId: ProjectRoleFromDb["project_id"];
+	placesAvailable: ProjectRoleFromDb["places_available"];
+	roleId: ProjectRoleFromDb["role_id"];
+	name: ProjectRoleFromDb["name"];
+	isCustom: ProjectRoleFromDb["is_custom"];
 }
 type PopulatedProjectRoleDocument = DocumentObject & {
-	Project: ProjectDocument;
-	placesAvailable: number;
-	name: string;
-	isCustom: false;
-} & (
-		| {Role: never; role_id: null}
-		| {Role: ProjectRoleDocument; role_id: never}
-	);
+	id: ProjectRoleFromDb["id"];
+	name: ProjectRoleFromDb["name"];
+	placesAvailable: ProjectRoleFromDb["places_available"];
+};
 
 interface ProjectRequestDocument extends DocumentObject {
 	userId: ProjectRequestFromDb["user_account_id"];
@@ -88,9 +82,7 @@ interface ProjectRequestDocument extends DocumentObject {
 interface PopulatedProjectRequestDocument extends DocumentObject {
 	user: UserDocument;
 	project: ProjectDocument;
-	role: RoleDocument & {
-		placesAvailable: ProjectRoleDocument["placesAvailable"];
-	};
+	role: PopulatedProjectRoleDocument;
 }
 
 interface RefreshTokenDocument extends DocumentObject {
@@ -121,7 +113,7 @@ interface ProjectUserDocument extends DocumentObject {
 }
 interface PopulatedProjectUserDocument extends DocumentObject {
 	user: UserDocument;
-	role: RoleDocument;
+	role: PopulatedProjectRoleDocument;
 	isOwner: boolean;
 }
 
@@ -136,7 +128,7 @@ interface PopulatedProjectMessageDocument extends DocumentObject {
 	project: ProjectDocument;
 	sender: {
 		user: UserDocument;
-		role: RoleDocument | null;
+		role: PopulatedProjectRoleDocument | null;
 		isOwner: boolean;
 	} | null;
 	text: ProjectMessageFromDb["text"];
@@ -147,8 +139,8 @@ interface PopulatedProjectMessageDocument extends DocumentObject {
 export type {
 	DocumentObject,
 	GithubConnectionDocument,
-	PopulatableDocument,
 	GithubRateLimitDocument,
+	PopulatableDocument,
 	PopulatedProjectDocument,
 	PopulatedProjectMessageDocument,
 	PopulatedProjectRequestDocument,

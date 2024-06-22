@@ -1,5 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import {
+	PopulatableDocument,
 	PopulatedProjectDocument,
 	db,
 	dbHelpers,
@@ -17,12 +18,8 @@ import {PoolClient} from "pg";
 import {
 	CreateProjectPayload,
 	ExtendedProject,
-	GetAllOptions,
-	GetAllReturn,
-	GetByMemberUserIdOptions,
-	GetByMemberUserIdReturn,
-	GetByOwnerUserIdOptions,
-	GetByOwnerUserIdReturn
+	GetOptions,
+	GetReturn
 } from "./types";
 
 const extend = async (
@@ -43,6 +40,26 @@ const extend = async (
 	]);
 
 	return {...project, memberCount, isRequestable: !isOwner && !isMember};
+};
+
+const extendMany = (
+	client: PoolClient,
+	projects: PopulatedProjectDocument[],
+	userId: string
+) => {
+	return Promise.all(projects.map(p => extend(client, p, userId)));
+};
+
+const populateAndExtendMany = async (
+	client: PoolClient,
+	projects: PopulatableDocument<PopulatedProjectDocument>[],
+	userId: string
+) => {
+	const populatedProjects = await dbHelpers.populateMany(client, projects);
+
+	const extendedProjects = await extendMany(client, populatedProjects, userId);
+
+	return extendedProjects;
 };
 
 const create = async ({
@@ -114,10 +131,7 @@ const create = async ({
 	}
 };
 
-const getAll = async (
-	userId: string,
-	opts: GetAllOptions
-): Promise<GetAllReturn> => {
+const getAll = async (userId: string, opts: GetOptions): Promise<GetReturn> => {
 	const {search, limit, offset} = opts;
 
 	const client = await db.getClient();
@@ -128,14 +142,8 @@ const getAll = async (
 			projectModel.countAll(client, {search})
 		]);
 
-		const populatedProjects = await dbHelpers.populateMany(client, projects);
-
-		const extendedProjects = await Promise.all(
-			populatedProjects.map(pp => extend(client, pp, userId))
-		);
-
 		return {
-			projects: extendedProjects.map(ep => new ExtendedProjectDto(ep)),
+			projects: await populateAndExtendMany(client, projects, userId),
 			totalCount
 		};
 	} finally {
@@ -145,8 +153,8 @@ const getAll = async (
 
 const getByOwnerUserId = async (
 	id: string,
-	opts: GetByOwnerUserIdOptions
-): Promise<GetByOwnerUserIdReturn> => {
+	opts: GetOptions
+): Promise<GetReturn> => {
 	const {search, limit, offset} = opts;
 
 	const client = await db.getClient();
@@ -157,14 +165,8 @@ const getByOwnerUserId = async (
 			projectModel.countByOwnerUserId(client, id, {search})
 		]);
 
-		const populatedProjects = await dbHelpers.populateMany(client, projects);
-
-		const extendedProjects = await Promise.all(
-			populatedProjects.map(pp => extend(client, pp, id))
-		);
-
 		return {
-			projects: extendedProjects.map(ep => new ExtendedProjectDto(ep)),
+			projects: await populateAndExtendMany(client, projects, id),
 			totalCount
 		};
 	} finally {
@@ -174,8 +176,8 @@ const getByOwnerUserId = async (
 
 const getByMemberUserId = async (
 	id: string,
-	opts: GetByMemberUserIdOptions
-): Promise<GetByMemberUserIdReturn> => {
+	opts: GetOptions
+): Promise<GetReturn> => {
 	const {search, limit, offset} = opts;
 
 	const client = await db.getClient();
@@ -186,14 +188,8 @@ const getByMemberUserId = async (
 			projectModel.countByMemberUserId(client, id, {search})
 		]);
 
-		const populatedProjects = await dbHelpers.populateMany(client, projects);
-
-		const extendedProjects = await Promise.all(
-			populatedProjects.map(pp => extend(client, pp, id))
-		);
-
 		return {
-			projects: extendedProjects.map(ep => new ExtendedProjectDto(ep)),
+			projects: await populateAndExtendMany(client, projects, id),
 			totalCount
 		};
 	} finally {
