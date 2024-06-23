@@ -4,12 +4,12 @@ import {ExtendedProjectDto} from "#src/dtos";
 interface CreateProjectPayload extends ProjectPayload {
 	role: string;
 	tags: string[];
-	roles: {[name: string]: number};
+	roles: [string, number][];
 }
 
 interface GetOptions {
 	search?: string;
-	tagsToSearch?: string[];
+	searchTags?: string[];
 	limit: number;
 	offset: number;
 }

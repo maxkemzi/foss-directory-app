@@ -42,7 +42,8 @@ const getUrlString = (url: string, opts: {params?: SearchParams} = {}) => {
 				return;
 			}
 
-			const parsedValue = typeof value !== "string" ? String(value) : value;
+			const parsedValue =
+				typeof value !== "string" ? JSON.stringify(value) : value;
 			result.searchParams.set(name, parsedValue);
 		});
 	}

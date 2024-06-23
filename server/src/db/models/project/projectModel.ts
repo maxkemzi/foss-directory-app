@@ -4,7 +4,7 @@ import {ProjectPayload} from "../../types/payloads";
 import {ProjectFromDb} from "../../types/rows";
 import ProjectDocument from "./ProjectDocument";
 import {FindOptions, CountOptions} from "./types";
-import {createSearchCondition} from "./helpers";
+import {createSearchCondition, createSearchTagsCondition} from "./helpers";
 
 const insert = async (
 	client: PoolClient,
@@ -30,15 +30,29 @@ const findAll = async (
 	client: PoolClient,
 	opts: FindOptions = {}
 ): Promise<ProjectDocument[]> => {
-	const {search, limit, offset} = opts;
+	const {search, limit, offset, searchTags} = opts;
 
-	let query = "SELECT * FROM project";
+	let query = "SELECT DISTINCT p.* FROM project p";
+	const conditions: string[] = [];
 
-	if (search) {
-		query += ` WHERE ${createSearchCondition(search, ["name", "description"])}`;
+	if (searchTags) {
+		query += `
+			JOIN project_tags pt ON p.id = pt.project_id
+			LEFT JOIN tag t ON pt.tag_id = t.id
+		`;
+
+		conditions.push(createSearchTagsCondition(searchTags));
 	}
 
-	query += ` ORDER BY created_at DESC, serial_id DESC`;
+	if (search) {
+		conditions.push(createSearchCondition(search, ["p.name", "p.description"]));
+	}
+
+	if (conditions.length > 0) {
+		query += ` WHERE ${conditions.join(" AND ")}`;
+	}
+
+	query += " ORDER BY created_at DESC, serial_id DESC";
 
 	if (limit) {
 		query += ` LIMIT ${limit}`;
@@ -48,7 +62,8 @@ const findAll = async (
 		query += ` OFFSET ${offset}`;
 	}
 
-	const {rows} = await client.query<ProjectFromDb>(`${query};`);
+	const values = searchTags?.map(t => `%${t}%`) || [];
+	const {rows} = await client.query<ProjectFromDb>(`${query};`, values);
 
 	return rows.map(p => new ProjectDocument(p));
 };
@@ -57,17 +72,32 @@ const countAll = async (
 	client: PoolClient,
 	opts: CountOptions = {}
 ): Promise<number> => {
-	const {search} = opts;
+	const {search, searchTags} = opts;
 
-	let query = `SELECT COUNT(*) FROM project`;
+	let query = "SELECT COUNT(DISTINCT p.id) FROM project p";
+	const conditions: string[] = [];
 
-	if (search) {
-		query += ` WHERE ${createSearchCondition(search, ["name", "description"])}`;
+	if (searchTags) {
+		query += `
+			JOIN project_tags pt ON p.id = pt.project_id
+			LEFT JOIN tag t ON pt.tag_id = t.id
+		`;
+
+		conditions.push(createSearchTagsCondition(searchTags));
 	}
 
+	if (search) {
+		conditions.push(createSearchCondition(search, ["p.name", "p.description"]));
+	}
+
+	if (conditions.length > 0) {
+		query += ` WHERE ${conditions.join(" AND ")}`;
+	}
+
+	const values = searchTags?.map(t => `%${t}%`) || [];
 	const {
 		rows: [{count}]
-	} = await client.query<{count: string}>(`${query};`);
+	} = await client.query<{count: string}>(`${query};`, values);
 
 	return Number(count);
 };

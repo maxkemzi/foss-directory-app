@@ -19,17 +19,17 @@ const useProjectList = (
 	);
 
 	const fetchFirstPage = useCallback(
-		({search}: Pick<FetchProjectsSearchParams, "search"> = {}) => {
-			fetchData(variant, {page: 1, search, limit: response.limit});
+		(params: Pick<FetchProjectsSearchParams, "search" | "searchTags"> = {}) => {
+			fetchData(variant, {...params, page: 1, limit: response.limit});
 		},
 		[fetchData, response.limit, variant]
 	);
 
 	const fetchMore = useCallback(
-		({search}: Pick<FetchProjectsSearchParams, "search"> = {}) => {
+		(params: Pick<FetchProjectsSearchParams, "search" | "searchTags"> = {}) => {
 			fetchData(variant, {
+				...params,
 				page: response.page + 1,
-				search,
 				limit: response.limit
 			});
 		},

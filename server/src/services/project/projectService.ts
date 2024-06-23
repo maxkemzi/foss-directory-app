@@ -108,7 +108,7 @@ const create = async ({
 
 		// Roles
 		// eslint-disable-next-line no-restricted-syntax
-		for (const [roleName, placesAvailable] of Object.entries(roles)) {
+		for (const [roleName, placesAvailable] of roles) {
 			const role = await roleModel.findByName(client, roleName);
 
 			await projectRoleModel.insert(client, {
@@ -118,9 +118,9 @@ const create = async ({
 			});
 		}
 
-		await client.query("COMMIT");
-
 		const populatedProject = await project.populate(client);
+
+		await client.query("COMMIT");
 
 		return new ProjectDto(populatedProject);
 	} catch (e) {
@@ -132,14 +132,14 @@ const create = async ({
 };
 
 const getAll = async (userId: string, opts: GetOptions): Promise<GetReturn> => {
-	const {search, limit, offset} = opts;
+	const {search, limit, offset, searchTags} = opts;
 
 	const client = await db.getClient();
 
 	try {
 		const [projects, totalCount] = await Promise.all([
-			projectModel.findAll(client, {search, limit, offset}),
-			projectModel.countAll(client, {search})
+			projectModel.findAll(client, {search, limit, offset, searchTags}),
+			projectModel.countAll(client, {search, searchTags})
 		]);
 
 		return {

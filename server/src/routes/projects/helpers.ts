@@ -8,4 +8,12 @@ const parseVariant = (
 	defaultVariant: Variant = "all"
 ) => (isValidVariant(variant) ? variant : defaultVariant);
 
-export {parseVariant};
+const parseSearchTags = (
+	searchTags: string | undefined
+): string[] | undefined =>
+	searchTags
+		?.split(",")
+		.map(t => t.trim())
+		.filter(t => t !== "");
+
+export {parseVariant, parseSearchTags};

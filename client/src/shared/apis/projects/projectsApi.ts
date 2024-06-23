@@ -31,23 +31,29 @@ const fetchByVariant = async (
 	variant: FetchProjectsVariant,
 	opts: FetchProjectsOptions = {}
 ): Promise<FetchProjectsResponse> => {
+	const {page, limit, search, searchTags} = opts;
+
+	const searchTagsQuery = searchTags
+		?.map(t => t.trim())
+		.filter(t => t !== "")
+		.join(",");
+
 	const response = await fetchApiWithAuth(BASE_URL, {
 		next: {tags: [CacheTag.PROJECTS]},
-		params: {variant, page: opts.page, limit: opts.limit, search: opts.search}
+		params: {variant, page, limit, search, searchTags: searchTagsQuery}
 	});
 
 	const data = await response.json();
 
 	const {headers} = response;
-	const {totalCount, page, limit, totalPages} =
-		getPaginationHeaderValues(headers);
+	const headerValues = getPaginationHeaderValues(headers);
 
 	return {
 		data,
-		totalCount,
-		page,
-		limit,
-		hasMore: calcHasMore(page, totalPages)
+		totalCount: headerValues.totalCount,
+		page: headerValues.page,
+		limit: headerValues.limit,
+		hasMore: calcHasMore(headerValues.page, headerValues.totalPages)
 	};
 };
 

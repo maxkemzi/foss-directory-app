@@ -12,12 +12,7 @@ import {VALIDATION_SCHEMA} from "./constants";
 
 const createProject = async (data: z.infer<typeof VALIDATION_SCHEMA>) => {
 	try {
-		const roles = data.roles.reduce((prev, curr) => {
-			const [key, value] = curr;
-			return {...prev, [key]: value};
-		}, {});
-
-		await projectsApi.create({...data, roles});
+		await projectsApi.create(data);
 		revalidateTag(CacheTag.PROJECTS);
 	} catch (e) {
 		const message = isApiError(e) ? e.message : "Error creating project";
@@ -28,7 +23,6 @@ const createProject = async (data: z.infer<typeof VALIDATION_SCHEMA>) => {
 const safeCreateProject: SafeAction<typeof createProject> = async data => {
 	try {
 		await createProject(data);
-
 		return {success: "Project has been created"};
 	} catch (e) {
 		return {error: getErrorMessage(e)};

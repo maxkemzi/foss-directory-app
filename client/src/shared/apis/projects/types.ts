@@ -8,6 +8,7 @@ import {
 type FetchProjectsVariant = "all" | "owned" | "member";
 type FetchProjectsSearchParams = PaginationSearchParams & {
 	search?: string;
+	searchTags?: string[];
 	variant?: FetchProjectsVariant;
 };
 type FetchProjectsOptions = Omit<FetchProjectsSearchParams, "variant">;
@@ -25,7 +26,7 @@ interface CreateProjectBody {
 	repoUrl: string;
 	role: string;
 	tags: string[];
-	roles: Record<string, number>;
+	roles: [string, number][];
 }
 type CreateProjectResponseData = ProjectFromApi;
 type CreateProjectResponse = ApiResponse<CreateProjectResponseData>;

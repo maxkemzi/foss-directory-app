@@ -5,7 +5,7 @@ import {
 	PageSection,
 	PageTitle
 } from "#src/shared/ui";
-import List from "./List";
+import Content from "./Content";
 
 const Projects = async () => {
 	const LIMIT = 6;
@@ -16,11 +16,7 @@ const Projects = async () => {
 			<PageContainer>
 				<PageTitle>Projects</PageTitle>
 				<PageContent>
-					{response.data.length !== 0 ? (
-						<List response={response} />
-					) : (
-						<p>There are no projects</p>
-					)}
+					<Content serverResponse={response} />
 				</PageContent>
 			</PageContainer>
 		</PageSection>
