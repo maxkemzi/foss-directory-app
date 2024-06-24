@@ -1,11 +1,19 @@
-interface FindAllOptions {
+import {TagDocument} from "#src/db/types";
+
+interface FindOptions {
 	search?: string;
 	limit?: number;
 	offset?: number;
 }
 
-interface CountAllOptions {
+interface CountOptions {
 	search?: string;
 }
 
-export type {FindAllOptions, CountAllOptions};
+interface TagModelImpl {
+	findAll(opts?: FindOptions): Promise<TagDocument[]>;
+	countAll(opts?: CountOptions): Promise<number>;
+	findByName(name: TagDocument["name"]): Promise<TagDocument | null>;
+}
+
+export type {CountOptions, FindOptions, TagModelImpl};

@@ -1,14 +1,14 @@
-import {RoleDto} from "#src/dtos";
+import {RoleDto} from "../dtos";
 
-interface GetAllOptions {
+interface GetOptions {
 	search?: string;
 	limit: number;
 	offset: number;
 }
 
-interface GetAllReturn {
+interface GetReturn {
 	roles: RoleDto[];
 	totalCount: number;
 }
 
-export type {GetAllOptions, GetAllReturn};
+export type {GetOptions, GetReturn};

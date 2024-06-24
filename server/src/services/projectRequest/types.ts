@@ -1,13 +1,13 @@
-import {ProjectRequestDto} from "#src/dtos";
+import {ProjectRequestDto} from "../dtos";
 
-interface GetByReceiverUserIdOptions {
+interface GetOptions {
 	limit?: number;
 	offset?: number;
 }
 
-interface GetByReceiverUserIdReturn {
+interface GetReturn {
 	requests: ProjectRequestDto[];
 	totalCount: number;
 }
 
-export type {GetByReceiverUserIdOptions, GetByReceiverUserIdReturn};
+export type {GetOptions, GetReturn};

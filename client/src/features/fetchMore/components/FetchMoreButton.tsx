@@ -14,7 +14,8 @@ const FetchMoreButton: FC<Props> = ({className, isFetching, onFetchMore}) => {
 			{isFetching ? (
 				<Spinner />
 			) : (
-				<Button color="primary" variant="flat" onClick={onFetchMore}>
+				// todo: improve the fix of server action can't accept complex objects
+				<Button color="primary" variant="flat" onClick={() => onFetchMore?.()}>
 					Fetch More
 				</Button>
 			)}

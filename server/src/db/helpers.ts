@@ -1,16 +1,15 @@
-import {PoolClient} from "pg";
-import {PopulatableDocument} from "./types/documents";
+import {GithubRateLimitDocument} from "./types";
 
-type ExtractGeneric<Type> = Type extends PopulatableDocument<infer X>
-	? X
-	: never;
+const isValidGithubRateLimitResource = (
+	resource: string
+): resource is GithubRateLimitDocument["resource"] =>
+	resource === "core" || resource === "search";
 
-const populateMany = <T extends PopulatableDocument<any>>(
-	client: PoolClient,
-	documents: T[]
-): Promise<ExtractGeneric<T>[]> => {
-	return Promise.all(documents.map(d => d.populate(client)));
+const isGithubRateLimitExceeded = (
+	rateLimit: GithubRateLimitDocument,
+	currentTime: number
+) => {
+	return currentTime < rateLimit.resetTime;
 };
 
-const dbHelpers = {populateMany};
-export default dbHelpers;
+export {isValidGithubRateLimitResource, isGithubRateLimitExceeded};

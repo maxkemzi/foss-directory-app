@@ -1,8 +1,8 @@
 import {Router} from "express";
-import controller from "./controller";
+import RolesController from "./RolesController";
 
 const rolesRouter = Router();
 
-rolesRouter.get("/", controller.getAll);
+rolesRouter.get("/", RolesController.getAll);
 
 export default rolesRouter;

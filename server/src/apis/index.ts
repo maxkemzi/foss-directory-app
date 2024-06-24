@@ -1,5 +1,5 @@
-import githubApi from "./github/githubApi";
+import GithubApi from "./github/GithubApi";
 import {GithubRepo} from "./github/types";
 
-export {githubApi};
+export {GithubApi};
 export type {GithubRepo};

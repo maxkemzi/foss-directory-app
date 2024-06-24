@@ -1,11 +1,19 @@
-interface FindAllOptions {
+import {RoleDocument} from "#src/db/types";
+
+interface FindOptions {
 	search?: string;
 	limit?: number;
 	offset?: number;
 }
 
-interface CountAllOptions {
+interface CountOptions {
 	search?: string;
 }
 
-export type {FindAllOptions, CountAllOptions};
+interface RoleModelImpl {
+	findAll(opts?: FindOptions): Promise<RoleDocument[]>;
+	countAll(opts?: CountOptions): Promise<number>;
+	findByName(name: RoleDocument["name"]): Promise<RoleDocument | null>;
+}
+
+export type {CountOptions, FindOptions, RoleModelImpl};

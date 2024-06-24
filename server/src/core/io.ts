@@ -1,5 +1,8 @@
-import {ExtendedUserDto} from "#src/dtos";
-import {jwtService, projectMessageService} from "#src/services";
+import {
+	JwtService,
+	ProjectMessageService,
+	ExtendedUserDto
+} from "#src/services";
 import {Server} from "socket.io";
 import server from "./server";
 
@@ -24,7 +27,7 @@ io.on("connection", async socket => {
 		}
 
 		const userPayload =
-			jwtService.verifyAccessToken<ExtendedUserDto>(accessToken);
+			JwtService.verifyAccessToken<ExtendedUserDto>(accessToken);
 		if (!userPayload) {
 			throw new Error();
 		}
@@ -35,7 +38,7 @@ io.on("connection", async socket => {
 
 		socket.on("chat message", async message => {
 			try {
-				await projectMessageService.create(
+				await ProjectMessageService.create(
 					{
 						projectId: message.projectId,
 						userId: userPayload.id,

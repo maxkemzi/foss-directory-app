@@ -1,9 +1,9 @@
 import {authChecker, validator} from "#src/middlewares";
 import {Router} from "express";
-import controller from "./controller";
-import messagesRouter from "./messages/messagesRouter";
-import requestsRouter from "./requests/requestsRouter";
-import usersRouter from "./users/usersRouter";
+import ProjectsController from "./ProjectsController";
+import projectMessagesRouter from "./messages/projectMessagesRouter";
+import projectRequestsRouter from "./requests/projectRequestsRouter";
+import projectUsersRouter from "./users/projectUsersRouter";
 import {
 	createValidationChain,
 	getValidationChain,
@@ -12,38 +12,38 @@ import {
 
 const projectsRouter = Router();
 
-projectsRouter.use("/requests", requestsRouter);
-projectsRouter.use("/:id/messages", messagesRouter);
-projectsRouter.use("/:id/users", usersRouter);
+projectsRouter.use("/requests", projectRequestsRouter);
+projectsRouter.use("/:id/messages", projectMessagesRouter);
+projectsRouter.use("/:id/users", projectUsersRouter);
 projectsRouter.post(
 	"/",
 	authChecker,
 	validator(createValidationChain),
-	controller.create
+	ProjectsController.create
 );
 projectsRouter.get(
 	"/",
 	authChecker,
 	validator(getValidationChain),
-	controller.getAll
+	ProjectsController.getAll
 );
 projectsRouter.get(
 	"/:id",
 	authChecker,
 	validator([idValidator]),
-	controller.getById
+	ProjectsController.getById
 );
 projectsRouter.delete(
 	"/:id",
 	authChecker,
 	validator([idValidator]),
-	controller.deleteById
+	ProjectsController.deleteById
 );
 projectsRouter.delete(
 	"/:id/leave",
 	authChecker,
 	validator([idValidator]),
-	controller.leaveById
+	ProjectsController.leaveById
 );
 
 export default projectsRouter;

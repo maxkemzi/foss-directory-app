@@ -1,7 +1,7 @@
 import "dotenv/config";
-import {projectMessageModel, db} from "#src/db";
 import {io, server} from "./core";
-import {ProjectMessageDto} from "./dtos";
+import {Db, ProjectMessageModel, ProjectMessagePopulator} from "./db";
+import {ProjectMessageDto} from "./services/dtos";
 
 const {
 	POSTGRES_HOST,
@@ -45,17 +45,20 @@ const PORT = process.env.PORT || 5000;
 
 const start = async () => {
 	try {
-		const client = await db.getClient();
+		const client = await Db.getInstance().getClient();
 
-		await db.listenNotifications(client, {
+		await Db.listenNotifications(client, {
 			onProjectMessageInsert: async (id: string) => {
+				const model = new ProjectMessageModel(client);
+
 				try {
-					const message = await projectMessageModel.findById(client, id);
+					const message = await model.findById(id);
 					if (!message) {
 						return;
 					}
 
-					const populatedMessage = await message.populate(client);
+					const populator = new ProjectMessagePopulator(client);
+					const populatedMessage = await populator.populate(message);
 
 					io.to(`room${message.projectId}`).emit(
 						"chat message",

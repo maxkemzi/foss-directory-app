@@ -1,16 +1,16 @@
 import {authChecker, githubConnectionChecker} from "#src/middlewares";
 import {Router} from "express";
-import controller from "./controller";
+import GithubController from "./GithubController";
 
 const githubRouter = Router();
 
-githubRouter.get("/", authChecker, controller.getAuthUrlAndCsrfToken);
-githubRouter.get("/callback", controller.createConnection);
+githubRouter.get("/", authChecker, GithubController.getAuthUrlAndCsrfToken);
+githubRouter.get("/callback", GithubController.createConnection);
 githubRouter.get(
 	"/repos",
 	authChecker,
 	githubConnectionChecker,
-	controller.getReposForUser
+	GithubController.getReposForUser
 );
 
 export default githubRouter;

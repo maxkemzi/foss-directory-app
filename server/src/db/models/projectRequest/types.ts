@@ -1,6 +1,28 @@
-interface FindByReceiverUserIdOptions {
+import {
+	ProjectRequestDocument,
+	ProjectRequestPayload,
+	UserDocument
+} from "#src/db/types";
+
+interface FindOptions {
 	limit?: number;
 	offset?: number;
 }
 
-export type {FindByReceiverUserIdOptions};
+interface ProjectRequestModelImpl {
+	insert(payload: ProjectRequestPayload): Promise<ProjectRequestDocument>;
+
+	deleteById(id: ProjectRequestDocument["id"]): Promise<void>;
+
+	findById(
+		id: ProjectRequestDocument["id"]
+	): Promise<ProjectRequestDocument | null>;
+
+	findByReceiverUserId(
+		id: UserDocument["id"],
+		opts?: FindOptions
+	): Promise<ProjectRequestDocument[]>;
+	countByReceiverUserId(id: UserDocument["id"]): Promise<number>;
+}
+
+export type {FindOptions, ProjectRequestModelImpl};

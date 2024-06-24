@@ -1,5 +1,5 @@
-import {PopulatedProjectDocument, ProjectPayload} from "#src/db";
-import {ExtendedProjectDto} from "#src/dtos";
+import {ProjectPayload} from "#src/db";
+import {ExtendedProjectDto} from "../dtos";
 
 interface CreateProjectPayload extends ProjectPayload {
 	role: string;
@@ -19,9 +19,4 @@ interface GetReturn {
 	totalCount: number;
 }
 
-interface ExtendedProject extends PopulatedProjectDocument {
-	memberCount: number;
-	isRequestable: boolean;
-}
-
-export type {CreateProjectPayload, GetOptions, GetReturn, ExtendedProject};
+export type {CreateProjectPayload, GetOptions, GetReturn};

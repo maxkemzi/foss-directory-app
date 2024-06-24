@@ -1,9 +1,9 @@
 import {authChecker} from "#src/middlewares";
 import {Router} from "express";
-import controller from "./controller";
+import UsersController from "./UsersController";
 
 const usersRouter = Router();
 
-usersRouter.delete("/", authChecker, controller.deleteAuth);
+usersRouter.delete("/", authChecker, UsersController.deleteAuth);
 
 export default usersRouter;

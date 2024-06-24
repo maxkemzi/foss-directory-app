@@ -1,23 +1,25 @@
-import authService from "./authService";
-import githubService from "./github/githubService";
-import projectService from "./project/projectService";
-import projectMessageService from "./projectMessage/projectMessageService";
-import projectUserService from "./projectUser/projectUserService";
-import projectRequestService from "./projectRequest/projectRequestService";
-import userService from "./userService";
-import roleService from "./role/roleService";
-import tagService from "./tag/tagService";
-import jwtService from "./jwtService";
+import AuthService from "./auth/AuthService";
+import GithubService from "./github/GithubService";
+import JwtService from "./jwt/JwtService";
+import ProjectService from "./project/ProjectService";
+import ProjectMessageService from "./projectMessage/ProjectMessageService";
+import ProjectRequestService from "./projectRequest/ProjectRequestService";
+import ProjectUserService from "./projectUser/ProjectUserService";
+import RoleService from "./role/RoleService";
+import TagService from "./tag/TagService";
+import UserService from "./user/UserService";
 
 export {
-	authService,
-	projectService,
-	githubService,
-	projectMessageService,
-	projectUserService,
-	projectRequestService,
-	userService,
-	roleService,
-	tagService,
-	jwtService
+	AuthService,
+	GithubService,
+	JwtService,
+	ProjectMessageService,
+	ProjectRequestService,
+	ProjectService,
+	ProjectUserService,
+	RoleService,
+	TagService,
+	UserService
 };
+
+export {ExtendedUserDto, GithubConnectionDto} from "./dtos";

@@ -1,4 +1,4 @@
-import {GithubRepoDto} from "#src/dtos";
+import {GithubRepoDto} from "../dtos";
 
 interface GetReposOptions {
 	search?: string;

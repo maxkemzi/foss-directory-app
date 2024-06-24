@@ -1,5 +1,5 @@
 import {ApiError} from "#src/lib";
-import {githubService} from "#src/services";
+import {GithubService} from "#src/services";
 import {NextFunction, Request, Response} from "express";
 
 const githubConnectionChecker = async (
@@ -13,7 +13,7 @@ const githubConnectionChecker = async (
 			throw new ApiError(401, "Unauthorized");
 		}
 
-		const connection = await githubService.getConnectionByUserId(userId);
+		const connection = await GithubService.getConnectionByUserId(userId);
 
 		res.locals.githubConnection = connection;
 		next();

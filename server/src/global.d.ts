@@ -1,4 +1,4 @@
-import {GithubConnectionDto, ExtendedUserDto} from "#src/dtos";
+import {ExtendedUserDto, GithubConnectionDto} from "#src/services";
 import "express";
 
 declare module "express" {
