@@ -1,7 +1,7 @@
 "use client";
 
 import {useRoleList} from "#src/entities/role";
-import {useDebouncedCallback, useObserver} from "#src/shared/hooks";
+import {useCallbackWithDebounce, useObserver} from "#src/shared/ui";
 import {TrashIcon} from "@heroicons/react/20/solid";
 import {PlusIcon} from "@heroicons/react/24/solid";
 import {Autocomplete, AutocompleteItem, Button, Input} from "@nextui-org/react";
@@ -36,7 +36,7 @@ const RolesField = () => {
 		onIntersect: () => fetchMore({search})
 	});
 
-	const fetchFirstPageWithDebounce = useDebouncedCallback(fetchFirstPage);
+	const fetchFirstPageWithDebounce = useCallbackWithDebounce(fetchFirstPage);
 	useEffect(() => {
 		fetchFirstPageWithDebounce({search});
 	}, [search, fetchFirstPageWithDebounce]);

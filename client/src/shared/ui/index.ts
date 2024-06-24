@@ -16,9 +16,14 @@ import SearchInput, {
 import Toast from "./components/Toast/Toast";
 import {ToastVariant} from "./components/Toast/constants";
 import {ToastOptions} from "./components/Toast/types";
-import useListenClickOutside from "./useListenClickOutside";
 
 export * from "./types";
+export {
+	useEffectUpdateOnly,
+	useListenClickOutside,
+	useObserver,
+	useCallbackWithDebounce
+} from "./hooks";
 export {
 	AlertModal,
 	Body,
@@ -34,7 +39,6 @@ export {
 	SearchInput,
 	Toast,
 	ToastVariant,
-	UiProvider,
-	useListenClickOutside
+	UiProvider
 };
 export type {AlertModalProps, SearchInputProps, ToastOptions};

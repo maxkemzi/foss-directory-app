@@ -3,40 +3,33 @@
 import {ProjectList, useProjectList} from "#src/entities/project";
 import {FetchMoreButton} from "#src/features/fetchMore";
 import {FetchProjectsResponse} from "#src/shared/apis/projects";
-import {useDebouncedCallback} from "#src/shared/hooks";
-import {ChipsInput, SearchInput} from "#src/shared/ui";
+import {
+	ChipsInput,
+	SearchInput,
+	useCallbackWithDebounce,
+	useEffectUpdateOnly
+} from "#src/shared/ui";
 import {ProjectCard} from "#src/widgets/ProjectCard";
-import {FC, useCallback, useEffect, useState} from "react";
+import {FC, useCallback, useState} from "react";
 
 interface Props {
 	serverResponse: FetchProjectsResponse;
 }
 
 const Content: FC<Props> = ({serverResponse}) => {
-	const [search, setSearch] = useState<string | null>(null);
-	const [searchTags, setSearchTags] = useState<string[] | null>(null);
+	const [search, setSearch] = useState<string>("");
+	const [searchTags, setSearchTags] = useState<string[]>([]);
 
 	const {projects, fetchFirstPage, fetchMore, hasMore, isFetching} =
 		useProjectList("all", serverResponse);
-	const fetchFirstPageWithDebounce = useDebouncedCallback(fetchFirstPage);
+	const fetchFirstPageWithDebounce = useCallbackWithDebounce(fetchFirstPage);
 
-	useEffect(() => {
-		if (search === null && searchTags === null) {
-			return;
-		}
-
-		fetchFirstPageWithDebounce({
-			search: search || undefined,
-			searchTags: searchTags || undefined
-		});
+	useEffectUpdateOnly(() => {
+		fetchFirstPageWithDebounce({search, searchTags});
 	}, [fetchFirstPageWithDebounce, search, searchTags]);
 
 	const fetchMoreWithSearch = useCallback(
-		() =>
-			fetchMore({
-				search: search || undefined,
-				searchTags: searchTags || undefined
-			}),
+		() => fetchMore({search, searchTags}),
 		[fetchMore, search, searchTags]
 	);
 

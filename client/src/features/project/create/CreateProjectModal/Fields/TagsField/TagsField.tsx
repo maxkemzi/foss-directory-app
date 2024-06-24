@@ -1,7 +1,7 @@
 "use client";
 
 import {useTagList} from "#src/entities/tag";
-import {useDebouncedCallback, useObserver} from "#src/shared/hooks";
+import {useCallbackWithDebounce, useObserver} from "#src/shared/ui";
 import {PlusIcon} from "@heroicons/react/24/solid";
 import {Autocomplete, AutocompleteItem, Button, Chip} from "@nextui-org/react";
 import {KeyboardEvent, useEffect, useMemo, useRef, useState} from "react";
@@ -28,7 +28,7 @@ const TagsField = () => {
 		onIntersect: () => fetchMore({search})
 	});
 
-	const fetchFirstPageWithDebounce = useDebouncedCallback(fetchFirstPage);
+	const fetchFirstPageWithDebounce = useCallbackWithDebounce(fetchFirstPage);
 	useEffect(() => {
 		fetchFirstPageWithDebounce({search});
 	}, [search, fetchFirstPageWithDebounce]);

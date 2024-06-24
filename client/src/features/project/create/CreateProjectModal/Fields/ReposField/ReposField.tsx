@@ -1,5 +1,5 @@
 import {useGithubRepoList} from "#src/entities/githubRepo";
-import {useDebouncedCallback, useObserver} from "#src/shared/hooks";
+import {useCallbackWithDebounce, useObserver} from "#src/shared/ui";
 import {Autocomplete, AutocompleteItem} from "@nextui-org/react";
 import {
 	FC,
@@ -37,7 +37,7 @@ const ReposField: FC<Props> = ({onKeyDown}) => {
 		onIntersect: () => fetchMore({search})
 	});
 
-	const fetchFirstPageWithDebounce = useDebouncedCallback(fetchFirstPage);
+	const fetchFirstPageWithDebounce = useCallbackWithDebounce(fetchFirstPage);
 	useEffect(() => {
 		fetchFirstPageWithDebounce({search});
 	}, [search, fetchFirstPageWithDebounce]);

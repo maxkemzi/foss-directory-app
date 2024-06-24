@@ -4,15 +4,8 @@ import {XCircleIcon} from "@heroicons/react/16/solid";
 import {PlusIcon} from "@heroicons/react/24/solid";
 import {Button, Chip, Input, InputProps} from "@nextui-org/react";
 import classNames from "classnames";
-import {
-	ChangeEvent,
-	FC,
-	KeyboardEvent,
-	useEffect,
-	useMemo,
-	useRef,
-	useState
-} from "react";
+import {ChangeEvent, FC, KeyboardEvent, useMemo, useRef, useState} from "react";
+import {useEffectUpdateOnly} from "../../hooks";
 
 interface Props {
 	className?: string;
@@ -24,7 +17,7 @@ interface Props {
 }
 
 const ChipsInput: FC<Props> = ({className, onChange, inputProps}) => {
-	const [values, setValues] = useState<string[] | null>(null);
+	const [values, setValues] = useState<string[]>([]);
 	const [inputValue, setInputValue] = useState("");
 	const onChangeRef = useRef(onChange);
 	onChangeRef.current = onChange;
@@ -34,26 +27,22 @@ const ChipsInput: FC<Props> = ({className, onChange, inputProps}) => {
 		setInputValue(target.value);
 	};
 
-	useEffect(() => {
-		if (values !== null) {
-			onChangeRef.current?.(values);
-		}
+	useEffectUpdateOnly(() => {
+		onChangeRef.current?.(values);
 	}, [values]);
 
 	const isDisabled = useMemo(
-		() =>
-			inputValue.length === 0 ||
-			(values !== null && values.includes(inputValue)),
+		() => inputValue.length === 0 || values.includes(inputValue),
 		[inputValue, values]
 	);
 
 	const addValue = () => {
-		setValues(prev => (prev !== null ? [...prev, inputValue] : [inputValue]));
+		setValues(prev => [...prev, inputValue]);
 		setInputValue("");
 	};
 
 	const removeValue = (value: string) => {
-		setValues(prev => (prev !== null ? prev.filter(v => v !== value) : prev));
+		setValues(prev => prev.filter(v => v !== value));
 	};
 
 	const clearValues = () => {
@@ -82,7 +71,7 @@ const ChipsInput: FC<Props> = ({className, onChange, inputProps}) => {
 				onChange={handleChange}
 				onKeyDown={handleKeyDown}
 				startContent={
-					values !== null && values.length !== 0 ? (
+					values.length !== 0 ? (
 						<div className="flex h-full py-2 flex-wrap items-end gap-2 max-w-[50%]">
 							{values.map(v => (
 								<Chip key={v} onClose={() => removeValue(v)}>
@@ -93,7 +82,7 @@ const ChipsInput: FC<Props> = ({className, onChange, inputProps}) => {
 					) : null
 				}
 				endContent={
-					values !== null && values.length !== 0 ? (
+					values.length !== 0 ? (
 						<button
 							className="self-start py-2"
 							aria-label="clear input"
