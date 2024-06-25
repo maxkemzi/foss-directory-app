@@ -1,14 +1,15 @@
+import {env} from "#src/config";
 import {
+	ExtendedUserDto,
 	JwtService,
-	ProjectMessageService,
-	ExtendedUserDto
+	ProjectMessageService
 } from "#src/services";
 import {Server} from "socket.io";
 import server from "./server";
 
 const io = new Server(server, {
 	cors: {
-		origin: process.env.PUBLIC_CLIENT_URL
+		origin: env.PUBLIC_CLIENT_URL
 	}
 });
 

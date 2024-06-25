@@ -4,6 +4,7 @@ import calcOffset from "./helpers/calcOffset";
 import parseLimitString from "./helpers/parseLimitString";
 import parsePageString from "./helpers/parsePageString";
 import parseSearchString from "./helpers/parseSearchString";
+import checkEnvVars from "./helpers/checkEnvVars";
 
 export {
 	Header,
@@ -11,5 +12,6 @@ export {
 	calcOffset,
 	parseLimitString,
 	parsePageString,
-	parseSearchString
+	parseSearchString,
+	checkEnvVars
 };

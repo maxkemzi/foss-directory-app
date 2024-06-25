@@ -14,7 +14,7 @@ class ProjectMessageService {
 		payload: OmitFromUnion<ProjectMessagePayload, "isSequential">,
 		userId: string
 	): Promise<ProjectMessageDto> {
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const userModel = new UserModel(client);
 		const messageModel = new ProjectMessageModel(client);
 
@@ -53,7 +53,7 @@ class ProjectMessageService {
 	): Promise<GetReturn> {
 		const {limit, offset} = opts;
 
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const userModel = new UserModel(client);
 		const messageModel = new ProjectMessageModel(client);
 

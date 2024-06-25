@@ -1,3 +1,4 @@
+import {env} from "#src/config";
 import {isValidGithubRateLimitResource} from "#src/db";
 import {ApiError} from "#src/lib";
 import {delay} from "../helpers";
@@ -10,15 +11,15 @@ import {
 	OAuthTokenResponse
 } from "./types";
 
-const BASE_URL = "https://api.github.com";
-const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID as string;
-const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET as string;
-
 class GithubApi {
+	private static BASE_URL = "https://api.github.com";
+	private static CLIENT_ID = env.GITHUB_CLIENT_ID;
+	private static CLIENT_SECRET = env.GITHUB_CLIENT_SECRET;
+
 	static async fetchOAuthToken(code: string): Promise<OAuthTokenResponse> {
 		const searchParams = new URLSearchParams();
-		searchParams.set("client_id", GITHUB_CLIENT_ID);
-		searchParams.set("client_secret", GITHUB_CLIENT_SECRET);
+		searchParams.set("client_id", this.CLIENT_ID);
+		searchParams.set("client_secret", this.CLIENT_SECRET);
 		searchParams.set("code", code);
 
 		const response = await fetch(
@@ -50,7 +51,7 @@ class GithubApi {
 	): Promise<FetchReposResponse> {
 		const {limit, page, search, onRateLimitExceeded} = opts;
 
-		const userResponse = await GithubApi.fetchGithubApi("/user", {
+		const userResponse = await this.fetchGithubApi("/user", {
 			token,
 			onRateLimitExceeded
 		});
@@ -73,7 +74,7 @@ class GithubApi {
 			searchParams.set("page", String(page));
 		}
 
-		const reposResponse = await GithubApi.fetchGithubApi(
+		const reposResponse = await this.fetchGithubApi(
 			`/search/repositories?${searchParams.toString()}`,
 			{token, onRateLimitExceeded}
 		);
@@ -92,7 +93,7 @@ class GithubApi {
 		const {token, onRateLimitExceeded} = opts;
 		const {headers: initHeaders, ...restInit} = init;
 
-		const response = await fetch(`${BASE_URL}${url}`, {
+		const response = await fetch(`${this.BASE_URL}${url}`, {
 			headers: {
 				...initHeaders,
 				Accept: "application/vnd.github+json",
@@ -127,7 +128,7 @@ class GithubApi {
 
 				if (retryAfterSeconds <= 5) {
 					await delay(retryAfterSeconds * 1000);
-					return GithubApi.fetchGithubApi(url, opts);
+					return this.fetchGithubApi(url, opts);
 				}
 
 				const rateLimitResource = headers.get("x-ratelimit-resource");

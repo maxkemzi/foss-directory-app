@@ -1,49 +1,29 @@
+import {env} from "#src/config";
 import crypto, {createDecipheriv} from "node:crypto";
 
 class AesCipherService {
 	private static ALGORITHM = "aes-256-cbc";
+	private static KEY = env.ENCRYPTION_KEY;
+	private static IV = env.ENCRYPTION_IV;
 
 	static encrypt(payload: string): string {
-		const {key, iv} = AesCipherService.getKeyAndIv();
+		const {ALGORITHM, KEY, IV} = this;
 
-		const cipher = crypto.createCipheriv(AesCipherService.ALGORITHM, key, iv);
+		const cipher = crypto.createCipheriv(ALGORITHM, KEY, IV);
 		let encrypted = cipher.update(payload, "utf8", "hex");
 		encrypted += cipher.final("hex");
+
 		return encrypted;
 	}
 
 	static decrypt(encryptedPayload: string): string {
-		const {key, iv} = AesCipherService.getKeyAndIv();
+		const {ALGORITHM, KEY, IV} = this;
 
-		const decipher = createDecipheriv(AesCipherService.ALGORITHM, key, iv);
+		const decipher = createDecipheriv(ALGORITHM, KEY, IV);
 		let decrypted = decipher.update(encryptedPayload, "hex", "utf8");
 		decrypted += decipher.final("utf8");
+
 		return decrypted;
-	}
-
-	private static getKeyAndIv() {
-		const {ENCRYPTION_KEY, ENCRYPTION_IV} = process.env;
-
-		if (!ENCRYPTION_KEY) {
-			throw new Error("ENCRYPTION_KEY environment variable is not set.");
-		}
-
-		if (!ENCRYPTION_IV) {
-			throw new Error("ENCRYPTION_IV environment variable is not set.");
-		}
-
-		const key = Buffer.from(ENCRYPTION_KEY, "hex");
-		const iv = Buffer.from(ENCRYPTION_IV, "hex");
-
-		if (key.length !== 32) {
-			throw new Error("Invalid encryption key length. Key must be 32 bytes.");
-		}
-
-		if (iv.length !== 16) {
-			throw new Error("Invalid encryption IV length. IV must be 16 bytes.");
-		}
-
-		return {key, iv};
 	}
 }
 

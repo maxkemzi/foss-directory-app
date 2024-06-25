@@ -3,7 +3,7 @@ import {ApiError} from "#src/lib";
 
 class UserService {
 	static async deleteById(id: UserDocument["id"]) {
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 
 		const model = new UserModel(client);
 

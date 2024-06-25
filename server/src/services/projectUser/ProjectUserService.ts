@@ -11,7 +11,7 @@ class ProjectUserService {
 	): Promise<GetReturn> {
 		const {limit, offset} = opts;
 
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const userModel = new UserModel(client);
 		const projectUserModel = new ProjectUserModel(client);
 

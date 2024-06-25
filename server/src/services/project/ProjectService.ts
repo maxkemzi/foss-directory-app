@@ -31,7 +31,7 @@ class ProjectService {
 			tags
 		} = payload;
 
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const projectModel = new ProjectModel(client);
 		const projectRoleModel = new ProjectRoleModel(client);
 		const projectTagModel = new ProjectTagModel(client);
@@ -101,7 +101,7 @@ class ProjectService {
 	static async getAll(userId: string, opts: GetOptions): Promise<GetReturn> {
 		const {search, limit, offset, searchTags} = opts;
 
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const model = new ProjectModel(client);
 
 		try {
@@ -129,7 +129,7 @@ class ProjectService {
 	): Promise<GetReturn> {
 		const {search, limit, offset} = opts;
 
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const model = new ProjectModel(client);
 
 		try {
@@ -157,7 +157,7 @@ class ProjectService {
 	): Promise<GetReturn> {
 		const {search, limit, offset} = opts;
 
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const model = new ProjectModel(client);
 
 		try {
@@ -195,7 +195,7 @@ class ProjectService {
 		id: ProjectDocument["id"],
 		userId: UserDocument["id"]
 	): Promise<void> {
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const projectModel = new ProjectModel(client);
 		const userModel = new UserModel(client);
 
@@ -220,7 +220,7 @@ class ProjectService {
 		id: ProjectDocument["id"],
 		userId: UserDocument["id"]
 	): Promise<ExtendedProjectDto> {
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const model = new ProjectModel(client);
 
 		try {
@@ -245,7 +245,7 @@ class ProjectService {
 		id: ProjectDocument["id"],
 		userId: UserDocument["id"]
 	): Promise<void> {
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const userModel = new UserModel(client);
 		const projectUserModel = new ProjectUserModel(client);
 

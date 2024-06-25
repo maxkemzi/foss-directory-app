@@ -7,7 +7,7 @@ import JwtService from "../jwt/JwtService";
 
 class AuthService {
 	static async signUp({username, email, password}: any) {
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 
 		const userModel = new UserModel(client);
 		const refreshTokenModel = new RefreshTokenModel(client);
@@ -48,7 +48,7 @@ class AuthService {
 	}
 
 	static async logIn({email, password}: any) {
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 
 		const userModel = new UserModel(client);
 		const refreshTokenModel = new RefreshTokenModel(client);
@@ -82,7 +82,7 @@ class AuthService {
 	}
 
 	static async refresh(refreshToken: string) {
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 
 		const userModel = new UserModel(client);
 		const refreshTokenModel = new RefreshTokenModel(client);
@@ -116,7 +116,7 @@ class AuthService {
 	}
 
 	static async logOut(refreshToken: string) {
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 
 		const refreshTokenModel = new RefreshTokenModel(client);
 

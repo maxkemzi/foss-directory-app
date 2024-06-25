@@ -1,70 +1,46 @@
+import {env} from "#src/config";
 import jwt from "jsonwebtoken";
 
 class JwtService {
+	private static ACCESS_SECRET = env.JWT_ACCESS_SECRET;
+	private static REFRESH_SECRET = env.JWT_REFRESH_SECRET;
+	private static CSRF_SECRET = env.JWT_CSRF_SECRET;
+
 	static generateAccessAndRefreshTokens(payload: string | object) {
 		return {
-			access: JwtService.generateAccessToken(payload),
-			refresh: JwtService.generateRefreshToken(payload)
+			access: this.generateAccessToken(payload),
+			refresh: this.generateRefreshToken(payload)
 		};
 	}
 
 	static generateAccessToken(payload: string | object) {
-		const {ACCESS_SECRET} = JwtService.getSecrets();
-		return jwt.sign(payload, ACCESS_SECRET, {
+		return jwt.sign(payload, this.ACCESS_SECRET, {
 			expiresIn: "30m"
 		});
 	}
 
 	static generateRefreshToken(payload: string | object) {
-		const {REFRESH_SECRET} = JwtService.getSecrets();
-		return jwt.sign(payload, REFRESH_SECRET, {
+		return jwt.sign(payload, this.REFRESH_SECRET, {
 			expiresIn: "30d"
 		});
 	}
 
 	static generateCsrfToken(payload: string | object) {
-		const {CSRF_SECRET} = JwtService.getSecrets();
-		return jwt.sign(payload, CSRF_SECRET, {
+		return jwt.sign(payload, this.CSRF_SECRET, {
 			expiresIn: "10m"
 		});
 	}
 
 	static verifyAccessToken<T>(token: string) {
-		const {ACCESS_SECRET} = JwtService.getSecrets();
-		return JwtService.verifyToken<T>(token, ACCESS_SECRET);
+		return this.verifyToken<T>(token, this.ACCESS_SECRET);
 	}
 
 	static verifyRefreshToken<T>(token: string) {
-		const {REFRESH_SECRET} = JwtService.getSecrets();
-		return JwtService.verifyToken<T>(token, REFRESH_SECRET);
+		return this.verifyToken<T>(token, this.REFRESH_SECRET);
 	}
 
 	static verifyCsrfToken<T>(token: string) {
-		const {CSRF_SECRET} = JwtService.getSecrets();
-		return JwtService.verifyToken<T>(token, CSRF_SECRET);
-	}
-
-	private static getSecrets() {
-		const {JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, JWT_CSRF_SECRET} =
-			process.env;
-
-		if (!JWT_ACCESS_SECRET) {
-			throw new Error("JWT_ACCESS_SECRET environment variable is not set.");
-		}
-
-		if (!JWT_REFRESH_SECRET) {
-			throw new Error("JWT_REFRESH_SECRET environment variable is not set.");
-		}
-
-		if (!JWT_CSRF_SECRET) {
-			throw new Error("JWT_CSRF_SECRET environment variable is not set.");
-		}
-
-		return {
-			ACCESS_SECRET: JWT_ACCESS_SECRET,
-			REFRESH_SECRET: JWT_REFRESH_SECRET,
-			CSRF_SECRET: JWT_CSRF_SECRET
-		};
+		return this.verifyToken<T>(token, this.CSRF_SECRET);
 	}
 
 	private static verifyToken<T>(token: string, secret: string) {

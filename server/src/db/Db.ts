@@ -1,50 +1,19 @@
+import {env} from "#src/config";
 import {Pool, PoolClient} from "pg";
 import {NotificationChannel} from "./constants";
 import {ProjectMessageDocument} from "./types";
 
 class Db {
-	private static instance: Db;
-	private pool: Pool;
+	private static POOL = new Pool({
+		host: env.POSTGRES_HOST,
+		user: env.POSTGRES_USER,
+		password: env.POSTGRES_PASSWORD,
+		database: env.POSTGRES_DATABASE,
+		port: env.POSTGRES_PORT
+	});
 
-	private constructor() {
-		const {
-			POSTGRES_HOST,
-			POSTGRES_USER,
-			POSTGRES_PASSWORD,
-			POSTGRES_DATABASE,
-			POSTGRES_PORT
-		} = process.env;
-
-		if (
-			!POSTGRES_HOST ||
-			!POSTGRES_USER ||
-			!POSTGRES_PASSWORD ||
-			!POSTGRES_DATABASE ||
-			!POSTGRES_PORT
-		) {
-			throw new Error(
-				"One or more required environment variables are missing."
-			);
-		}
-
-		this.pool = new Pool({
-			host: POSTGRES_HOST,
-			user: POSTGRES_USER,
-			password: POSTGRES_PASSWORD,
-			database: POSTGRES_DATABASE,
-			port: Number(POSTGRES_PORT)
-		});
-	}
-
-	static getInstance(): Db {
-		if (!Db.instance) {
-			Db.instance = new Db();
-		}
-		return Db.instance;
-	}
-
-	getClient() {
-		return this.pool.connect();
+	static getClient() {
+		return this.POOL.connect();
 	}
 
 	static async listenNotifications(

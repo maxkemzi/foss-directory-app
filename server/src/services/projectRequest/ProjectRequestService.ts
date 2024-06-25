@@ -15,7 +15,7 @@ class ProjectRequestService {
 		payload: ProjectRequestPayload,
 		userId: string
 	): Promise<ProjectRequestDto> {
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const userModel = new UserModel(client);
 		const requestModel = new ProjectRequestModel(client);
 
@@ -45,7 +45,7 @@ class ProjectRequestService {
 	): Promise<GetReturn> {
 		const {limit, offset} = opts;
 
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const model = new ProjectRequestModel(client);
 
 		try {
@@ -67,7 +67,7 @@ class ProjectRequestService {
 	}
 
 	static async acceptById(id: string, userId: string): Promise<void> {
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const userModel = new UserModel(client);
 		const requestModel = new ProjectRequestModel(client);
 		const projectUserModel = new ProjectUserModel(client);
@@ -111,7 +111,7 @@ class ProjectRequestService {
 	}
 
 	static async rejectById(id: string, userId: string): Promise<void> {
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const userModel = new UserModel(client);
 		const requestModel = new ProjectRequestModel(client);
 

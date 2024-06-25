@@ -1,3 +1,4 @@
+import {env} from "#src/config";
 import {errorHandler} from "#src/middlewares";
 import router from "#src/routes";
 import cookieParser from "cookie-parser";
@@ -11,7 +12,7 @@ app.use(cookieParser());
 app.use(
 	cors({
 		credentials: true,
-		origin: process.env.PUBLIC_CLIENT_URL
+		origin: env.PUBLIC_CLIENT_URL
 	})
 );
 app.use("/api", router);

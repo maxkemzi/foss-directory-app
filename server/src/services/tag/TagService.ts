@@ -6,7 +6,7 @@ class TagService {
 	static async getAll(opts: GetOptions): Promise<GetReturn> {
 		const {limit, offset, search} = opts;
 
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const model = new TagModel(client);
 
 		try {

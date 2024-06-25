@@ -1,11 +1,12 @@
+import {env} from "#src/config";
 import {ApiError} from "#src/lib";
 import {GithubService, JwtService} from "#src/services";
 import {
-	parsePageString,
-	parseLimitString,
-	parseSearchString,
+	Header,
 	calcTotalPages,
-	Header
+	parseLimitString,
+	parsePageString,
+	parseSearchString
 } from "#src/utils";
 import {NextFunction, Request, Response} from "express";
 
@@ -61,7 +62,7 @@ class GithubController {
 
 			await GithubService.createConnection({userId: payload.userId, code});
 
-			res.redirect(`${process.env.PUBLIC_CLIENT_URL}/success?token=${state}`);
+			res.redirect(`${env.PUBLIC_CLIENT_URL}/success?token=${state}`);
 		} catch (e) {
 			next(e);
 		}

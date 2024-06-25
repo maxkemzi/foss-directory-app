@@ -1,4 +1,5 @@
 import {GithubApi} from "#src/apis";
+import {env} from "#src/config";
 import {
 	Db,
 	GithubConnectionModel,
@@ -11,14 +12,14 @@ import {GithubRepoDto} from "../dtos";
 import {GetReposOptions, GetReposReturn} from "./types";
 
 class GithubService {
-	private static PUBLIC_SERVER_URL = process.env.PUBLIC_SERVER_URL as string;
-	private static GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID as string;
+	private static PUBLIC_SERVER_URL = env.PUBLIC_SERVER_URL;
+	private static GITHUB_CLIENT_ID = env.GITHUB_CLIENT_ID;
 
 	static getOAuthUrl(state: string) {
-		const redirectUri = `${GithubService.PUBLIC_SERVER_URL}/api/integrations/github/callback`;
+		const redirectUri = `${this.PUBLIC_SERVER_URL}/api/integrations/github/callback`;
 
 		const searchParams = new URLSearchParams();
-		searchParams.set("client_id", GithubService.GITHUB_CLIENT_ID);
+		searchParams.set("client_id", this.GITHUB_CLIENT_ID);
 		searchParams.set("state", state);
 		searchParams.set("redirect_uri", redirectUri);
 
@@ -32,7 +33,7 @@ class GithubService {
 		userId: string;
 		code: string;
 	}) {
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const model = new GithubConnectionModel(client);
 
 		try {
@@ -52,7 +53,7 @@ class GithubService {
 	}
 
 	static async getConnectionByUserId(id: string) {
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const model = new GithubConnectionModel(client);
 
 		try {
@@ -73,7 +74,7 @@ class GithubService {
 	): Promise<GetReposReturn> {
 		const {limit, page, search, userId} = opts;
 
-		const client = await Db.getInstance().getClient();
+		const client = await Db.getClient();
 		const rateLimitModel = new GithubRateLimitModel(client);
 		const connectionModel = new GithubConnectionModel(client);
 
