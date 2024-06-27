@@ -1,6 +1,5 @@
 import AuthService from "./auth/AuthService";
 import GithubService from "./github/GithubService";
-import JwtService from "./jwt/JwtService";
 import ProjectService from "./project/ProjectService";
 import ProjectMessageService from "./projectMessage/ProjectMessageService";
 import ProjectRequestService from "./projectRequest/ProjectRequestService";
@@ -12,7 +11,6 @@ import UserService from "./user/UserService";
 export {
 	AuthService,
 	GithubService,
-	JwtService,
 	ProjectMessageService,
 	ProjectRequestService,
 	ProjectService,
@@ -22,4 +20,14 @@ export {
 	UserService
 };
 
-export {ExtendedUserDto, GithubConnectionDto} from "./dtos";
+export {
+	ExtendedUserDto,
+	GithubConnectionDto,
+	TagDto,
+	RoleDto,
+	ExtendedProjectDto,
+	ProjectMessageDto,
+	GithubRepoDto,
+	ProjectRequestDto,
+	ProjectUserDto
+} from "./dtos";

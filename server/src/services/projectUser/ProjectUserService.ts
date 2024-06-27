@@ -1,5 +1,5 @@
 import {Db, ProjectUserModel, ProjectUserPopulator, UserModel} from "#src/db";
-import {ApiError} from "#src/lib";
+import {ErrorFactory, ProjectError} from "#src/lib";
 import {ProjectUserDto} from "../dtos";
 import {GetOptions, GetReturn} from "./types";
 
@@ -18,7 +18,9 @@ class ProjectUserService {
 		try {
 			const isMember = await userModel.isProjectMember(id, userId);
 			if (!isMember) {
-				throw new ApiError(403, "You are not the member of this project");
+				throw ErrorFactory.getForbidden(
+					ProjectError.MEMBER_PERMISSION_REQUIRED
+				);
 			}
 
 			const [users, totalCount] = await Promise.all([

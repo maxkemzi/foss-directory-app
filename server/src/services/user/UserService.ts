@@ -1,5 +1,5 @@
 import {Db, UserDocument, UserModel} from "#src/db";
-import {ApiError} from "#src/lib";
+import {ErrorFactory, UserError} from "#src/lib";
 
 class UserService {
 	static async deleteById(id: UserDocument["id"]) {
@@ -10,7 +10,7 @@ class UserService {
 		try {
 			const candidate = await model.findById(id);
 			if (!candidate) {
-				throw new ApiError(400, "User with the specified id was not found");
+				throw ErrorFactory.getBadRequest(UserError.NOT_FOUND);
 			}
 
 			await model.deleteById(id);

@@ -11,7 +11,7 @@ import {
 	UserDocument,
 	UserModel
 } from "#src/db";
-import {ApiError} from "#src/lib";
+import {ErrorFactory, ProjectError} from "#src/lib";
 import {PoolClient} from "pg";
 import {ExtendedProjectDto, ProjectDto} from "../dtos";
 import {ProjectExtender} from "../extenders";
@@ -110,12 +110,14 @@ class ProjectService {
 				model.countAll({search, searchTags})
 			]);
 
+			const extendedProjects = await ProjectService.populateAndExtendMany(
+				client,
+				projects,
+				userId
+			);
+
 			return {
-				projects: await ProjectService.populateAndExtendMany(
-					client,
-					projects,
-					userId
-				),
+				projects: extendedProjects.map(ep => new ExtendedProjectDto(ep)),
 				totalCount
 			};
 		} finally {
@@ -202,12 +204,12 @@ class ProjectService {
 		try {
 			const candidate = await projectModel.findById(id);
 			if (!candidate) {
-				throw new ApiError(400, "Project by the specified id was not found");
+				throw ErrorFactory.getBadRequest(ProjectError.NOT_FOUND);
 			}
 
 			const isOwner = await userModel.isProjectOwner(id, userId);
 			if (!isOwner) {
-				throw new ApiError(403, "You are not the owner of this project");
+				throw ErrorFactory.getForbidden(ProjectError.OWNER_PERMISSION_REQUIRED);
 			}
 
 			await projectModel.deleteById(id);
@@ -226,7 +228,7 @@ class ProjectService {
 		try {
 			const project = await model.findById(id);
 			if (!project) {
-				throw new ApiError(400, "Project by the specified id was not found");
+				throw ErrorFactory.getBadRequest(ProjectError.NOT_FOUND);
 			}
 
 			const populator = new ProjectPopulator(client);
@@ -252,7 +254,9 @@ class ProjectService {
 		try {
 			const isMember = await userModel.isProjectMember(id, userId);
 			if (!isMember) {
-				throw new ApiError(403, "You are not the member of this project");
+				throw ErrorFactory.getForbidden(
+					ProjectError.MEMBER_PERMISSION_REQUIRED
+				);
 			}
 
 			await projectUserModel.deleteByProjectAndUserIds(id, userId);

@@ -5,4 +5,4 @@ const Header = {
 	TOTAL_PAGES: "x-total-pages"
 };
 
-export default Header;
+export {Header};

@@ -5,7 +5,7 @@ import {
 	ProjectFromApi
 } from "../types";
 
-type FetchProjectsVariant = "all" | "owned" | "member";
+type FetchProjectsVariant = "all" | "owner" | "member";
 type FetchProjectsSearchParams = PaginationSearchParams & {
 	search?: string;
 	searchTags?: string[];

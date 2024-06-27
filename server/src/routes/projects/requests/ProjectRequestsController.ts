@@ -1,84 +1,70 @@
-import {ApiError} from "#src/lib";
+import {ErrorFactory} from "#src/lib";
+import {Header} from "#src/routes/constants";
+import {calcOffset, calcTotalPages} from "#src/routes/helpers";
 import {ProjectRequestService} from "#src/services";
 import {
-	Header,
-	calcOffset,
-	calcTotalPages,
-	parseLimitString,
-	parsePageString
-} from "#src/utils";
-import {NextFunction, Request, Response} from "express";
+	AcceptByIdRequestHandler,
+	CreateRequestHandler,
+	GetReceivedParsedQuery,
+	GetReceivedRequestHandler,
+	RejectByIdRequestHandler
+} from "./types";
 
 class ProjectRequestsController {
-	static async create(req: Request, res: Response, next: NextFunction) {
+	static create: CreateRequestHandler = async (req, res, next) => {
 		try {
 			const userId = res.locals.user?.id;
 			if (!userId) {
-				throw new ApiError(401, "Unauthorized");
+				throw ErrorFactory.getUnauthorized();
 			}
 
 			const {projectId, projectRoleId} = req.body;
 
-			await ProjectRequestService.create(
-				{
-					userId,
-					projectId,
-					projectRoleId
-				},
+			const request = await ProjectRequestService.create(
+				{userId, projectId, projectRoleId},
 				userId
 			);
 
-			res.json({success: true});
+			res.json({id: request.id});
 		} catch (e) {
 			next(e);
 		}
-	}
+	};
 
-	static async getReceived(req: Request, res: Response, next: NextFunction) {
+	static getReceived: GetReceivedRequestHandler = async (req, res, next) => {
 		try {
 			const userId = res.locals.user?.id;
 			if (!userId) {
-				throw new ApiError(401, "Unauthorized");
+				throw ErrorFactory.getUnauthorized();
 			}
 
-			const {page, limit} = req.query;
+			const {page, limit} = req.query as GetReceivedParsedQuery;
 
-			if (page && typeof page !== "string") {
-				throw new ApiError(400, '"page" param must be a string');
-			}
-
-			if (limit && typeof limit !== "string") {
-				throw new ApiError(400, '"limit" param must be a string');
-			}
-
-			const parsedPage = parsePageString(page);
-			const parsedLimit = parseLimitString(limit);
-
-			const offset = calcOffset(parsedPage, parsedLimit);
+			const offset = calcOffset(page, limit);
 
 			const {requests, totalCount} =
 				await ProjectRequestService.getByReceiverUserId(userId, {
-					limit: parsedLimit,
+					limit,
 					offset
 				});
 
 			res.set({
 				[Header.TOTAL_COUNT]: totalCount,
-				[Header.PAGE]: parsedPage,
-				[Header.PAGE_LIMIT]: parsedLimit,
-				[Header.TOTAL_PAGES]: calcTotalPages(totalCount, parsedLimit)
+				[Header.PAGE]: page,
+				[Header.PAGE_LIMIT]: limit,
+				[Header.TOTAL_PAGES]: calcTotalPages(totalCount, limit)
 			});
 			res.json(requests);
 		} catch (e) {
 			next(e);
 		}
-	}
+	};
 
-	static async acceptById(req: Request, res: Response, next: NextFunction) {
+	static acceptById: AcceptByIdRequestHandler = async (req, res, next) => {
 		try {
 			const userId = res.locals.user?.id;
 			if (!userId) {
-				throw new ApiError(401, "Unauthorized");
+				throw ErrorFactory.getUnauthorized();
 			}
 
 			const {id} = req.params;
@@ -89,13 +75,13 @@ class ProjectRequestsController {
 		} catch (e) {
 			next(e);
 		}
-	}
+	};
 
-	static async rejectById(req: Request, res: Response, next: NextFunction) {
+	static rejectById: RejectByIdRequestHandler = async (req, res, next) => {
 		try {
 			const userId = res.locals.user?.id;
 			if (!userId) {
-				throw new ApiError(401, "Unauthorized");
+				throw ErrorFactory.getUnauthorized();
 			}
 
 			const {id} = req.params;
@@ -106,7 +92,7 @@ class ProjectRequestsController {
 		} catch (e) {
 			next(e);
 		}
-	}
+	};
 }
 
 export default ProjectRequestsController;

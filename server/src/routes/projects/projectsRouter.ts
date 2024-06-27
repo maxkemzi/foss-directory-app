@@ -4,11 +4,8 @@ import ProjectsController from "./ProjectsController";
 import projectMessagesRouter from "./messages/projectMessagesRouter";
 import projectRequestsRouter from "./requests/projectRequestsRouter";
 import projectUsersRouter from "./users/projectUsersRouter";
-import {
-	createValidationChain,
-	getValidationChain,
-	idValidator
-} from "./validationChains";
+import {CREATE_VALIDATION, GET_ALL_VALIDATION} from "./validations";
+import {ID_VALIDATION} from "../validations";
 
 const projectsRouter = Router();
 
@@ -18,31 +15,31 @@ projectsRouter.use("/:id/users", projectUsersRouter);
 projectsRouter.post(
 	"/",
 	authChecker,
-	validator(createValidationChain),
+	validator(CREATE_VALIDATION),
 	ProjectsController.create
 );
 projectsRouter.get(
 	"/",
 	authChecker,
-	validator(getValidationChain),
+	validator(GET_ALL_VALIDATION),
 	ProjectsController.getAll
 );
 projectsRouter.get(
 	"/:id",
 	authChecker,
-	validator([idValidator]),
+	validator(ID_VALIDATION),
 	ProjectsController.getById
 );
 projectsRouter.delete(
 	"/:id",
 	authChecker,
-	validator([idValidator]),
+	validator(ID_VALIDATION),
 	ProjectsController.deleteById
 );
 projectsRouter.delete(
 	"/:id/leave",
 	authChecker,
-	validator([idValidator]),
+	validator(ID_VALIDATION),
 	ProjectsController.leaveById
 );
 

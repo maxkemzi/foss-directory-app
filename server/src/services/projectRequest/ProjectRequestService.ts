@@ -6,7 +6,7 @@ import {
 	ProjectUserModel,
 	UserModel
 } from "#src/db";
-import {ApiError} from "#src/lib";
+import {ErrorFactory, ProjectRequestError} from "#src/lib";
 import {ProjectRequestDto} from "../dtos";
 import {GetOptions, GetReturn} from "./types";
 
@@ -25,7 +25,7 @@ class ProjectRequestService {
 				userId
 			);
 			if (isMember) {
-				throw new ApiError(403, "You are already the member of this project");
+				throw ErrorFactory.getForbidden(ProjectRequestError.ALREADY_MEMBER);
 			}
 
 			const request = await requestModel.insert(payload);
@@ -75,17 +75,13 @@ class ProjectRequestService {
 		try {
 			const request = await requestModel.findById(id);
 			if (!request) {
-				throw new ApiError(
-					400,
-					"Project request with the specified id was not found"
-				);
+				throw ErrorFactory.getBadRequest(ProjectRequestError.NOT_FOUND);
 			}
 
 			const isReceiver = await userModel.isProjectRequestReceiver(id, userId);
 			if (!isReceiver) {
-				throw new ApiError(
-					403,
-					"Only the project request receiver can accept it"
+				throw ErrorFactory.getForbidden(
+					ProjectRequestError.RECEIVER_PERMISSION_REQUIRED
 				);
 			}
 
@@ -118,17 +114,13 @@ class ProjectRequestService {
 		try {
 			const request = await requestModel.findById(id);
 			if (!request) {
-				throw new ApiError(
-					400,
-					"Project request with the specified id was not found"
-				);
+				throw ErrorFactory.getBadRequest(ProjectRequestError.NOT_FOUND);
 			}
 
 			const isReceiver = await userModel.isProjectRequestReceiver(id, userId);
 			if (!isReceiver) {
-				throw new ApiError(
-					403,
-					"Only the project request receiver can reject it"
+				throw ErrorFactory.getForbidden(
+					ProjectRequestError.RECEIVER_PERMISSION_REQUIRED
 				);
 			}
 

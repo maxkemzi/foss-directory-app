@@ -1,4 +1,4 @@
-import {ApiError} from "#src/lib";
+import {ApiError, ValidationError} from "#src/lib";
 import {NextFunction, Request, Response} from "express";
 import {DatabaseError} from "pg";
 
@@ -18,8 +18,13 @@ const errorHandler = (
 		}
 	}
 
+	if (err instanceof ValidationError) {
+		res.status(err.status).json({errors: err.errors, code: err.code});
+		return;
+	}
+
 	if (err instanceof ApiError) {
-		res.status(err.status).json({error: err.message});
+		res.status(err.status).json({error: err.message, code: err.code});
 		return;
 	}
 

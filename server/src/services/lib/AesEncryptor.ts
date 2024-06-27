@@ -1,7 +1,7 @@
 import {env} from "#src/config";
-import crypto, {createDecipheriv} from "node:crypto";
+import crypto from "node:crypto";
 
-class AesCipherService {
+class AesEncryptor {
 	private static ALGORITHM = "aes-256-cbc";
 	private static KEY = env.ENCRYPTION_KEY;
 	private static IV = env.ENCRYPTION_IV;
@@ -19,7 +19,7 @@ class AesCipherService {
 	static decrypt(encryptedPayload: string): string {
 		const {ALGORITHM, KEY, IV} = this;
 
-		const decipher = createDecipheriv(ALGORITHM, KEY, IV);
+		const decipher = crypto.createDecipheriv(ALGORITHM, KEY, IV);
 		let decrypted = decipher.update(encryptedPayload, "hex", "utf8");
 		decrypted += decipher.final("utf8");
 
@@ -27,4 +27,4 @@ class AesCipherService {
 	}
 }
 
-export default AesCipherService;
+export default AesEncryptor;

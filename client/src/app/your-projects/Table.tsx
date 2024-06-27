@@ -13,7 +13,7 @@ interface Props {
 
 const Table: FC<Props> = ({response}) => {
 	const {projects, isFetching, hasMore, fetchMore} = useProjectList(
-		"owned",
+		"owner",
 		response
 	);
 

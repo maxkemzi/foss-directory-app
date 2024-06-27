@@ -1,9 +1,6 @@
 import {env} from "#src/config";
-import {
-	ExtendedUserDto,
-	JwtService,
-	ProjectMessageService
-} from "#src/services";
+import {ExtendedUserDto, ProjectMessageService} from "#src/services";
+import {JwtVerificator} from "#src/services/lib";
 import {Server} from "socket.io";
 import server from "./server";
 
@@ -28,7 +25,7 @@ io.on("connection", async socket => {
 		}
 
 		const userPayload =
-			JwtService.verifyAccessToken<ExtendedUserDto>(accessToken);
+			JwtVerificator.verifyAccess<ExtendedUserDto>(accessToken);
 		if (!userPayload) {
 			throw new Error();
 		}

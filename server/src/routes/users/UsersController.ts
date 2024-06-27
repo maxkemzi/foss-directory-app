@@ -1,22 +1,26 @@
-import {ApiError} from "#src/lib";
-import {NextFunction, Request, Response} from "express";
-import userService from "../../services/user/UserService";
+import {ErrorFactory} from "#src/lib";
+import {UserService} from "#src/services";
+import {DeleteAccountRequestHandler} from "./types";
 
 class UsersController {
-	static async deleteAuth(req: Request, res: Response, next: NextFunction) {
+	static deleteAccount: DeleteAccountRequestHandler = async (
+		req,
+		res,
+		next
+	) => {
 		try {
 			const userId = res.locals.user?.id;
 			if (!userId) {
-				throw new ApiError(401, "Unauthorized");
+				throw ErrorFactory.getUnauthorized();
 			}
 
-			await userService.deleteById(userId);
+			await UserService.deleteById(userId);
 
 			res.json({success: true});
 		} catch (e) {
 			next(e);
 		}
-	}
+	};
 }
 
 export default UsersController;

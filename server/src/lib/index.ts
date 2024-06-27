@@ -1,3 +1,1 @@
-import ApiError from "./ApiError";
-
-export {ApiError};
+export * from "./error";

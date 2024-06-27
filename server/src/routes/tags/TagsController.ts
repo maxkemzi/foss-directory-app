@@ -1,55 +1,32 @@
-import {ApiError} from "#src/lib";
 import {TagService} from "#src/services";
-import {
-	Header,
-	calcOffset,
-	calcTotalPages,
-	parseLimitString,
-	parsePageString,
-	parseSearchString
-} from "#src/utils";
-import {NextFunction, Request, Response} from "express";
+import {Header} from "../constants";
+import {calcOffset, calcTotalPages} from "../helpers";
+import {GetAllParsedQuery, GetAllRequestHandler} from "./types";
 
 class TagsController {
-	static async getAll(req: Request, res: Response, next: NextFunction) {
+	static getAll: GetAllRequestHandler = async (req, res, next) => {
 		try {
-			const {page, limit, search} = req.query;
+			const {page, limit, search} = req.query as GetAllParsedQuery;
 
-			if (page && typeof page !== "string") {
-				throw new ApiError(400, '"page" param must be a string');
-			}
-
-			if (limit && typeof limit !== "string") {
-				throw new ApiError(400, '"limit" param must be a string');
-			}
-
-			if (search && typeof search !== "string") {
-				throw new ApiError(400, '"search" param must be a string');
-			}
-
-			const parsedPage = parsePageString(page);
-			const parsedLimit = parseLimitString(limit);
-			const parsedSearch = parseSearchString(search);
-
-			const offset = calcOffset(parsedPage, parsedLimit);
+			const offset = calcOffset(page, limit);
 
 			const {tags, totalCount} = await TagService.getAll({
-				limit: parsedLimit,
-				search: parsedSearch,
+				limit,
+				search,
 				offset
 			});
 
 			res.set({
 				[Header.TOTAL_COUNT]: totalCount,
-				[Header.PAGE]: parsedPage,
-				[Header.PAGE_LIMIT]: parsedLimit,
-				[Header.TOTAL_PAGES]: calcTotalPages(totalCount, parsedLimit)
+				[Header.PAGE]: page,
+				[Header.PAGE_LIMIT]: limit,
+				[Header.TOTAL_PAGES]: calcTotalPages(totalCount, limit)
 			});
 			res.json(tags);
 		} catch (e) {
 			next(e);
 		}
-	}
+	};
 }
 
 export default TagsController;

@@ -6,8 +6,8 @@ import {
 	GithubRateLimitModel,
 	isGithubRateLimitExceeded
 } from "#src/db";
-import {ApiError} from "#src/lib";
-import aesCipherService from "../aesCipher/AesCipherService";
+import {ErrorFactory, GithubError} from "#src/lib";
+import {AesEncryptor} from "#src/services/lib";
 import {GithubRepoDto} from "../dtos";
 import {GetReposOptions, GetReposReturn} from "./types";
 
@@ -16,7 +16,7 @@ class GithubService {
 	private static GITHUB_CLIENT_ID = env.GITHUB_CLIENT_ID;
 
 	static getOAuthUrl(state: string) {
-		const redirectUri = `${this.PUBLIC_SERVER_URL}/api/integrations/github/callback`;
+		const redirectUri = `${this.PUBLIC_SERVER_URL}/api/integrations/github/connect`;
 
 		const searchParams = new URLSearchParams();
 		searchParams.set("client_id", this.GITHUB_CLIENT_ID);
@@ -39,12 +39,12 @@ class GithubService {
 		try {
 			const connection = await model.findByUserId(userId);
 			if (connection) {
-				throw new ApiError(400, "You are already connected to github");
+				throw ErrorFactory.getForbidden(GithubError.ALREADY_CONNECTED);
 			}
 
 			const {accessToken} = await GithubApi.fetchOAuthToken(code);
 
-			const encryptedToken = aesCipherService.encrypt(accessToken);
+			const encryptedToken = AesEncryptor.encrypt(accessToken);
 
 			await model.insert({userId, token: encryptedToken});
 		} finally {
@@ -59,7 +59,7 @@ class GithubService {
 		try {
 			const connection = await model.findByUserId(id);
 			if (!connection) {
-				throw new ApiError(401, "Your must be connected to GitHub.");
+				throw ErrorFactory.getForbidden(GithubError.CONNECTION_REQUIRED);
 			}
 
 			return connection;
@@ -91,13 +91,10 @@ class GithubService {
 				(searchRateLimit &&
 					isGithubRateLimitExceeded(searchRateLimit, currentTime))
 			) {
-				throw new ApiError(
-					429,
-					`GitHub API rate limit exceeded. Try again later.`
-				);
+				throw ErrorFactory.getTooManyRequests(GithubError.RATE_LIMIT_EXCEEDED);
 			}
 
-			const decryptedToken = aesCipherService.decrypt(token);
+			const decryptedToken = AesEncryptor.decrypt(token);
 
 			const {data, totalCount} = await GithubApi.fetchReposByToken(
 				decryptedToken,
@@ -109,10 +106,7 @@ class GithubService {
 						const connection = await connectionModel.findByUserId(userId);
 
 						if (!connection) {
-							throw new ApiError(
-								401,
-								"GitHub connection was not found. Try to connect to GitHub again."
-							);
+							throw ErrorFactory.getBadRequest(GithubError.CONNECTION_REQUIRED);
 						}
 
 						await rateLimitModel.upsert({

@@ -1,6 +1,6 @@
 import {env} from "#src/config";
 import {isValidGithubRateLimitResource} from "#src/db";
-import {ApiError} from "#src/lib";
+import {ErrorFactory, GithubError} from "#src/lib";
 import {delay} from "../helpers";
 import {
 	FetchGithubApiOptions,
@@ -35,10 +35,10 @@ class GithubApi {
 		if (!response.ok) {
 			const {error} = await response.json();
 			if (error === "unverified_user_email") {
-				throw new ApiError(401, "You need to verify your GitHub email.");
+				throw ErrorFactory.getForbidden(GithubError.UNVERIFIED_EMAIL);
 			}
 
-			throw new ApiError(404, "Error authorizing GitHub.");
+			throw new Error();
 		}
 
 		const data = (await response.json()) as OAuthTokenApiResponse;
@@ -143,24 +143,15 @@ class GithubApi {
 					});
 				}
 
-				throw new ApiError(
-					429,
-					"GitHub API rate limit exceeded. Try again later."
-				);
+				throw ErrorFactory.getTooManyRequests(GithubError.RATE_LIMIT_EXCEEDED);
 			}
 
 			const {error} = await response.json();
 			if (error === "bad_verification_code") {
-				throw new ApiError(
-					401,
-					"Your GitHub token has expired, connect to GitHub again."
-				);
+				throw ErrorFactory.getUnauthorized(GithubError.TOKEN_EXPIRED);
 			}
 
-			throw new ApiError(
-				404,
-				"Something went wrong with requesting GitHub API."
-			);
+			throw new Error();
 		}
 
 		return response;

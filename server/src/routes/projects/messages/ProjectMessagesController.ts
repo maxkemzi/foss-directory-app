@@ -1,54 +1,43 @@
-import {ApiError} from "#src/lib";
+import {ErrorFactory} from "#src/lib";
 import {ProjectMessageService} from "#src/services";
-import {
-	Header,
-	calcOffset,
-	calcTotalPages,
-	parseLimitString,
-	parsePageString
-} from "#src/utils";
-import {NextFunction, Request, Response} from "express";
+import {Header} from "../../constants";
+import {calcOffset, calcTotalPages} from "../../helpers";
+import {GetByProjectIdParsedQuery, GetByProjectIdRequestHandler} from "./types";
 
 class ProjectMessagesController {
-	static async getByProjectId(req: Request, res: Response, next: NextFunction) {
+	static getByProjectId: GetByProjectIdRequestHandler = async (
+		req,
+		res,
+		next
+	) => {
 		try {
 			const userId = res.locals.user?.id;
 			if (!userId) {
-				throw new ApiError(401, "Unauthorized");
+				throw ErrorFactory.getUnauthorized();
 			}
 
 			const {id} = req.params;
-			const {page, limit} = req.query;
+			const {page, limit} = req.query as GetByProjectIdParsedQuery;
 
-			if (page && typeof page !== "string") {
-				throw new ApiError(400, '"page" param must be a string');
-			}
-
-			if (limit && typeof limit !== "string") {
-				throw new ApiError(400, '"limit" param must be a string');
-			}
-
-			const parsedPage = parsePageString(page);
-			const parsedLimit = parseLimitString(limit);
-			const offset = calcOffset(parsedPage, parsedLimit);
+			const offset = calcOffset(page, limit);
 
 			const {messages, totalCount} = await ProjectMessageService.getByProjectId(
 				id,
 				userId,
-				{limit: parsedLimit, offset}
+				{limit, offset}
 			);
 
 			res.set({
 				[Header.TOTAL_COUNT]: totalCount,
-				[Header.PAGE]: parsedPage,
-				[Header.PAGE_LIMIT]: parsedLimit,
-				[Header.TOTAL_PAGES]: calcTotalPages(totalCount, parsedLimit)
+				[Header.PAGE]: page,
+				[Header.PAGE_LIMIT]: limit,
+				[Header.TOTAL_PAGES]: calcTotalPages(totalCount, limit)
 			});
 			res.json(messages);
 		} catch (e) {
 			next(e);
 		}
-	}
+	};
 }
 
 export default ProjectMessagesController;

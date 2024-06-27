@@ -1,9 +1,8 @@
 import {Db, RefreshTokenModel, UserModel} from "#src/db";
-import {ApiError} from "#src/lib";
-import bcryptjs from "bcryptjs";
+import {AuthError, ErrorFactory, UserError} from "#src/lib";
+import {JwtGenerator, JwtVerificator, PasswordHasher} from "#src/services/lib";
 import {ExtendedUserDto} from "../dtos";
 import {UserExtender} from "../extenders";
-import JwtService from "../jwt/JwtService";
 
 class AuthService {
 	static async signUp({username, email, password}: any) {
@@ -15,15 +14,15 @@ class AuthService {
 		try {
 			const candidateByUsername = await userModel.findByUsername(username);
 			if (candidateByUsername) {
-				throw new ApiError(400, "User with provided username already exists");
+				throw ErrorFactory.getBadRequest(AuthError.USERNAME_ALREADY_EXISTS);
 			}
 
 			const candidateByEmail = await userModel.findByEmail(email);
 			if (candidateByEmail) {
-				throw new ApiError(400, "User with provided email already exists");
+				throw ErrorFactory.getBadRequest(AuthError.EMAIL_ALREADY_EXISTS);
 			}
 
-			const hashedPassword = await bcryptjs.hash(password, 10);
+			const hashedPassword = await PasswordHasher.hash(password);
 			const user = await userModel.insert({
 				username,
 				email,
@@ -34,7 +33,7 @@ class AuthService {
 			const extendedUser = await extender.extend(user);
 
 			const userDto = new ExtendedUserDto(extendedUser);
-			const tokens = JwtService.generateAccessAndRefreshTokens({...userDto});
+			const tokens = JwtGenerator.generateAccessAndRefresh({...userDto});
 
 			await refreshTokenModel.upsert({
 				userId: userDto.id,
@@ -56,19 +55,22 @@ class AuthService {
 		try {
 			const user = await userModel.findByEmail(email);
 			if (!user) {
-				throw new ApiError(400, "User with provided email doesn't exist");
+				throw ErrorFactory.getBadRequest(AuthError.EMAIL_DOES_NOT_EXIST);
 			}
 
-			const passwordsMatch = await bcryptjs.compare(password, user.password);
+			const passwordsMatch = await PasswordHasher.compare(
+				password,
+				user.password
+			);
 			if (!passwordsMatch) {
-				throw new ApiError(400, "Wrong password");
+				throw ErrorFactory.getBadRequest(AuthError.WRONG_PASSWORD);
 			}
 
 			const extender = new UserExtender(client);
 			const extendedUser = await extender.extend(user);
 
 			const userDto = new ExtendedUserDto(extendedUser);
-			const tokens = JwtService.generateAccessAndRefreshTokens({...userDto});
+			const tokens = JwtGenerator.generateAccessAndRefresh({...userDto});
 
 			await refreshTokenModel.upsert({
 				userId: userDto.id,
@@ -89,22 +91,22 @@ class AuthService {
 
 		try {
 			const userPayload =
-				JwtService.verifyRefreshToken<ExtendedUserDto>(refreshToken);
+				JwtVerificator.verifyRefresh<ExtendedUserDto>(refreshToken);
 			const tokenFromDb = await refreshTokenModel.findByToken(refreshToken);
 			if (!userPayload || !tokenFromDb) {
-				throw new ApiError(401, "Invalid token");
+				throw ErrorFactory.getUnauthorized(AuthError.INVALID_TOKEN);
 			}
 
 			const user = await userModel.findById(userPayload.id);
 			if (!user) {
-				throw new ApiError(400, "User doesn't exist");
+				throw ErrorFactory.getBadRequest(UserError.NOT_FOUND);
 			}
 
 			const extender = new UserExtender(client);
 			const extendedUser = await extender.extend(user);
 
 			const userDto = new ExtendedUserDto(extendedUser);
-			const accessToken = JwtService.generateAccessToken({...userDto});
+			const accessToken = JwtGenerator.generateAccess({...userDto});
 
 			return {
 				user: {...userDto},

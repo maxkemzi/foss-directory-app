@@ -4,6 +4,6 @@ import UsersController from "./UsersController";
 
 const usersRouter = Router();
 
-usersRouter.delete("/", authChecker, UsersController.deleteAuth);
+usersRouter.delete("/", authChecker, UsersController.deleteAccount);
 
 export default usersRouter;

@@ -5,7 +5,7 @@ import {
 	ProjectMessagePopulator,
 	UserModel
 } from "#src/db";
-import {ApiError} from "#src/lib";
+import {ErrorFactory, ProjectError} from "#src/lib";
 import {ProjectMessageDto} from "../dtos";
 import {GetOptions, GetReturn, OmitFromUnion} from "./types";
 
@@ -24,7 +24,9 @@ class ProjectMessageService {
 				userId
 			);
 			if (!isProjectMember) {
-				throw new ApiError(403, "You are not the member of this project");
+				throw ErrorFactory.getForbidden(
+					ProjectError.MEMBER_PERMISSION_REQUIRED
+				);
 			}
 
 			const latestMessage = await messageModel.findLatestByProjectId(
@@ -60,7 +62,9 @@ class ProjectMessageService {
 		try {
 			const isProjectMember = await userModel.isProjectMember(id, userId);
 			if (!isProjectMember) {
-				throw new ApiError(403, "You are not the member of this project");
+				throw ErrorFactory.getForbidden(
+					ProjectError.MEMBER_PERMISSION_REQUIRED
+				);
 			}
 
 			const [messages, totalCount] = await Promise.all([

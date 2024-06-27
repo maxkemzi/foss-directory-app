@@ -1,9 +1,14 @@
-import {ApiError} from "#src/lib";
+import {ErrorFactory} from "#src/lib";
 import {AuthService} from "#src/services";
-import {NextFunction, Request, Response} from "express";
+import {
+	LoginRequestHandler,
+	LogoutRequestHandler,
+	RefreshRequestHandler,
+	SignupRequestHandler
+} from "./types";
 
 class AuthController {
-	static async signUp(req: Request, res: Response, next: NextFunction) {
+	static signUp: SignupRequestHandler = async (req, res, next) => {
 		try {
 			const {username, email, password} = req.body;
 
@@ -17,9 +22,9 @@ class AuthController {
 		} catch (e) {
 			next(e);
 		}
-	}
+	};
 
-	static async logIn(req: Request, res: Response, next: NextFunction) {
+	static logIn: LoginRequestHandler = async (req, res, next) => {
 		try {
 			const {email, password} = req.body;
 
@@ -29,13 +34,13 @@ class AuthController {
 		} catch (e) {
 			next(e);
 		}
-	}
+	};
 
-	static async refresh(req: Request, res: Response, next: NextFunction) {
+	static refresh: RefreshRequestHandler = async (req, res, next) => {
 		try {
 			const {refreshToken} = req.cookies;
 			if (!refreshToken) {
-				throw new ApiError(401, "Unauthorized.");
+				throw ErrorFactory.getUnauthorized();
 			}
 
 			const {user, tokens} = await AuthService.refresh(refreshToken);
@@ -44,13 +49,13 @@ class AuthController {
 		} catch (e) {
 			next(e);
 		}
-	}
+	};
 
-	static async logOut(req: Request, res: Response, next: NextFunction) {
+	static logOut: LogoutRequestHandler = async (req, res, next) => {
 		try {
 			const {refreshToken} = req.cookies;
 			if (!refreshToken) {
-				throw new ApiError(401, "Unauthorized.");
+				throw ErrorFactory.getUnauthorized();
 			}
 
 			await AuthService.logOut(refreshToken);
@@ -59,7 +64,7 @@ class AuthController {
 		} catch (e) {
 			next(e);
 		}
-	}
+	};
 }
 
 export default AuthController;

@@ -10,7 +10,7 @@ import Table from "./Table";
 const LIMIT = 6;
 
 const YourProjects = async () => {
-	const response = await projectActions.getByVariant("owned", {
+	const response = await projectActions.getByVariant("owner", {
 		limit: LIMIT
 	});
 

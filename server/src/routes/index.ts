@@ -1,10 +1,10 @@
 import {Router} from "express";
-import authRouter from "./auth/authRouter";
-import integrationsRouter from "./integrations/integrationsRouter";
-import projectsRouter from "./projects/projectsRouter";
-import rolesRouter from "./roles/rolesRouter";
-import tagsRouter from "./tags/tagsRouter";
-import usersRouter from "./users/usersRouter";
+import authRouter from "./auth";
+import integrationsRouter from "./integrations";
+import projectsRouter from "./projects";
+import rolesRouter from "./roles";
+import tagsRouter from "./tags";
+import usersRouter from "./users";
 
 const router = Router();
 
