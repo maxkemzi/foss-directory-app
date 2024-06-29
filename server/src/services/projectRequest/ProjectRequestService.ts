@@ -6,7 +6,7 @@ import {
 	ProjectUserModel,
 	UserModel
 } from "#src/db";
-import {ErrorFactory, ProjectRequestError} from "#src/lib";
+import {ApiErrorInfo, ErrorFactory} from "#src/lib";
 import {ProjectRequestDto} from "../dtos";
 import {GetOptions, GetReturn} from "./types";
 
@@ -25,7 +25,9 @@ class ProjectRequestService {
 				userId
 			);
 			if (isMember) {
-				throw ErrorFactory.getForbidden(ProjectRequestError.ALREADY_MEMBER);
+				throw ErrorFactory.getForbidden(
+					ApiErrorInfo.PROJECT_REQUEST_ALREADY_MEMBER
+				);
 			}
 
 			const request = await requestModel.insert(payload);
@@ -75,13 +77,15 @@ class ProjectRequestService {
 		try {
 			const request = await requestModel.findById(id);
 			if (!request) {
-				throw ErrorFactory.getBadRequest(ProjectRequestError.NOT_FOUND);
+				throw ErrorFactory.getBadRequest(
+					ApiErrorInfo.PROJECT_REQUEST_NOT_FOUND
+				);
 			}
 
 			const isReceiver = await userModel.isProjectRequestReceiver(id, userId);
 			if (!isReceiver) {
 				throw ErrorFactory.getForbidden(
-					ProjectRequestError.RECEIVER_PERMISSION_REQUIRED
+					ApiErrorInfo.PROJECT_REQUEST_RECEIVER_PERMISSION_REQUIRED
 				);
 			}
 
@@ -114,13 +118,15 @@ class ProjectRequestService {
 		try {
 			const request = await requestModel.findById(id);
 			if (!request) {
-				throw ErrorFactory.getBadRequest(ProjectRequestError.NOT_FOUND);
+				throw ErrorFactory.getBadRequest(
+					ApiErrorInfo.PROJECT_REQUEST_NOT_FOUND
+				);
 			}
 
 			const isReceiver = await userModel.isProjectRequestReceiver(id, userId);
 			if (!isReceiver) {
 				throw ErrorFactory.getForbidden(
-					ProjectRequestError.RECEIVER_PERMISSION_REQUIRED
+					ApiErrorInfo.PROJECT_REQUEST_RECEIVER_PERMISSION_REQUIRED
 				);
 			}
 

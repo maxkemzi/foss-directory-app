@@ -6,14 +6,14 @@ type ResponseBody = {
 	tokens: {access: string; refresh: string};
 };
 
-type SignupRequestHandler = RequestHandler<
+type SignUpRequestHandler = RequestHandler<
 	{},
 	ResponseBody,
 	{username: string; email: string; password: string},
 	{}
 >;
 
-type LoginRequestHandler = RequestHandler<
+type LogInRequestHandler = RequestHandler<
 	{},
 	ResponseBody,
 	{email: string; password: string},
@@ -25,8 +25,8 @@ type RefreshRequestHandler = RequestHandler<{}, ResponseBody, {}, {}>;
 type LogoutRequestHandler = RequestHandler<{}, {success: true}, {}, {}>;
 
 export type {
-	LoginRequestHandler,
+	LogInRequestHandler,
 	LogoutRequestHandler,
 	RefreshRequestHandler,
-	SignupRequestHandler
+	SignUpRequestHandler
 };

@@ -1,5 +1,5 @@
 import {env} from "#src/config";
-import {ErrorFactory, GithubError} from "#src/lib";
+import {ApiErrorInfo, ErrorFactory} from "#src/lib";
 import {Header} from "#src/routes/constants";
 import {calcTotalPages} from "#src/routes/helpers";
 import {GithubService} from "#src/services";
@@ -34,7 +34,7 @@ class GithubController {
 
 			const payload = JwtVerificator.verifyCsrf<{userId: string}>(state);
 			if (!payload) {
-				throw ErrorFactory.getForbidden(GithubError.INVALID_CSRF_TOKEN);
+				throw ErrorFactory.getForbidden(ApiErrorInfo.GITHUB_INVALID_CSRF_TOKEN);
 			}
 
 			await GithubService.createConnection({userId: payload.userId, code});
@@ -54,7 +54,9 @@ class GithubController {
 
 			const connection = await GithubService.getConnectionByUserId(userId);
 			if (!connection) {
-				throw ErrorFactory.getForbidden(GithubError.CONNECTION_REQUIRED);
+				throw ErrorFactory.getForbidden(
+					ApiErrorInfo.GITHUB_CONNECTION_REQUIRED
+				);
 			}
 
 			const {page, limit, search} = req.query as GetReposParsedQuery;

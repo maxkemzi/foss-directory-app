@@ -1,6 +1,6 @@
 import {env} from "#src/config";
 import {isValidGithubRateLimitResource} from "#src/db";
-import {ErrorFactory, GithubError} from "#src/lib";
+import {ApiErrorInfo, ErrorFactory} from "#src/lib";
 import {delay} from "../helpers";
 import {
 	FetchGithubApiOptions,
@@ -35,7 +35,7 @@ class GithubApi {
 		if (!response.ok) {
 			const {error} = await response.json();
 			if (error === "unverified_user_email") {
-				throw ErrorFactory.getForbidden(GithubError.UNVERIFIED_EMAIL);
+				throw ErrorFactory.getForbidden(ApiErrorInfo.GITHUB_UNVERIFIED_EMAIL);
 			}
 
 			throw new Error();
@@ -143,12 +143,14 @@ class GithubApi {
 					});
 				}
 
-				throw ErrorFactory.getTooManyRequests(GithubError.RATE_LIMIT_EXCEEDED);
+				throw ErrorFactory.getTooManyRequests(
+					ApiErrorInfo.GITHUB_EXCEEDED_RATE_LIMIT
+				);
 			}
 
 			const {error} = await response.json();
 			if (error === "bad_verification_code") {
-				throw ErrorFactory.getUnauthorized(GithubError.TOKEN_EXPIRED);
+				throw ErrorFactory.getUnauthorized(ApiErrorInfo.GITHUB_EXPIRED_TOKEN);
 			}
 
 			throw new Error();

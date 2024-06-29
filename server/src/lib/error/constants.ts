@@ -1,100 +1,115 @@
-const AuthError = {
-	AUTH_HEADER_MISSING: {
+import {ApiErrorInfoType, ApiErrorKey} from "./types";
+
+const ApiErrorInfo: Record<ApiErrorKey, ApiErrorInfoType> = {
+	// // General
+	BAD_REQUEST: {
+		message: "Bad request.",
+		code: "badRequest"
+	},
+	UNAUTHORIZED: {
+		message: "Unauthorized.",
+		code: "unauthorized"
+	},
+	INTERNAL_SERVER: {
+		message: "Internal server error.",
+		code: "internalServer"
+	},
+	TOO_MANY_REQUESTS: {
+		message: "Too many requests.",
+		code: "tooManyRequests"
+	},
+	FORBIDDEN: {
+		message: "Forbidden.",
+		code: "forbidden"
+	},
+	// // Auth
+	AUTH_MISSING_HEADER: {
 		message: "Authorization header is missing.",
-		code: "auth_header_missing"
+		code: "authMissingHeader"
 	},
-	INVALID_AUTH_HEADER: {
+	AUTH_INVALID_HEADER: {
 		message: "Invalid authorization header.",
-		code: "auth_invalid_header"
+		code: "authInvalidHeader"
 	},
-	EMAIL_ALREADY_EXISTS: {
+	AUTH_EXISTING_EMAIL: {
 		message: "Email already exists.",
-		code: "auth_email_already_exists"
+		code: "authExistingEmail"
 	},
-	EMAIL_DOES_NOT_EXIST: {
+	AUTH_NON_EXISTING_EMAIL: {
 		message: "Email doesn't exist.",
-		code: "auth_email_does_not_exist"
+		code: "authNonExistingEmail"
 	},
-	USERNAME_ALREADY_EXISTS: {
+	AUTH_EXISTING_USERNAME: {
 		message: "Username already exists.",
-		code: "auth_username_already_exists"
+		code: "authExistingUsername"
 	},
-	WRONG_PASSWORD: {
+	AUTH_WRONG_PASSWORD: {
 		message: "Wrong password.",
-		code: "auth_wrong_password"
+		code: "authWrongPassword"
 	},
-	INVALID_TOKEN: {
+	AUTH_INVALID_TOKEN: {
 		message: "Session token is invalid.",
-		code: "auth_invalid_token"
-	}
-};
-
-const GithubError = {
-	ALREADY_CONNECTED: {
+		code: "authInvalidToken"
+	},
+	// // Github
+	GITHUB_ALREADY_CONNECTED: {
 		message: "You are already connected to GitHub.",
-		code: "github_already_connected"
+		code: "githubAlreadyConnected"
 	},
-	CONNECTION_REQUIRED: {
-		message:
-			"Your must be connected to GitHub in order to perform this action.",
-		code: "github_connection_required"
+	GITHUB_CONNECTION_REQUIRED: {
+		message: "You must be connected to GitHub in order to perform this action.",
+		code: "githubConnectionRequired"
 	},
-	RATE_LIMIT_EXCEEDED: {
+	GITHUB_EXCEEDED_RATE_LIMIT: {
 		message: "GitHub API rate limit exceeded. Try again later.",
-		code: "github_rate_limit_exceeded"
+		code: "githubExceededRateLimit"
 	},
-	TOKEN_EXPIRED: {
+	GITHUB_EXPIRED_TOKEN: {
 		message: "Your GitHub token has expired, connect to GitHub again.",
-		code: "github_token_expired"
+		code: "githubExpiredToken"
 	},
-	UNVERIFIED_EMAIL: {
+	GITHUB_UNVERIFIED_EMAIL: {
 		message: "You need to verify your GitHub email.",
-		code: "github_email_unverified"
+		code: "githubUnverifiedEmail"
 	},
-	INVALID_CSRF_TOKEN: {
+	GITHUB_INVALID_CSRF_TOKEN: {
 		message: "Invalid CSRF token.",
-		code: "github_csrf_token_invalid"
-	}
-};
-
-const ProjectError = {
-	NOT_FOUND: {
-		message: "Project was not found.",
-		code: "project_not_found"
+		code: "githubInvalidCsrfToken"
 	},
-	OWNER_PERMISSION_REQUIRED: {
+	// // Project
+	PROJECT_NOT_FOUND: {
+		message: "Project was not found.",
+		code: "projectNotFound"
+	},
+	PROJECT_OWNER_PERMISSION_REQUIRED: {
 		message:
 			"Only the owner of the project has permission to perform this action.",
-		code: "project_owner_permission_required"
+		code: "projectOwnerPermissionRequired"
 	},
-	MEMBER_PERMISSION_REQUIRED: {
+	PROJECT_MEMBER_PERMISSION_REQUIRED: {
 		message:
 			"Only the member of the project has permission to perform this action.",
-		code: "project_member_permission_required"
-	}
-};
-
-const ProjectRequestError = {
-	NOT_FOUND: {
-		message: "Project request was not found.",
-		code: "project_request_not_found"
+		code: "projectMemberPermissionRequired"
 	},
-	RECEIVER_PERMISSION_REQUIRED: {
+	// // Project request
+	PROJECT_REQUEST_NOT_FOUND: {
+		message: "Project request was not found.",
+		code: "projectRequestNotFound"
+	},
+	PROJECT_REQUEST_RECEIVER_PERMISSION_REQUIRED: {
 		message:
 			"Only the receiver of the project request has permission to perform this action.",
-		code: "project_request_receiver_permission_required"
+		code: "projectRequestReceiverPermissionRequired"
 	},
-	ALREADY_MEMBER: {
+	PROJECT_REQUEST_ALREADY_MEMBER: {
 		message: "The members of the project can't perform this action.",
-		code: "project_request_already_member"
-	}
-};
-
-const UserError = {
-	NOT_FOUND: {
+		code: "projectRequestAlreadyMember"
+	},
+	// // User
+	USER_NOT_FOUND: {
 		message: "User was not found.",
-		code: "user_not_found"
+		code: "userNotFound"
 	}
 };
 
-export {AuthError, GithubError, ProjectError, ProjectRequestError, UserError};
+export {ApiErrorInfo};

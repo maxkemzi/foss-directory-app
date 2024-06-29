@@ -1,5 +1,5 @@
 import {Db, RefreshTokenModel, UserModel} from "#src/db";
-import {AuthError, ErrorFactory, UserError} from "#src/lib";
+import {ApiErrorInfo, ErrorFactory} from "#src/lib";
 import {JwtGenerator, JwtVerificator, PasswordHasher} from "#src/services/lib";
 import {ExtendedUserDto} from "../dtos";
 import {UserExtender} from "../extenders";
@@ -14,12 +14,12 @@ class AuthService {
 		try {
 			const candidateByUsername = await userModel.findByUsername(username);
 			if (candidateByUsername) {
-				throw ErrorFactory.getBadRequest(AuthError.USERNAME_ALREADY_EXISTS);
+				throw ErrorFactory.getBadRequest(ApiErrorInfo.AUTH_EXISTING_USERNAME);
 			}
 
 			const candidateByEmail = await userModel.findByEmail(email);
 			if (candidateByEmail) {
-				throw ErrorFactory.getBadRequest(AuthError.EMAIL_ALREADY_EXISTS);
+				throw ErrorFactory.getBadRequest(ApiErrorInfo.AUTH_EXISTING_EMAIL);
 			}
 
 			const hashedPassword = await PasswordHasher.hash(password);
@@ -55,7 +55,7 @@ class AuthService {
 		try {
 			const user = await userModel.findByEmail(email);
 			if (!user) {
-				throw ErrorFactory.getBadRequest(AuthError.EMAIL_DOES_NOT_EXIST);
+				throw ErrorFactory.getBadRequest(ApiErrorInfo.AUTH_NON_EXISTING_EMAIL);
 			}
 
 			const passwordsMatch = await PasswordHasher.compare(
@@ -63,7 +63,7 @@ class AuthService {
 				user.password
 			);
 			if (!passwordsMatch) {
-				throw ErrorFactory.getBadRequest(AuthError.WRONG_PASSWORD);
+				throw ErrorFactory.getBadRequest(ApiErrorInfo.AUTH_WRONG_PASSWORD);
 			}
 
 			const extender = new UserExtender(client);
@@ -94,12 +94,12 @@ class AuthService {
 				JwtVerificator.verifyRefresh<ExtendedUserDto>(refreshToken);
 			const tokenFromDb = await refreshTokenModel.findByToken(refreshToken);
 			if (!userPayload || !tokenFromDb) {
-				throw ErrorFactory.getUnauthorized(AuthError.INVALID_TOKEN);
+				throw ErrorFactory.getUnauthorized(ApiErrorInfo.AUTH_INVALID_TOKEN);
 			}
 
 			const user = await userModel.findById(userPayload.id);
 			if (!user) {
-				throw ErrorFactory.getBadRequest(UserError.NOT_FOUND);
+				throw ErrorFactory.getBadRequest(ApiErrorInfo.USER_NOT_FOUND);
 			}
 
 			const extender = new UserExtender(client);

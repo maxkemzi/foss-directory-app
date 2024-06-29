@@ -6,7 +6,7 @@ import {
 	GithubRateLimitModel,
 	isGithubRateLimitExceeded
 } from "#src/db";
-import {ErrorFactory, GithubError} from "#src/lib";
+import {ApiErrorInfo, ErrorFactory} from "#src/lib";
 import {AesEncryptor} from "#src/services/lib";
 import {GithubRepoDto} from "../dtos";
 import {GetReposOptions, GetReposReturn} from "./types";
@@ -39,7 +39,7 @@ class GithubService {
 		try {
 			const connection = await model.findByUserId(userId);
 			if (connection) {
-				throw ErrorFactory.getForbidden(GithubError.ALREADY_CONNECTED);
+				throw ErrorFactory.getForbidden(ApiErrorInfo.GITHUB_ALREADY_CONNECTED);
 			}
 
 			const {accessToken} = await GithubApi.fetchOAuthToken(code);
@@ -59,7 +59,9 @@ class GithubService {
 		try {
 			const connection = await model.findByUserId(id);
 			if (!connection) {
-				throw ErrorFactory.getForbidden(GithubError.CONNECTION_REQUIRED);
+				throw ErrorFactory.getForbidden(
+					ApiErrorInfo.GITHUB_CONNECTION_REQUIRED
+				);
 			}
 
 			return connection;
@@ -91,7 +93,9 @@ class GithubService {
 				(searchRateLimit &&
 					isGithubRateLimitExceeded(searchRateLimit, currentTime))
 			) {
-				throw ErrorFactory.getTooManyRequests(GithubError.RATE_LIMIT_EXCEEDED);
+				throw ErrorFactory.getTooManyRequests(
+					ApiErrorInfo.GITHUB_EXCEEDED_RATE_LIMIT
+				);
 			}
 
 			const decryptedToken = AesEncryptor.decrypt(token);
@@ -106,7 +110,9 @@ class GithubService {
 						const connection = await connectionModel.findByUserId(userId);
 
 						if (!connection) {
-							throw ErrorFactory.getBadRequest(GithubError.CONNECTION_REQUIRED);
+							throw ErrorFactory.getBadRequest(
+								ApiErrorInfo.GITHUB_CONNECTION_REQUIRED
+							);
 						}
 
 						await rateLimitModel.upsert({

@@ -1,49 +1,35 @@
 import ApiError from "./ApiError";
 import ValidationError from "./ValidationError";
-import {ErrorData} from "./types";
+import {ApiErrorInfo} from "./constants";
+import {ApiErrorInfoType} from "./types";
 
 class ErrorFactory {
 	static getBadRequest(
-		{message, code}: ErrorData = {
-			message: "Bad request.",
-			code: "bad_request"
-		}
+		{message, code}: ApiErrorInfoType = ApiErrorInfo.BAD_REQUEST
 	): ApiError {
 		return new ApiError(400, message, code);
 	}
 
 	static getUnauthorized(
-		{message, code}: ErrorData = {
-			message: "Unauthorized.",
-			code: "unauthorized"
-		}
+		{message, code}: ApiErrorInfoType = ApiErrorInfo.UNAUTHORIZED
 	): ApiError {
 		return new ApiError(401, message, code);
 	}
 
 	static getInternalServer(
-		{message, code}: ErrorData = {
-			message: "Internal server error.",
-			code: "internal_server"
-		}
+		{message, code}: ApiErrorInfoType = ApiErrorInfo.INTERNAL_SERVER
 	): ApiError {
 		return new ApiError(500, message, code);
 	}
 
 	static getTooManyRequests(
-		{message, code}: ErrorData = {
-			message: "Too many requests.",
-			code: "too_many_requests"
-		}
+		{message, code}: ApiErrorInfoType = ApiErrorInfo.TOO_MANY_REQUESTS
 	): ApiError {
 		return new ApiError(429, message, code);
 	}
 
 	static getForbidden(
-		{message, code}: ErrorData = {
-			message: "Forbidden.",
-			code: "forbidden"
-		}
+		{message, code}: ApiErrorInfoType = ApiErrorInfo.FORBIDDEN
 	): ApiError {
 		return new ApiError(403, message, code);
 	}

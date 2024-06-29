@@ -1,4 +1,4 @@
-import {AuthError, ErrorFactory} from "#src/lib";
+import {ApiErrorInfo, ErrorFactory} from "#src/lib";
 import {ExtendedUserDto} from "#src/services";
 import {JwtVerificator} from "#src/services/lib";
 import {NextFunction, Request, Response} from "express";
@@ -7,18 +7,18 @@ const authChecker = (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const authHeader = req.headers.authorization;
 		if (!authHeader) {
-			throw ErrorFactory.getUnauthorized(AuthError.AUTH_HEADER_MISSING);
+			throw ErrorFactory.getUnauthorized(ApiErrorInfo.AUTH_MISSING_HEADER);
 		}
 
 		const accessToken = authHeader.split(" ")[1];
 		if (!accessToken) {
-			throw ErrorFactory.getUnauthorized(AuthError.INVALID_AUTH_HEADER);
+			throw ErrorFactory.getUnauthorized(ApiErrorInfo.AUTH_INVALID_HEADER);
 		}
 
 		const userPayload =
 			JwtVerificator.verifyAccess<ExtendedUserDto>(accessToken);
 		if (!userPayload) {
-			throw ErrorFactory.getUnauthorized(AuthError.INVALID_TOKEN);
+			throw ErrorFactory.getUnauthorized(ApiErrorInfo.AUTH_INVALID_TOKEN);
 		}
 
 		res.locals.user = userPayload;

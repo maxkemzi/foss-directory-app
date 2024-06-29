@@ -5,7 +5,7 @@ import {
 	ProjectMessagePopulator,
 	UserModel
 } from "#src/db";
-import {ErrorFactory, ProjectError} from "#src/lib";
+import {ApiErrorInfo, ErrorFactory} from "#src/lib";
 import {ProjectMessageDto} from "../dtos";
 import {GetOptions, GetReturn, OmitFromUnion} from "./types";
 
@@ -25,7 +25,7 @@ class ProjectMessageService {
 			);
 			if (!isProjectMember) {
 				throw ErrorFactory.getForbidden(
-					ProjectError.MEMBER_PERMISSION_REQUIRED
+					ApiErrorInfo.PROJECT_MEMBER_PERMISSION_REQUIRED
 				);
 			}
 
@@ -63,7 +63,7 @@ class ProjectMessageService {
 			const isProjectMember = await userModel.isProjectMember(id, userId);
 			if (!isProjectMember) {
 				throw ErrorFactory.getForbidden(
-					ProjectError.MEMBER_PERMISSION_REQUIRED
+					ApiErrorInfo.PROJECT_MEMBER_PERMISSION_REQUIRED
 				);
 			}
 

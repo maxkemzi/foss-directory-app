@@ -9,9 +9,9 @@ const validator =
 
 		try {
 			for (let i = 0; i < flatValidations.length; i += 1) {
-				const validationRule = flatValidations[i];
+				const validation = flatValidations[i];
 				// eslint-disable-next-line no-await-in-loop
-				const result = await validationRule.run(req);
+				const result = await validation.run(req);
 				if (!result.isEmpty()) {
 					break;
 				}

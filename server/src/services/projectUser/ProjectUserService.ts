@@ -1,5 +1,5 @@
 import {Db, ProjectUserModel, ProjectUserPopulator, UserModel} from "#src/db";
-import {ErrorFactory, ProjectError} from "#src/lib";
+import {ApiErrorInfo, ErrorFactory} from "#src/lib";
 import {ProjectUserDto} from "../dtos";
 import {GetOptions, GetReturn} from "./types";
 
@@ -19,7 +19,7 @@ class ProjectUserService {
 			const isMember = await userModel.isProjectMember(id, userId);
 			if (!isMember) {
 				throw ErrorFactory.getForbidden(
-					ProjectError.MEMBER_PERMISSION_REQUIRED
+					ApiErrorInfo.PROJECT_MEMBER_PERMISSION_REQUIRED
 				);
 			}
 

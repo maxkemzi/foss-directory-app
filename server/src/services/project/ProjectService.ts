@@ -11,7 +11,7 @@ import {
 	UserDocument,
 	UserModel
 } from "#src/db";
-import {ErrorFactory, ProjectError} from "#src/lib";
+import {ApiErrorInfo, ErrorFactory} from "#src/lib";
 import {PoolClient} from "pg";
 import {ExtendedProjectDto, ProjectDto} from "../dtos";
 import {ProjectExtender} from "../extenders";
@@ -204,12 +204,14 @@ class ProjectService {
 		try {
 			const candidate = await projectModel.findById(id);
 			if (!candidate) {
-				throw ErrorFactory.getBadRequest(ProjectError.NOT_FOUND);
+				throw ErrorFactory.getBadRequest(ApiErrorInfo.PROJECT_NOT_FOUND);
 			}
 
 			const isOwner = await userModel.isProjectOwner(id, userId);
 			if (!isOwner) {
-				throw ErrorFactory.getForbidden(ProjectError.OWNER_PERMISSION_REQUIRED);
+				throw ErrorFactory.getForbidden(
+					ApiErrorInfo.PROJECT_OWNER_PERMISSION_REQUIRED
+				);
 			}
 
 			await projectModel.deleteById(id);
@@ -228,7 +230,7 @@ class ProjectService {
 		try {
 			const project = await model.findById(id);
 			if (!project) {
-				throw ErrorFactory.getBadRequest(ProjectError.NOT_FOUND);
+				throw ErrorFactory.getBadRequest(ApiErrorInfo.PROJECT_NOT_FOUND);
 			}
 
 			const populator = new ProjectPopulator(client);
@@ -255,7 +257,7 @@ class ProjectService {
 			const isMember = await userModel.isProjectMember(id, userId);
 			if (!isMember) {
 				throw ErrorFactory.getForbidden(
-					ProjectError.MEMBER_PERMISSION_REQUIRED
+					ApiErrorInfo.PROJECT_MEMBER_PERMISSION_REQUIRED
 				);
 			}
 

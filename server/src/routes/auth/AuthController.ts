@@ -1,14 +1,14 @@
 import {ErrorFactory} from "#src/lib";
 import {AuthService} from "#src/services";
 import {
-	LoginRequestHandler,
+	LogInRequestHandler,
 	LogoutRequestHandler,
 	RefreshRequestHandler,
-	SignupRequestHandler
+	SignUpRequestHandler
 } from "./types";
 
 class AuthController {
-	static signUp: SignupRequestHandler = async (req, res, next) => {
+	static signUp: SignUpRequestHandler = async (req, res, next) => {
 		try {
 			const {username, email, password} = req.body;
 
@@ -24,7 +24,7 @@ class AuthController {
 		}
 	};
 
-	static logIn: LoginRequestHandler = async (req, res, next) => {
+	static logIn: LogInRequestHandler = async (req, res, next) => {
 		try {
 			const {email, password} = req.body;
 
