@@ -1,6 +1,4 @@
-import {ApiErrorInfoType, ApiErrorKey} from "./types";
-
-const ApiErrorInfo: Record<ApiErrorKey, ApiErrorInfoType> = {
+const ApiErrorInfo = {
 	// // General
 	BAD_REQUEST: {
 		message: "Bad request.",
@@ -112,4 +110,4 @@ const ApiErrorInfo: Record<ApiErrorKey, ApiErrorInfoType> = {
 	}
 };
 
-export {ApiErrorInfo};
+module.exports = {ApiErrorInfo};

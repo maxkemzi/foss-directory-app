@@ -1,7 +1,6 @@
+import {ApiErrorInfo, ApiErrorInfoType} from "foss-directory-shared";
 import ApiError from "./ApiError";
 import ValidationError from "./ValidationError";
-import {ApiErrorInfo} from "./constants";
-import {ApiErrorInfoType} from "./types";
 
 class ErrorFactory {
 	static getBadRequest(

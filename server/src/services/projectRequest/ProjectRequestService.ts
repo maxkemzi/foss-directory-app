@@ -6,7 +6,8 @@ import {
 	ProjectUserModel,
 	UserModel
 } from "#src/db";
-import {ApiErrorInfo, ErrorFactory} from "#src/lib";
+import {ErrorFactory} from "#src/lib";
+import {ApiErrorInfo} from "foss-directory-shared";
 import {ProjectRequestDto} from "../dtos";
 import {GetOptions, GetReturn} from "./types";
 

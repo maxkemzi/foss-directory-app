@@ -11,7 +11,8 @@ import {
 	UserDocument,
 	UserModel
 } from "#src/db";
-import {ApiErrorInfo, ErrorFactory} from "#src/lib";
+import {ErrorFactory} from "#src/lib";
+import {ApiErrorInfo} from "foss-directory-shared";
 import {PoolClient} from "pg";
 import {ExtendedProjectDto, ProjectDto} from "../dtos";
 import {ProjectExtender} from "../extenders";

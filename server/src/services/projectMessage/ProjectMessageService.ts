@@ -5,7 +5,8 @@ import {
 	ProjectMessagePopulator,
 	UserModel
 } from "#src/db";
-import {ApiErrorInfo, ErrorFactory} from "#src/lib";
+import {ErrorFactory} from "#src/lib";
+import {ApiErrorInfo} from "foss-directory-shared";
 import {ProjectMessageDto} from "../dtos";
 import {GetOptions, GetReturn, OmitFromUnion} from "./types";
 

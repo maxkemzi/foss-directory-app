@@ -1,9 +1,10 @@
 import {env} from "#src/config";
-import {ApiErrorInfo, ErrorFactory} from "#src/lib";
+import {ErrorFactory} from "#src/lib";
 import {Header} from "#src/routes/constants";
 import {calcTotalPages} from "#src/routes/helpers";
 import {GithubService} from "#src/services";
 import {JwtGenerator, JwtVerificator} from "#src/services/lib";
+import {ApiErrorInfo} from "foss-directory-shared";
 import {
 	ConnectRequestHandler,
 	GetAuthUrlRequestHandler,

@@ -25,9 +25,9 @@ type ApiErrorKey =
 	| "PROJECT_REQUEST_ALREADY_MEMBER"
 	| "USER_NOT_FOUND";
 
-interface ApiErrorInfoType {
+export interface ApiErrorInfoType {
 	message: string;
 	code: string;
 }
 
-export type {ApiErrorKey, ApiErrorInfoType};
+export const ApiErrorInfo: Record<ApiErrorKey, ApiErrorInfoType>;

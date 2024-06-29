@@ -1,6 +1,7 @@
 import {env} from "#src/config";
 import {isValidGithubRateLimitResource} from "#src/db";
-import {ApiErrorInfo, ErrorFactory} from "#src/lib";
+import {ErrorFactory} from "#src/lib";
+import {ApiErrorInfo} from "foss-directory-shared";
 import {delay} from "../helpers";
 import {
 	FetchGithubApiOptions,

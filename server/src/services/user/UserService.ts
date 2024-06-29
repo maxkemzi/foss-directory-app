@@ -1,5 +1,6 @@
 import {Db, UserDocument, UserModel} from "#src/db";
-import {ApiErrorInfo, ErrorFactory} from "#src/lib";
+import {ErrorFactory} from "#src/lib";
+import {ApiErrorInfo} from "foss-directory-shared";
 
 class UserService {
 	static async deleteById(id: UserDocument["id"]) {

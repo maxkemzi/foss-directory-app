@@ -1,5 +1,6 @@
 import {Db, ProjectUserModel, ProjectUserPopulator, UserModel} from "#src/db";
-import {ApiErrorInfo, ErrorFactory} from "#src/lib";
+import {ErrorFactory} from "#src/lib";
+import {ApiErrorInfo} from "foss-directory-shared";
 import {ProjectUserDto} from "../dtos";
 import {GetOptions, GetReturn} from "./types";
 

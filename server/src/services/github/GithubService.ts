@@ -6,8 +6,9 @@ import {
 	GithubRateLimitModel,
 	isGithubRateLimitExceeded
 } from "#src/db";
-import {ApiErrorInfo, ErrorFactory} from "#src/lib";
+import {ErrorFactory} from "#src/lib";
 import {AesEncryptor} from "#src/services/lib";
+import {ApiErrorInfo} from "foss-directory-shared";
 import {GithubRepoDto} from "../dtos";
 import {GetReposOptions, GetReposReturn} from "./types";
 

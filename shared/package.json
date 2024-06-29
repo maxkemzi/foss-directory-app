@@ -1,0 +1,18 @@
+{
+	"name": "foss-directory-shared",
+	"version": "1.0.2",
+	"description": "Shared logic for client and server.",
+	"main": "index.js",
+	"types": "index.d.ts",
+	"scripts": {},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/maxkemzi/foss-directory-app.git"
+	},
+	"author": "Max Kyrychenko <iam.maxkyrychenko@gmail.com>",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/maxkemzi/foss-directory-app/issues"
+	},
+	"homepage": "https://github.com/maxkemzi/foss-directory-app#readme"
+}
