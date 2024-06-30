@@ -1,1 +1,5 @@
-module.exports = {...require("./src/errors")};
+module.exports = {
+	...require("./src/errors"),
+	...require("./src/headers"),
+	...require("./src/cookies")
+};

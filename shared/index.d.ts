@@ -1,3 +1,4 @@
-import {ApiErrorInfo, ApiErrorInfoType} from "./src/errors";
-
-export {ApiErrorInfo, ApiErrorInfoType};
+export {ApiErrorInfo, ApiErrorInfoType} from "./src/errors";
+export * from "./src/cookies";
+export * from "./src/entities";
+export * from "./src/headers";
