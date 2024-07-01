@@ -12,7 +12,7 @@ const useSafeAction = <
 	OutData extends Record<string, any> = Default
 >(
 	action: SafeAction<OrigAction, OutData>,
-	opts: Options<Resolve<OutData>>
+	opts: Options<Resolve<OutData>> = {}
 ): Return<Parameters<OrigAction>> => {
 	const [isPending, startTransition] = useTransition();
 	const [success, setSuccess] = useState<string | null>(null);

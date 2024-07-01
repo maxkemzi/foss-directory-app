@@ -1,26 +1,27 @@
-import {ExtendedUserDto} from "#src/services";
 import {RequestHandler} from "express";
-
-type ResponseBody = {
-	user: ExtendedUserDto;
-	tokens: {access: string; refresh: string};
-};
 
 type SignUpRequestHandler = RequestHandler<
 	{},
-	ResponseBody,
+	{success: true},
 	{username: string; email: string; password: string},
+	{}
+>;
+
+type VerifyEmailRequestHandler = RequestHandler<
+	{token: string},
+	{success: true},
+	{},
 	{}
 >;
 
 type LogInRequestHandler = RequestHandler<
 	{},
-	ResponseBody,
+	{success: true},
 	{email: string; password: string},
 	{}
 >;
 
-type RefreshRequestHandler = RequestHandler<{}, ResponseBody, {}, {}>;
+type RefreshRequestHandler = RequestHandler<{}, {success: true}, {}, {}>;
 
 type LogoutRequestHandler = RequestHandler<{}, {success: true}, {}, {}>;
 
@@ -28,5 +29,6 @@ export type {
 	LogInRequestHandler,
 	LogoutRequestHandler,
 	RefreshRequestHandler,
-	SignUpRequestHandler
+	SignUpRequestHandler,
+	VerifyEmailRequestHandler
 };

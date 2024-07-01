@@ -21,7 +21,11 @@ const VARS: EnvVars = {
 	GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
 	GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
 	PUBLIC_CLIENT_URL: process.env.PUBLIC_CLIENT_URL,
-	PUBLIC_SERVER_URL: process.env.PUBLIC_SERVER_URL
+	PUBLIC_SERVER_URL: process.env.PUBLIC_SERVER_URL,
+	SMTP_HOST: process.env.SMTP_HOST,
+	SMTP_PORT: process.env.SMTP_PORT,
+	SMPT_USER: process.env.SMPT_USER,
+	SMTP_PASSWORD: process.env.SMTP_PASSWORD
 };
 
 const REQUIRED_VARS: RequiredEnvVar[] = [
@@ -38,7 +42,11 @@ const REQUIRED_VARS: RequiredEnvVar[] = [
 	"GITHUB_CLIENT_ID",
 	"GITHUB_CLIENT_SECRET",
 	"PUBLIC_CLIENT_URL",
-	"PUBLIC_SERVER_URL"
+	"PUBLIC_SERVER_URL",
+	"SMTP_HOST",
+	"SMTP_PORT",
+	"SMPT_USER",
+	"SMTP_PASSWORD"
 ];
 
 const ensureRequiredVarsSet = (
@@ -90,7 +98,8 @@ const parseVars = (vars: EnvVarsWithRequiredSet): ParsedEnvVars => {
 		PORT: vars.PORT ? parseNumeric("PORT", vars.PORT) : 5000,
 		POSTGRES_PORT: parseNumeric("POSTGRES_PORT", vars.POSTGRES_PORT),
 		ENCRYPTION_KEY: parseHexStr("ENCRYPTION_KEY", vars.ENCRYPTION_KEY, 32),
-		ENCRYPTION_IV: parseHexStr("ENCRYPTION_IV", vars.ENCRYPTION_IV, 16)
+		ENCRYPTION_IV: parseHexStr("ENCRYPTION_IV", vars.ENCRYPTION_IV, 16),
+		SMTP_PORT: parseNumeric("SMTP_PORT", vars.SMTP_PORT)
 	};
 };
 

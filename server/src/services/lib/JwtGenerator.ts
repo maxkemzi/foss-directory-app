@@ -30,6 +30,12 @@ class JwtGenerator {
 			expiresIn: "10m"
 		});
 	}
+
+	static generateEmail(payload: string | object) {
+		return jwt.sign(payload, this.CSRF_SECRET, {
+			expiresIn: "1d"
+		});
+	}
 }
 
 export default JwtGenerator;

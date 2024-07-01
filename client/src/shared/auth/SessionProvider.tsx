@@ -1,12 +1,12 @@
 "use client";
 
+import {SessionFromApi} from "foss-directory-shared";
 import {FC, PropsWithChildren, createContext, useContext} from "react";
-import {Session} from "./types";
 
-const SessionContext = createContext<Session | null>(null);
+const SessionContext = createContext<SessionFromApi | null>(null);
 
 interface Props extends PropsWithChildren {
-	session: Session | null;
+	session: SessionFromApi | null;
 }
 
 const SessionProvider: FC<Props> = ({session, children}) => {

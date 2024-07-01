@@ -5,7 +5,7 @@ import {useSafeAction} from "#src/shared/hooks";
 import {PasswordInput} from "#src/shared/ui";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Button, Input, Link} from "@nextui-org/react";
-import {useRouter} from "next/navigation";
+import {useState} from "react";
 import {Controller, useForm} from "react-hook-form";
 import {z} from "zod";
 import {safeSignUp} from "../actions";
@@ -14,7 +14,7 @@ import {SIGNUP_VALIDATION_SCHEMA} from "../constants";
 type FormValues = z.infer<typeof SIGNUP_VALIDATION_SCHEMA>;
 
 const SignupForm = () => {
-	const router = useRouter();
+	const [stepIsVeification, setStepIsVerification] = useState(false);
 
 	const {
 		control,
@@ -32,7 +32,10 @@ const SignupForm = () => {
 
 	const {execute, error, isPending} = useSafeAction(safeSignUp, {
 		onSuccess: () => {
-			router.push(Pathname.LOGIN);
+			setStepIsVerification(true);
+		},
+		onError: () => {
+			setStepIsVerification(false);
 		}
 	});
 
@@ -40,7 +43,27 @@ const SignupForm = () => {
 		execute(values);
 	};
 
-	return (
+	const handleBackToSignup = () => setStepIsVerification(false);
+
+	return stepIsVeification ? (
+		<div>
+			<h1 className="text-5xl mb-4 capitalize">Email verification</h1>
+			<p>We have send a verification URL to your email.</p>
+			<p className="mb-4 color-danger">
+				Please note that the verification URL is only valid for 24 hours.
+			</p>
+			<div className="flex gap-4">
+				<Button color="primary" variant="flat" onClick={handleBackToSignup}>
+					Back to signup
+				</Button>
+				<form onSubmit={handleSubmit(onSubmit)}>
+					<Button color="primary" isDisabled={isPending} type="submit">
+						Send again
+					</Button>
+				</form>
+			</div>
+		</div>
+	) : (
 		<div className="max-w-[325px] w-full">
 			<h1 className="text-5xl mb-6">Signup</h1>
 			{error ? (

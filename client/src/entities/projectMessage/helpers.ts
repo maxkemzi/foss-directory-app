@@ -1,10 +1,10 @@
 import {ProjectMessageFromApi} from "#src/shared/apis";
-import {Session} from "#src/shared/auth";
+import {SessionFromApi} from "foss-directory-shared";
 import {ExtendedProjectMessage} from "./types";
 
 const isOwn = (
 	message: ProjectMessageFromApi,
-	userId: Session["user"]["id"]
+	userId: SessionFromApi["user"]["id"]
 ) => {
 	if (message.type !== "regular" || message.sender === null) {
 		return false;
@@ -15,7 +15,7 @@ const isOwn = (
 
 const extend = (
 	message: ProjectMessageFromApi,
-	userId: Session["user"]["id"]
+	userId: SessionFromApi["user"]["id"]
 ): ExtendedProjectMessage => {
 	return {...message, isOwn: isOwn(message, userId)};
 };

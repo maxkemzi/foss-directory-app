@@ -31,3 +31,5 @@ export {
 	ProjectRequestDto,
 	ProjectUserDto
 } from "./dtos";
+
+export type {AuthSession} from "./auth/types";

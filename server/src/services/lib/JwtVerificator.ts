@@ -18,6 +18,10 @@ class JwtVerificator {
 		return this.verify<T>(token, this.CSRF_SECRET);
 	}
 
+	static verifyEmail<T>(token: string) {
+		return this.verify<T>(token, this.CSRF_SECRET);
+	}
+
 	private static verify<T>(token: string, secret: string) {
 		try {
 			const payload = jwt.verify(token, secret) as T;

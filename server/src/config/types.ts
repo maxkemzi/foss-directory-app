@@ -13,7 +13,11 @@ type EnvVar =
 	| "GITHUB_CLIENT_ID"
 	| "GITHUB_CLIENT_SECRET"
 	| "PUBLIC_CLIENT_URL"
-	| "PUBLIC_SERVER_URL";
+	| "PUBLIC_SERVER_URL"
+	| "SMTP_HOST"
+	| "SMTP_PORT"
+	| "SMPT_USER"
+	| "SMTP_PASSWORD";
 
 type RequiredEnvVar = Exclude<EnvVar, "PORT">;
 
@@ -25,12 +29,13 @@ type EnvVarsWithRequiredSet = {
 
 type ParsedEnvVars = Omit<
 	EnvVarsWithRequiredSet,
-	"PORT" | "POSTGRES_PORT" | "ENCRYPTION_KEY" | "ENCRYPTION_IV"
+	"PORT" | "POSTGRES_PORT" | "ENCRYPTION_KEY" | "ENCRYPTION_IV" | "SMTP_PORT"
 > & {
 	PORT: number;
 	POSTGRES_PORT: number;
 	ENCRYPTION_KEY: Buffer;
 	ENCRYPTION_IV: Buffer;
+	SMTP_PORT: number;
 };
 
 export type {

@@ -1,18 +1,17 @@
 "use server";
 
-import {Cookie, Pathname} from "#src/shared/constants";
+import {Pathname} from "#src/shared/constants";
+import {ApiCookie, SessionFromApi} from "foss-directory-shared";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
-import {Session} from "./types";
-import {SessionOption} from "./constants";
 import {fetchApi} from "../apis";
 import authApi, {LoginBody} from "../apis/auth";
-import {AppError} from "../error";
 import {isApiError} from "../apis/lib";
+import {AppError} from "../error";
 
-const getServerSession = async (): Promise<Session | null> => {
+const getServerSession = async (): Promise<SessionFromApi | null> => {
 	const cookieStore = cookies();
-	const session = cookieStore.get(Cookie.SESSION);
+	const session = cookieStore.get(ApiCookie.SESSION.name);
 
 	if (!session?.value) {
 		return null;
@@ -21,41 +20,60 @@ const getServerSession = async (): Promise<Session | null> => {
 	return JSON.parse(session.value);
 };
 
-const setServerSession = async (session: Session) => {
+const getServerRefreshToken = async (): Promise<string | null> => {
 	const cookieStore = cookies();
-	cookieStore.set(Cookie.SESSION, JSON.stringify(session), {
-		httpOnly: SessionOption.HTTP_ONLY,
-		maxAge: SessionOption.MAX_AGE,
-		secure: SessionOption.IS_SECURE,
-		sameSite: SessionOption.SAME_SITE
-	});
+	const refreshToken = cookieStore.get(ApiCookie.REFRESH_TOKEN.name);
+
+	if (!refreshToken?.value) {
+		return null;
+	}
+
+	return refreshToken.value;
 };
 
-const clearServerSession = async () => {
+const setServerAuthCookies = async (
+	session: SessionFromApi,
+	refreshToken: string
+) => {
 	const cookieStore = cookies();
-	cookieStore.delete(Cookie.SESSION);
+	cookieStore.set(
+		ApiCookie.SESSION.name,
+		JSON.stringify(session),
+		ApiCookie.SESSION.options
+	);
+	cookieStore.set(
+		ApiCookie.REFRESH_TOKEN.name,
+		refreshToken,
+		ApiCookie.REFRESH_TOKEN.options
+	);
+};
+
+const clearServerAuthCookies = async () => {
+	const cookieStore = cookies();
+	cookieStore.delete(ApiCookie.REFRESH_TOKEN.name);
+	cookieStore.delete(ApiCookie.SESSION.name);
 };
 
 const logIn = async (data: LoginBody) => {
 	const response = await authApi.logIn(data);
-	await setServerSession(response.data);
+	await setServerAuthCookies(response.session, response.refreshToken);
 };
 
 const logOut = async () => {
-	const session = await getServerSession();
+	const refreshToken = await getServerRefreshToken();
 
-	if (!session) {
+	if (!refreshToken) {
 		redirect(Pathname.LOGIN);
 	}
 
 	try {
-		await authApi.logOut(session.tokens.refresh);
+		await authApi.logOut(refreshToken);
 	} catch (e) {
 		const message = isApiError(e) ? e.message : "Error logging out";
 		throw new AppError(message);
 	}
 
-	await clearServerSession();
+	await clearServerAuthCookies();
 
 	redirect(Pathname.LOGIN);
 };
@@ -76,7 +94,7 @@ const fetchApiWithAuth = async (
 	const response = await fetchApi(url, {
 		headers: {
 			...headers,
-			Authorization: `Bearer ${session.tokens.access}`
+			Authorization: `Bearer ${session.accessToken}`
 		},
 		...restOpts
 	});
@@ -84,10 +102,10 @@ const fetchApiWithAuth = async (
 };
 
 export {
-	clearServerSession,
+	clearServerAuthCookies,
 	fetchApiWithAuth,
 	getServerSession,
 	logIn,
 	logOut,
-	setServerSession
+	setServerAuthCookies
 };

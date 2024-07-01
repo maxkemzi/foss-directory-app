@@ -2,7 +2,7 @@
 
 import {isApiError} from "#src/shared/apis/lib";
 import usersApi from "#src/shared/apis/users";
-import {clearServerSession} from "#src/shared/auth";
+import {clearServerAuthCookies} from "#src/shared/auth";
 import {AppError} from "#src/shared/error";
 import {getErrorMessage} from "#src/shared/helpers";
 import {SafeAction} from "#src/shared/hooks";
@@ -10,7 +10,7 @@ import {SafeAction} from "#src/shared/hooks";
 const deleteAccount = async () => {
 	try {
 		await usersApi.deleteAccount();
-		await clearServerSession();
+		await clearServerAuthCookies();
 	} catch (e) {
 		const message = isApiError(e) ? e.message : "Error deleting account";
 		throw new AppError(message);

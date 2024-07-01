@@ -1,6 +1,5 @@
 "use client";
 
-import {Session} from "#src/shared/auth";
 import {Pathname} from "#src/shared/constants";
 import {Bars2Icon, XMarkIcon} from "@heroicons/react/24/solid";
 import {
@@ -15,6 +14,7 @@ import {
 	Navbar as NextUiNavbar
 } from "@nextui-org/react";
 import classNames from "classnames";
+import {SessionFromApi} from "foss-directory-shared";
 import {usePathname} from "next/navigation";
 import {FC, useState} from "react";
 import {navbarItems} from "../../constants";
@@ -22,7 +22,7 @@ import UserDropdown from "./UserDropdown";
 
 interface Props {
 	isAbsolute?: boolean;
-	session: Session | null;
+	session: SessionFromApi | null;
 }
 
 const Navbar: FC<Props> = ({isAbsolute, session}) => {

@@ -1,16 +1,24 @@
+import {env} from "#src/config";
 import {Db, RefreshTokenModel, UserModel} from "#src/db";
 import {ErrorFactory} from "#src/lib";
-import {JwtGenerator, JwtVerificator, PasswordHasher} from "#src/services/lib";
+import {
+	JwtGenerator,
+	JwtVerificator,
+	MailSender,
+	PasswordHasher
+} from "#src/services/lib";
 import {ApiErrorInfo} from "foss-directory-shared";
 import {ExtendedUserDto} from "../dtos";
 import {UserExtender} from "../extenders";
+import {AuthSession, LogInPayload, SignUpPayload} from "./types";
 
 class AuthService {
-	static async signUp({username, email, password}: any) {
+	static async signUp(payload: SignUpPayload) {
+		const {username, email} = payload;
+
 		const client = await Db.getClient();
 
 		const userModel = new UserModel(client);
-		const refreshTokenModel = new RefreshTokenModel(client);
 
 		try {
 			const candidateByUsername = await userModel.findByUsername(username);
@@ -22,6 +30,35 @@ class AuthService {
 			if (candidateByEmail) {
 				throw ErrorFactory.getBadRequest(ApiErrorInfo.AUTH_EXISTING_EMAIL);
 			}
+		} finally {
+			client.release();
+		}
+
+		const token = JwtGenerator.generateEmail(payload);
+		const url = `${env.PUBLIC_SERVER_URL}/api/auth/verify-email/${token}`;
+
+		await MailSender.send({
+			to: email,
+			subject: "Email verification.",
+			html: `<a href="${url}">Click here to verify your email</a>`
+		});
+	}
+
+	static async verifyEmail(token: string): Promise<AuthSession> {
+		const payload = JwtVerificator.verifyEmail<SignUpPayload>(token);
+		if (!payload) {
+			throw ErrorFactory.getUnauthorized();
+		}
+
+		const {username, email, password} = payload;
+
+		const client = await Db.getClient();
+
+		const userModel = new UserModel(client);
+		const refreshTokenModel = new RefreshTokenModel(client);
+
+		try {
+			await client.query("BEGIN");
 
 			const hashedPassword = await PasswordHasher.hash(password);
 			const user = await userModel.insert({
@@ -41,13 +78,20 @@ class AuthService {
 				token: tokens.refresh
 			});
 
+			await client.query("COMMIT");
+
 			return {user: {...userDto}, tokens};
+		} catch (e) {
+			await client.query("ROLLBACK");
+			throw e;
 		} finally {
 			client.release();
 		}
 	}
 
-	static async logIn({email, password}: any) {
+	static async logIn(payload: LogInPayload) {
+		const {email, password} = payload;
+
 		const client = await Db.getClient();
 
 		const userModel = new UserModel(client);

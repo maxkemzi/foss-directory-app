@@ -8,9 +8,9 @@ import {
 	FetchProjectsResponse
 } from "#src/shared/apis/projects";
 import {FetchProjectMessagesResponse} from "#src/shared/apis/projects/messages";
-import {Session} from "#src/shared/auth";
 import {Pathname} from "#src/shared/constants";
 import {ProjectChatCard} from "#src/widgets/ProjectChatCard";
+import {SessionFromApi} from "foss-directory-shared";
 import {usePathname, useRouter} from "next/navigation";
 import {FC} from "react";
 
@@ -19,7 +19,7 @@ interface Props {
 	projectsResponse: FetchProjectsResponse;
 	messagesResponse: FetchProjectMessagesResponse;
 	projectResponse: FetchProjectResponse;
-	session: Session;
+	session: SessionFromApi;
 }
 
 const Chat: FC<Props> = ({

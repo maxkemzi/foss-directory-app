@@ -1,3 +1,4 @@
+import {SessionFromApi} from "foss-directory-shared";
 import {ApiResponse, UserFromApi} from "../types";
 
 interface LoginBody {
@@ -6,10 +7,12 @@ interface LoginBody {
 }
 
 interface LoginResponseData {
-	tokens: {access: string; refresh: string};
-	user: UserFromApi;
+	success: true;
 }
-type LoginResponse = ApiResponse<LoginResponseData>;
+type LoginResponse = ApiResponse<LoginResponseData> & {
+	session: SessionFromApi;
+	refreshToken: string;
+};
 
 interface SignupBody {
 	username: string;
@@ -24,10 +27,11 @@ interface SignupResponseData {
 type SignupResponse = ApiResponse<SignupResponseData>;
 
 interface RefreshResponseData {
-	tokens: {access: string; refresh: string};
-	user: UserFromApi;
+	success: true;
 }
-type RefreshResponse = ApiResponse<RefreshResponseData>;
+type RefreshResponse = ApiResponse<RefreshResponseData> & {
+	session: SessionFromApi;
+};
 
 interface LogoutResponseData {
 	message: string;

@@ -1,4 +1,5 @@
 import {fetchApi, withRetry} from "../actions";
+import {getRefreshTokenFromCookies, getSessionFromCookies} from "./helpers";
 import {
 	LoginBody,
 	LoginResponse,
@@ -35,21 +36,34 @@ const logIn = async (body: LoginBody): Promise<LoginResponse> => {
 	});
 
 	const data = await response.json();
-	return {data};
+
+	const {headers} = response;
+	const cookies = headers.getSetCookie();
+
+	const session = getSessionFromCookies(cookies);
+	const refreshToken = getRefreshTokenFromCookies(cookies);
+
+	return {data, session, refreshToken};
 };
 
-const logOut = async (refreshToken: string): Promise<LogoutResponse> => {
-	const response = await fetchAuthApiWithRetry("/logout", {
+const refresh = async (refreshToken: string): Promise<RefreshResponse> => {
+	const response = await fetchAuthApiWithRetry("/refresh", {
 		method: "POST",
 		headers: {Cookie: `refreshToken=${refreshToken}`}
 	});
 
 	const data = await response.json();
-	return {data};
+
+	const {headers} = response;
+	const cookies = headers.getSetCookie();
+
+	const session = getSessionFromCookies(cookies);
+
+	return {data, session};
 };
 
-const refresh = async (refreshToken: string): Promise<RefreshResponse> => {
-	const response = await fetchAuthApiWithRetry("/refresh", {
+const logOut = async (refreshToken: string): Promise<LogoutResponse> => {
+	const response = await fetchAuthApiWithRetry("/logout", {
 		method: "POST",
 		headers: {Cookie: `refreshToken=${refreshToken}`}
 	});

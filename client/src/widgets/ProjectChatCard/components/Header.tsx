@@ -1,13 +1,13 @@
 import {ProjectChatHeader} from "#src/entities/project";
 import {ShowProjectChatInfoClickArea} from "#src/features/project/showChatInfo";
 import {ProjectFromApi} from "#src/shared/apis";
-import {Session} from "#src/shared/auth";
+import {SessionFromApi} from "foss-directory-shared";
 import {FC} from "react";
 import ActionsDropdown from "./ActionsDropdown";
 
 interface Props {
 	project: ProjectFromApi;
-	userId: Session["user"]["id"];
+	userId: SessionFromApi["user"]["id"];
 	onBurgerButtonClick: () => void;
 }
 

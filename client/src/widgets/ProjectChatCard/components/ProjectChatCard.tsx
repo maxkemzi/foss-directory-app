@@ -2,7 +2,7 @@
 
 import {ProjectChatLayout} from "#src/entities/project";
 import {ProjectFromApi, ProjectMessageFromApi} from "#src/shared/apis";
-import {Session} from "#src/shared/auth";
+import {SessionFromApi} from "foss-directory-shared";
 import {FC, useState} from "react";
 import Body from "./Body";
 import Header from "./Header";
@@ -22,7 +22,7 @@ interface Props {
 		onFetchMore: () => void;
 	};
 	project: ProjectFromApi;
-	session: Session;
+	session: SessionFromApi;
 	isChatActive?: (projectId: ProjectFromApi["id"]) => boolean;
 	onChatClick?: (projectId: ProjectFromApi["id"]) => void;
 }

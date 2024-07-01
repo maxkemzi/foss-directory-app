@@ -53,4 +53,38 @@ const getUrlString = (url: string, opts: {params?: SearchParams} = {}) => {
 
 const calcHasMore = (page: number, totalPages: number) => page < totalPages;
 
-export {getPaginationHeaderValues, getUrlString, calcHasMore};
+const getCookieValue = (name: string, cookies: string[]) => {
+	const cookie = cookies.find(c => c.includes(`${name}=`));
+	if (!cookie) {
+		return null;
+	}
+
+	return cookie.split(";")[0].split("=")[1];
+};
+
+const decodeCookieValue = (value: string) => {
+	try {
+		return decodeURIComponent(value);
+	} catch (e) {
+		console.log("Error decoding cookie value.");
+		return null;
+	}
+};
+
+const parseCookieValue = <T>(decodedValue: string): T | null => {
+	try {
+		return JSON.parse(decodedValue);
+	} catch (e) {
+		console.log("Error parsing cookie value.");
+		return null;
+	}
+};
+
+export {
+	getPaginationHeaderValues,
+	getUrlString,
+	calcHasMore,
+	getCookieValue,
+	decodeCookieValue,
+	parseCookieValue
+};

@@ -10,9 +10,9 @@ import {FetchMoreButton} from "#src/features/fetchMore";
 import {SendProjectMessageForm} from "#src/features/projectMessage/send";
 import {useSocketConnection} from "#src/features/socket/connect";
 import {ProjectFromApi, ProjectMessageFromApi} from "#src/shared/apis";
-import {Session} from "#src/shared/auth";
 import {useEffectUpdateOnly} from "#src/shared/ui";
 import {Spinner} from "@nextui-org/react";
+import {SessionFromApi} from "foss-directory-shared";
 import dynamic from "next/dynamic";
 import {FC, useCallback, useMemo, useRef, useState} from "react";
 
@@ -24,7 +24,7 @@ interface Props {
 		onFetchMore: () => void;
 	};
 	project: ProjectFromApi;
-	session: Session;
+	session: SessionFromApi;
 }
 
 const DynamicProjectMessageList = dynamic(
@@ -46,7 +46,7 @@ const Body: FC<Props> = ({project, messages, session}) => {
 
 	const {socket} = useSocketConnection({
 		projectId: project.id,
-		accessToken: session.tokens.access,
+		accessToken: session.accessToken,
 		onChatMessage: message => {
 			setNewMessages(prev => [message, ...prev]);
 		}

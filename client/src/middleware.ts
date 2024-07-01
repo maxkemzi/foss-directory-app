@@ -1,46 +1,39 @@
 import authApi from "#src/shared/apis/auth";
+import {ApiCookie, SessionFromApi} from "foss-directory-shared";
 import {NextRequest, NextResponse} from "next/server";
-import {SessionOption} from "./shared/auth";
-import {Session} from "./shared/auth/types";
-import {Cookie, Pathname} from "./shared/constants";
+import {Pathname} from "./shared/constants";
 
-const getTokens = async (
-	req: NextRequest
-): Promise<Session["tokens"] | null> => {
-	const session = req.cookies.get("session");
+const getRefreshToken = async (req: NextRequest): Promise<string | null> => {
+	const refreshToken = req.cookies.get(ApiCookie.REFRESH_TOKEN.name);
 
-	if (!session?.value) {
+	if (!refreshToken?.value) {
 		return null;
 	}
 
-	const {tokens} = JSON.parse(session.value);
-
-	if (!tokens) {
-		return null;
-	}
-
-	return tokens;
+	return refreshToken.value;
 };
 
-const updateSession = (session: Session, req: NextRequest): NextResponse => {
-	req.cookies.set(Cookie.SESSION, JSON.stringify(session));
+const updateSession = (
+	session: SessionFromApi,
+	req: NextRequest
+): NextResponse => {
+	req.cookies.set(ApiCookie.SESSION.name, JSON.stringify(session));
 
 	const res = NextResponse.next({request: {headers: req.headers}});
-	res.cookies.set(Cookie.SESSION, JSON.stringify(session), {
-		httpOnly: SessionOption.HTTP_ONLY,
-		maxAge: SessionOption.MAX_AGE,
-		secure: SessionOption.IS_SECURE,
-		sameSite: SessionOption.SAME_SITE
+	res.cookies.set(ApiCookie.SESSION.name, JSON.stringify(session), {
+		...ApiCookie.SESSION.options,
+		secure: false
 	});
 
 	return res;
 };
 
-const clearSession = async (req: NextRequest) => {
-	req.cookies.delete(Cookie.SESSION);
+const clearAuthCookies = async (req: NextRequest) => {
+	req.cookies.delete([ApiCookie.SESSION.name, ApiCookie.REFRESH_TOKEN.name]);
 
 	const res = NextResponse.redirect(new URL(Pathname.LOGIN, req.url));
-	res.cookies.delete(Cookie.SESSION);
+	res.cookies.delete(ApiCookie.SESSION.name);
+	res.cookies.delete(ApiCookie.REFRESH_TOKEN.name);
 
 	return res;
 };
@@ -52,25 +45,25 @@ const logOut = async (refreshToken: string, req: NextRequest) => {
 		console.log("Couldn't log out before clearing the session");
 	}
 
-	return clearSession(req);
+	return clearAuthCookies(req);
 };
 
 export const middleware = async (req: NextRequest) => {
 	const {pathname} = req.nextUrl;
 
-	const tokens = await getTokens(req);
+	const refreshToken = await getRefreshToken(req);
 
-	if (!tokens) {
+	if (!refreshToken) {
 		return NextResponse.redirect(new URL(Pathname.LOGIN, req.url));
 	}
 
 	let res = NextResponse.next();
 	try {
-		const {data} = await authApi.refresh(tokens.refresh);
-		res = updateSession(data, req);
+		const {session} = await authApi.refresh(refreshToken);
+		res = updateSession(session, req);
 	} catch (e) {
 		console.log("Error refreshing token: ", e);
-		return logOut(tokens.refresh, req);
+		return logOut(refreshToken, req);
 	}
 
 	const isSuccessPath = pathname.startsWith(Pathname.SUCCESS);

@@ -1,12 +1,12 @@
 "use client";
 
 import {ProjectFromApi, ProjectMessageFromApi} from "#src/shared/apis";
-import {Session} from "#src/shared/auth";
+import {SessionFromApi} from "foss-directory-shared";
 import {useEffect, useRef, useState} from "react";
 import {Socket, io} from "socket.io-client";
 
 interface Options {
-	accessToken: Session["tokens"]["access"];
+	accessToken: SessionFromApi["accessToken"];
 	projectId: ProjectFromApi["id"];
 	onChatMessage?: (message: ProjectMessageFromApi) => void;
 }
