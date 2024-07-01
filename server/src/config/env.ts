@@ -1,12 +1,9 @@
-import "dotenv/config";
-import {
-	EnvVars,
-	EnvVarsWithRequiredSet,
-	ParsedEnvVars,
-	RequiredEnvVar
-} from "./types";
+import {config} from "dotenv-safe";
+import {z} from "zod";
 
-const VARS: EnvVars = {
+config();
+
+const VARS = {
 	PORT: process.env.PORT,
 	POSTGRES_HOST: process.env.POSTGRES_HOST,
 	POSTGRES_USER: process.env.POSTGRES_USER,
@@ -16,6 +13,7 @@ const VARS: EnvVars = {
 	JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
 	JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
 	JWT_CSRF_SECRET: process.env.JWT_CSRF_SECRET,
+	JWT_EMAIL_SECRET: process.env.JWT_EMAIL_SECRET,
 	ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,
 	ENCRYPTION_IV: process.env.ENCRYPTION_IV,
 	GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
@@ -28,87 +26,71 @@ const VARS: EnvVars = {
 	SMTP_PASSWORD: process.env.SMTP_PASSWORD
 };
 
-const REQUIRED_VARS: RequiredEnvVar[] = [
-	"POSTGRES_HOST",
-	"POSTGRES_USER",
-	"POSTGRES_PASSWORD",
-	"POSTGRES_DATABASE",
-	"POSTGRES_PORT",
-	"JWT_ACCESS_SECRET",
-	"JWT_REFRESH_SECRET",
-	"JWT_CSRF_SECRET",
-	"ENCRYPTION_KEY",
-	"ENCRYPTION_IV",
-	"GITHUB_CLIENT_ID",
-	"GITHUB_CLIENT_SECRET",
-	"PUBLIC_CLIENT_URL",
-	"PUBLIC_SERVER_URL",
-	"SMTP_HOST",
-	"SMTP_PORT",
-	"SMPT_USER",
-	"SMTP_PASSWORD"
-];
+const commonValidation = () => z.string().trim().min(1);
 
-const ensureRequiredVarsSet = (
-	vars: EnvVars,
-	requiredVars: RequiredEnvVar[]
-) => {
-	const notSetVars: RequiredEnvVar[] = [];
+const stringToNumber = (value: string, ctx: z.RefinementCtx) => {
+	const transformed = parseInt(value, 10);
 
-	requiredVars.forEach(name => {
-		if (vars[name] === undefined) {
-			notSetVars.push(name);
-		}
-	});
+	if (Number.isNaN(transformed)) {
+		ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			message: "Not a number."
+		});
 
-	if (notSetVars.length > 0) {
-		throw new Error(
-			`The following environment variables are not set:\n- ${notSetVars.join(
-				"\n- "
-			)}`
-		);
+		return z.NEVER;
 	}
 
-	return vars as EnvVarsWithRequiredSet;
+	return transformed;
 };
 
-const parseVars = (vars: EnvVarsWithRequiredSet): ParsedEnvVars => {
-	const parseNumeric = (name: string, value: string): number => {
-		const number = Number(value);
+const createStringToBuffer = (length: number) => {
+	return (value: string, ctx: z.RefinementCtx) => {
+		try {
+			const transformed = Buffer.from(value, "hex");
 
-		if (Number.isNaN(number)) {
-			throw new Error(`${name} must be a number.`);
+			if (transformed.length !== length) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: `Must be ${length} bytes long.`
+				});
+
+				return z.NEVER;
+			}
+
+			return transformed;
+		} catch (e) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "Invalid value to create buffer from."
+			});
+
+			return z.NEVER;
 		}
-
-		return number;
-	};
-
-	const parseHexStr = (name: string, value: string, length: number): Buffer => {
-		const buffer = Buffer.from(value, "hex");
-
-		if (buffer.length !== length) {
-			throw new Error(`Invalid ${name} length. It must be ${length} bytes.`);
-		}
-
-		return buffer;
-	};
-
-	return {
-		...vars,
-		PORT: vars.PORT ? parseNumeric("PORT", vars.PORT) : 5000,
-		POSTGRES_PORT: parseNumeric("POSTGRES_PORT", vars.POSTGRES_PORT),
-		ENCRYPTION_KEY: parseHexStr("ENCRYPTION_KEY", vars.ENCRYPTION_KEY, 32),
-		ENCRYPTION_IV: parseHexStr("ENCRYPTION_IV", vars.ENCRYPTION_IV, 16),
-		SMTP_PORT: parseNumeric("SMTP_PORT", vars.SMTP_PORT)
 	};
 };
 
-const initVars = (): ParsedEnvVars => {
-	const varsWithRequiredSet = ensureRequiredVarsSet(VARS, REQUIRED_VARS);
+const VARS_VALIDATION_SCHEMA = z.object({
+	PORT: commonValidation().transform(stringToNumber),
+	POSTGRES_HOST: commonValidation(),
+	POSTGRES_USER: commonValidation(),
+	POSTGRES_PASSWORD: commonValidation(),
+	POSTGRES_DATABASE: commonValidation(),
+	POSTGRES_PORT: commonValidation().transform(stringToNumber),
+	JWT_ACCESS_SECRET: commonValidation(),
+	JWT_REFRESH_SECRET: commonValidation(),
+	JWT_CSRF_SECRET: commonValidation(),
+	JWT_EMAIL_SECRET: commonValidation(),
+	ENCRYPTION_KEY: commonValidation().transform(createStringToBuffer(32)),
+	ENCRYPTION_IV: commonValidation().transform(createStringToBuffer(16)),
+	GITHUB_CLIENT_ID: commonValidation(),
+	GITHUB_CLIENT_SECRET: commonValidation(),
+	PUBLIC_CLIENT_URL: commonValidation().url(),
+	PUBLIC_SERVER_URL: commonValidation().url(),
+	SMTP_HOST: commonValidation(),
+	SMTP_PORT: commonValidation().transform(stringToNumber),
+	SMPT_USER: commonValidation().email(),
+	SMTP_PASSWORD: commonValidation()
+});
 
-	return parseVars(varsWithRequiredSet);
-};
-
-const env = initVars();
-
+const env = VARS_VALIDATION_SCHEMA.parse(VARS);
 export default env;

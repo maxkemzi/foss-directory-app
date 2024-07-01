@@ -5,6 +5,7 @@ class JwtVerificator {
 	private static ACCESS_SECRET = env.JWT_ACCESS_SECRET;
 	private static REFRESH_SECRET = env.JWT_REFRESH_SECRET;
 	private static CSRF_SECRET = env.JWT_CSRF_SECRET;
+	private static EMAIL_SECRET = env.JWT_EMAIL_SECRET;
 
 	static verifyAccess<T>(token: string) {
 		return this.verify<T>(token, this.ACCESS_SECRET);
@@ -19,7 +20,7 @@ class JwtVerificator {
 	}
 
 	static verifyEmail<T>(token: string) {
-		return this.verify<T>(token, this.CSRF_SECRET);
+		return this.verify<T>(token, this.EMAIL_SECRET);
 	}
 
 	private static verify<T>(token: string, secret: string) {

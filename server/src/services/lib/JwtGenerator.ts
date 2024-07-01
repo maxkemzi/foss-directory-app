@@ -5,6 +5,7 @@ class JwtGenerator {
 	private static ACCESS_SECRET = env.JWT_ACCESS_SECRET;
 	private static REFRESH_SECRET = env.JWT_REFRESH_SECRET;
 	private static CSRF_SECRET = env.JWT_CSRF_SECRET;
+	private static EMAIL_SECRET = env.JWT_EMAIL_SECRET;
 
 	static generateAccessAndRefresh(payload: string | object) {
 		return {
@@ -32,7 +33,7 @@ class JwtGenerator {
 	}
 
 	static generateEmail(payload: string | object) {
-		return jwt.sign(payload, this.CSRF_SECRET, {
+		return jwt.sign(payload, this.EMAIL_SECRET, {
 			expiresIn: "1d"
 		});
 	}

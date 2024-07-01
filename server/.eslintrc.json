@@ -20,6 +20,7 @@
 		"project": "./eslint.tsconfig.json"
 	},
 	"rules": {
+		"consistent-return": "off",
 		"@typescript-eslint/lines-between-class-members": "off",
 		"no-console": "off",
 		"lines-between-class-members": "off",
