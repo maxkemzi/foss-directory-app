@@ -1,6 +1,6 @@
 import {env} from "#src/config";
+import {JwtVerificator} from "#src/lib";
 import {ExtendedUserDto, ProjectMessageService} from "#src/services";
-import {JwtVerificator} from "#src/services/lib";
 import {Server} from "socket.io";
 import server from "./server";
 

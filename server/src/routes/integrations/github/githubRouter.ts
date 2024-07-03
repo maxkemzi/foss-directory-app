@@ -1,4 +1,4 @@
-import {authChecker, validator} from "#src/middlewares";
+import {authChecker, rateLimitter, validator} from "#src/middlewares";
 import {
 	PAGINATION_VALIDATION,
 	SEARCH_VALIDATION
@@ -9,15 +9,17 @@ import {CONNECT_VALIDATION} from "./validations";
 
 const githubRouter = Router();
 
-githubRouter.get("/", authChecker, GithubController.getAuthUrl);
+githubRouter.get("/", authChecker, rateLimitter, GithubController.getAuthUrl);
 githubRouter.get(
 	"/connect",
+	rateLimitter,
 	validator(CONNECT_VALIDATION),
 	GithubController.connect
 );
 githubRouter.get(
 	"/repos",
 	authChecker,
+	rateLimitter,
 	validator(PAGINATION_VALIDATION, SEARCH_VALIDATION),
 	GithubController.getRepos
 );

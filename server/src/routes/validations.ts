@@ -2,14 +2,14 @@ import {query, param} from "express-validator";
 
 const createPageValidation = () =>
 	query("page", "'page' must be a positive integer.")
-		.optional()
+		.default(1)
 		.isInt({gt: 0})
 		.withMessage("'page' must be a positive integer.")
 		.toInt(10);
 
 const createLimitValidation = () =>
 	query("limit", "'limit' must be an integer from 1 to 100.")
-		.optional()
+		.default(10)
 		.isInt({gt: 0, lt: 101})
 		.withMessage("'limit' must be an integer from 1 to 100.")
 		.toInt(10);

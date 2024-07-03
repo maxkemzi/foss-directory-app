@@ -1,6 +1,6 @@
 {
 	"name": "foss-directory-shared",
-	"version": "1.0.4",
+	"version": "1.0.9",
 	"description": "Shared logic for client and server.",
 	"main": "index.js",
 	"types": "index.d.ts",

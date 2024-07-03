@@ -10,6 +10,7 @@ import ProjectUserModel from "./projectUser/ProjectUserModel";
 import ProjectTagModel from "./projectTag/ProjectTagModel";
 import ProjectRoleModel from "./projectRole/ProjectRoleModel";
 import ProjectRequestModel from "./projectRequest/ProjectRequestModel";
+import RateLimitModel from "./rateLimit/RateLimitModel";
 
 export {
 	TagModel,
@@ -23,5 +24,6 @@ export {
 	ProjectUserModel,
 	ProjectTagModel,
 	ProjectRoleModel,
-	ProjectRequestModel
+	ProjectRequestModel,
+	RateLimitModel
 };

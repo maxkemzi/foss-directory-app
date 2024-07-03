@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv-safe").config();
 const fs = require("node:fs/promises");
 const path = require("node:path");
 const {Client} = require("pg");
@@ -41,4 +41,4 @@ const readSqlFile = async (...paths) => {
 	return data.toString();
 };
 
-export {getDbClient, readSqlFile};
+module.exports = {getDbClient, readSqlFile};

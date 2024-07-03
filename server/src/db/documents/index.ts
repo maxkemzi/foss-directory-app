@@ -6,6 +6,7 @@ import ProjectRequestDocument from "./ProjectRequestDocument";
 import ProjectRoleDocument from "./ProjectRoleDocument";
 import ProjectTagDocument from "./ProjectTagDocument";
 import ProjectUserDocument from "./ProjectUserDocument";
+import RateLimitDocument from "./RateLimitDocument";
 import RefreshTokenDocument from "./RefreshTokenDocument";
 import RoleDocument from "./RoleDocument";
 import TagDocument from "./TagDocument";
@@ -23,5 +24,6 @@ export {
 	RefreshTokenDocument,
 	RoleDocument,
 	TagDocument,
-	UserDocument
+	UserDocument,
+	RateLimitDocument
 };

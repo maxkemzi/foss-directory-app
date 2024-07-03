@@ -78,6 +78,13 @@ interface UserFromDb extends RowFromDb {
 	avatar: string | null;
 }
 
+interface RateLimitFromDb extends RowFromDb {
+	user_id: string | null;
+	ip: string | null;
+	request_count: number;
+	reset_time: number;
+}
+
 export type {
 	RowFromDb,
 	GithubConnectionFromDb,
@@ -91,5 +98,6 @@ export type {
 	RefreshTokenFromDb,
 	RoleFromDb,
 	TagFromDb,
-	UserFromDb
+	UserFromDb,
+	RateLimitFromDb
 };

@@ -1,4 +1,4 @@
-import {getDbClient, readSqlFile} from "../helpers";
+const {getDbClient, readSqlFile} = require("../helpers");
 
 const populateDb = async () => {
 	const client = getDbClient();

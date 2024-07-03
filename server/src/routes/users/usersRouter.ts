@@ -1,9 +1,10 @@
-import {authChecker} from "#src/middlewares";
+import {authChecker, rateLimitter} from "#src/middlewares";
 import {Router} from "express";
 import UsersController from "./UsersController";
 
 const usersRouter = Router();
 
-usersRouter.delete("/", authChecker, UsersController.deleteAccount);
+usersRouter.use(authChecker, rateLimitter);
+usersRouter.delete("/", UsersController.deleteAccount);
 
 export default usersRouter;

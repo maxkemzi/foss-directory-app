@@ -1,10 +1,11 @@
-import {validator} from "#src/middlewares";
+import {rateLimitter, validator} from "#src/middlewares";
 import {Router} from "express";
 import {PAGINATION_VALIDATION, SEARCH_VALIDATION} from "../validations";
 import TagsController from "./TagsController";
 
 const tagsRouter = Router();
 
+tagsRouter.use(rateLimitter);
 tagsRouter.get(
 	"/",
 	validator(PAGINATION_VALIDATION, SEARCH_VALIDATION),

@@ -10,7 +10,8 @@ import {
 	RefreshTokenFromDb,
 	RoleFromDb,
 	TagFromDb,
-	UserFromDb
+	UserFromDb,
+	RateLimitFromDb
 } from "./rows";
 
 interface PaginationArgs {
@@ -106,6 +107,14 @@ interface UserPayload {
 	password: UserFromDb["password"];
 }
 
+type RateLimitPayload = {
+	requestCount: RateLimitFromDb["request_count"];
+	resetTime: RateLimitFromDb["reset_time"];
+} & (
+	| {userId: NonNullable<RateLimitFromDb["user_id"]>; ip?: never}
+	| {ip: NonNullable<RateLimitFromDb["ip"]>; userId?: never}
+);
+
 export type {
 	GithubConnectionPayload,
 	PaginationArgs,
@@ -119,5 +128,6 @@ export type {
 	RefreshTokenPayload,
 	RolePayload,
 	TagPayload,
-	UserPayload
+	UserPayload,
+	RateLimitPayload
 };

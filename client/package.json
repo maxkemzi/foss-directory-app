@@ -14,7 +14,7 @@
 		"@nextui-org/react": "^2.4.1",
 		"@nextui-org/use-infinite-scroll": "^2.1.2",
 		"classnames": "^2.5.1",
-		"foss-directory-shared": "^1.0.4",
+		"foss-directory-shared": "^1.0.9",
 		"framer-motion": "^10.18.0",
 		"next": "^14.2.3",
 		"react": "^18.3.1",

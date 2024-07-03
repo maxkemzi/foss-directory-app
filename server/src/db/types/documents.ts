@@ -8,6 +8,7 @@ import {
 	ProjectRoleFromDb,
 	ProjectTagFromDb,
 	ProjectUserFromDb,
+	RateLimitFromDb,
 	RefreshTokenFromDb,
 	RoleFromDb,
 	RowFromDb,
@@ -105,6 +106,13 @@ interface UserDocument extends DocumentObject {
 	avatar: UserFromDb["avatar"];
 }
 
+interface RateLimitDocument extends DocumentObject {
+	userId: RateLimitFromDb["user_id"];
+	ip: RateLimitFromDb["ip"];
+	requestCount: RateLimitFromDb["request_count"];
+	resetTime: RateLimitFromDb["reset_time"];
+}
+
 interface ProjectUserDocument extends DocumentObject {
 	userId: ProjectUserFromDb["user_account_id"];
 	projectId: ProjectUserFromDb["project_id"];
@@ -153,6 +161,7 @@ export type {
 	ProjectRoleDocument,
 	ProjectTagDocument,
 	ProjectUserDocument,
+	RateLimitDocument,
 	RefreshTokenDocument,
 	RoleDocument,
 	TagDocument,

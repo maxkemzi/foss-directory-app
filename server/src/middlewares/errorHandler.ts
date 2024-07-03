@@ -1,5 +1,6 @@
-import {ApiError, ValidationError} from "#src/lib";
+import {ApiError, ErrorFactory, ValidationError} from "#src/lib";
 import {NextFunction, Request, Response} from "express";
+import {ApiErrorInfo} from "foss-directory-shared";
 import {DatabaseError} from "pg";
 
 const errorHandler = (
@@ -28,7 +29,12 @@ const errorHandler = (
 		return;
 	}
 
-	res.status(404).json({error: "Something went wrong."});
+	const fallbackErr = ErrorFactory.getInternalServer(
+		ApiErrorInfo.INTERNAL_SERVER
+	);
+	res
+		.status(fallbackErr.status)
+		.json({error: fallbackErr.message, code: fallbackErr.code});
 };
 
 export default errorHandler;

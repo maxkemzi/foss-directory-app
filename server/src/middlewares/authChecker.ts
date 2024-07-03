@@ -1,6 +1,5 @@
-import {ErrorFactory} from "#src/lib";
+import {ErrorFactory, JwtVerificator} from "#src/lib";
 import {ExtendedUserDto} from "#src/services";
-import {JwtVerificator} from "#src/services/lib";
 import {NextFunction, Request, Response} from "express";
 import {ApiErrorInfo} from "foss-directory-shared";
 

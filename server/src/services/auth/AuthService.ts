@@ -1,12 +1,7 @@
 import {env} from "#src/config";
 import {Db, RefreshTokenModel, UserModel} from "#src/db";
-import {ErrorFactory} from "#src/lib";
-import {
-	JwtGenerator,
-	JwtVerificator,
-	MailSender,
-	PasswordHasher
-} from "#src/services/lib";
+import {ErrorFactory, JwtGenerator, JwtVerificator} from "#src/lib";
+import {MailSender, PasswordHasher} from "#src/services/lib";
 import {ApiErrorInfo} from "foss-directory-shared";
 import {ExtendedUserDto} from "../dtos";
 import {UserExtender} from "../extenders";

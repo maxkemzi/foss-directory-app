@@ -1,9 +1,7 @@
 import {env} from "#src/config";
-import {ErrorFactory} from "#src/lib";
-import {Header} from "#src/routes/constants";
-import {calcTotalPages} from "#src/routes/helpers";
+import {ErrorFactory, JwtGenerator, JwtVerificator} from "#src/lib";
+import {setPaginationHeaders} from "#src/routes/helpers";
 import {GithubService} from "#src/services";
-import {JwtGenerator, JwtVerificator} from "#src/services/lib";
 import {ApiErrorInfo} from "foss-directory-shared";
 import {
 	ConnectRequestHandler,
@@ -67,12 +65,7 @@ class GithubController {
 				{userId, page, limit, search}
 			);
 
-			res.set({
-				[Header.TOTAL_COUNT]: totalCount,
-				[Header.PAGE]: page,
-				[Header.PAGE_LIMIT]: limit,
-				[Header.TOTAL_PAGES]: calcTotalPages(totalCount, limit)
-			});
+			setPaginationHeaders(res, {page, limit, totalCount});
 			res.json(repos);
 		} catch (e) {
 			next(e);

@@ -1,6 +1,5 @@
 import {RoleService} from "#src/services";
-import {Header} from "../constants";
-import {calcOffset, calcTotalPages} from "../helpers";
+import {calcOffset, setPaginationHeaders} from "../helpers";
 import {GetAllParsedQuery, GetAllRequestHandler} from "./types";
 
 class RolesController {
@@ -16,12 +15,7 @@ class RolesController {
 				offset
 			});
 
-			res.set({
-				[Header.TOTAL_COUNT]: totalCount,
-				[Header.PAGE]: page,
-				[Header.PAGE_LIMIT]: limit,
-				[Header.TOTAL_PAGES]: calcTotalPages(totalCount, limit)
-			});
+			setPaginationHeaders(res, {page, limit, totalCount});
 			res.json(roles);
 		} catch (e) {
 			next(e);

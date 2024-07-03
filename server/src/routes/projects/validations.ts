@@ -64,7 +64,7 @@ const GET_ALL_VALIDATION: ValidationChain[] = [
 	...PAGINATION_VALIDATION,
 	...SEARCH_VALIDATION,
 	query("variant", "'variant' must be either 'all', 'owner' or 'member'.")
-		.optional()
+		.default("all")
 		.isString()
 		.withMessage("'variant' must be a string.")
 		.trim()

@@ -11,6 +11,17 @@ CREATE TABLE IF NOT EXISTS user_account (
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS rate_limit (
+	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	serial_id BIGSERIAL,
+	user_id UUID UNIQUE REFERENCES user_account(id) ON DELETE CASCADE,
+	ip TEXT UNIQUE,
+	request_count INT NOT NULL,
+	reset_time BIGINT NOT NULL,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS github_connection (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 	serial_id BIGSERIAL,
@@ -239,6 +250,11 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER user_account_updated_at
 BEFORE UPDATE ON user_account
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at();
+
+CREATE OR REPLACE TRIGGER rate_limit_updated_at
+BEFORE UPDATE ON rate_limit
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();
 

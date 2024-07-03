@@ -21,7 +21,8 @@ export {
 	RefreshTokenModel,
 	RoleModel,
 	TagModel,
-	UserModel
+	UserModel,
+	RateLimitModel
 } from "./models";
 
 export {

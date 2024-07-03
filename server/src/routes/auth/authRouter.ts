@@ -1,10 +1,11 @@
-import {validator} from "#src/middlewares";
+import {rateLimitter, validator} from "#src/middlewares";
 import {Router} from "express";
 import AuthController from "./AuthController";
 import {LOGIN_VALIDATION, SIGNUP_VALIDATION} from "./validations";
 
 const authRouter = Router();
 
+authRouter.use(rateLimitter);
 authRouter.get("/verify-email/:token", AuthController.verifyEmail);
 authRouter.post("/signup", validator(SIGNUP_VALIDATION), AuthController.signUp);
 authRouter.post("/login", validator(LOGIN_VALIDATION), AuthController.logIn);

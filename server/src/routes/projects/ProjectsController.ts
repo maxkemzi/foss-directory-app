@@ -1,7 +1,6 @@
 import {ErrorFactory} from "#src/lib";
 import {ProjectService} from "#src/services";
-import {Header} from "../constants";
-import {calcOffset, calcTotalPages} from "../helpers";
+import {calcOffset, setPaginationHeaders} from "../helpers";
 import {
 	CreateRequestHandler,
 	DeleteByIdRequestHandler,
@@ -67,12 +66,7 @@ class ProjectsController {
 				offset
 			});
 
-			res.set({
-				[Header.TOTAL_COUNT]: totalCount,
-				[Header.PAGE]: page,
-				[Header.PAGE_LIMIT]: limit,
-				[Header.TOTAL_PAGES]: calcTotalPages(totalCount, limit)
-			});
+			setPaginationHeaders(res, {page, limit, totalCount});
 			res.json(projects);
 		} catch (e) {
 			next(e);

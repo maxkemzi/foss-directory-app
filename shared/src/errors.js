@@ -107,6 +107,11 @@ const ApiErrorInfo = {
 	USER_NOT_FOUND: {
 		message: "User was not found.",
 		code: "userNotFound"
+	},
+	// // Rate limit
+	RATE_LIMIT_NOT_ENOUGH_INFO: {
+		message: "Could not determine rate limit identifier.",
+		code: "rateLimitNotEnoughInfo"
 	}
 };
 
