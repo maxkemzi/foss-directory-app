@@ -1,4 +1,4 @@
-import {ValidationError} from "#src/lib";
+import {ErrorFactory} from "#src/lib";
 import {NextFunction, Request, Response} from "express";
 import {ValidationChain, validationResult} from "express-validator";
 
@@ -20,7 +20,7 @@ const validator =
 			const errors = validationResult(req);
 
 			if (!errors.isEmpty()) {
-				throw new ValidationError(errors.mapped());
+				throw ErrorFactory.getValidation(errors.mapped());
 			}
 
 			next();

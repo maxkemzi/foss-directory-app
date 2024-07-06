@@ -1,4 +1,4 @@
-import {ApiError, ErrorFactory, ValidationError} from "#src/lib";
+import {ErrorFactory, isApiError, isValidationError} from "#src/lib";
 import {NextFunction, Request, Response} from "express";
 import {ApiErrorInfo} from "foss-directory-shared";
 import {DatabaseError} from "pg";
@@ -19,12 +19,12 @@ const errorHandler = (
 		}
 	}
 
-	if (err instanceof ValidationError) {
+	if (isValidationError(err)) {
 		res.status(err.status).json({errors: err.errors, code: err.code});
 		return;
 	}
 
-	if (err instanceof ApiError) {
+	if (isApiError(err)) {
 		res.status(err.status).json({error: err.message, code: err.code});
 		return;
 	}
