@@ -8,16 +8,6 @@ vi.mock("pg", () => {
 	return {Pool: vi.fn(() => pool)};
 });
 
-vi.mock("#src/config", () => ({
-	env: {
-		POSTGRES_HOST: "localhost",
-		POSTGRES_USER: "user",
-		POSTGRES_PASSWORD: "password",
-		POSTGRES_DATABASE: "database",
-		POSTGRES_PORT: 5432
-	}
-}));
-
 let pool: Pool;
 let client: PoolClient;
 

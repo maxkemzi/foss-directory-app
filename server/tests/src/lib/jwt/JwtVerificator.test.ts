@@ -2,15 +2,6 @@ import JwtVerificator from "#src/lib/jwt/JwtVerificator";
 import jwt from "jsonwebtoken";
 import {Mock} from "vitest";
 
-vi.mock("#src/config", () => ({
-	env: {
-		JWT_ACCESS_SECRET: "testAccessSecret",
-		JWT_REFRESH_SECRET: "testRefreshSecret",
-		JWT_CSRF_SECRET: "testCsrfSecret",
-		JWT_EMAIL_SECRET: "testEmailSecret"
-	}
-}));
-
 vi.spyOn(jwt, "verify");
 vi.mock("jsonwebtoken", async importOriginal => {
 	const original = await importOriginal<typeof import("jsonwebtoken")>();
@@ -21,10 +12,10 @@ const mockVerify = jwt.verify as Mock;
 
 describe("JwtVerificator", () => {
 	let payload: {userId: number};
-	const accessSecret = "testAccessSecret";
-	const refreshSecret = "testRefreshSecret";
-	const csrfSecret = "testCsrfSecret";
-	const emailSecret = "testEmailSecret";
+	const accessSecret = "access";
+	const refreshSecret = "refresh";
+	const csrfSecret = "csrf";
+	const emailSecret = "email";
 
 	beforeEach(() => {
 		payload = {userId: 123};
