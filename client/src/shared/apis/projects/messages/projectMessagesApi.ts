@@ -1,11 +1,13 @@
 "use server";
 
-import {fetchApiWithAuth} from "#src/shared/auth";
+import {fetchApi, withAuth} from "../../actions";
 import {calcHasMore, getPaginationHeaderValues} from "../../helpers";
 import {
 	FetchProjectMessagesResponse,
 	FetchProjectMessagesSearchParams
 } from "./types";
+
+const fetchApiWithAuth = withAuth(fetchApi);
 
 const BASE_URL = "/projects";
 

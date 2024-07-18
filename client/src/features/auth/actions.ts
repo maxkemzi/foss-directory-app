@@ -1,16 +1,16 @@
 "use server";
 
+import {authActions} from "#src/shared/actions";
 import authApi from "#src/shared/apis/auth";
 import {isApiError} from "#src/shared/apis/lib";
-import {logIn} from "#src/shared/auth";
 import {AppError} from "#src/shared/error";
 import {getErrorMessage} from "#src/shared/helpers";
 import {SafeAction} from "#src/shared/hooks";
 import {SignupFormFields} from "./types";
 
-const safeLogIn: SafeAction<typeof logIn> = async data => {
+const safeLogIn: SafeAction<typeof authActions.logIn> = async data => {
 	try {
-		await logIn(data);
+		await authActions.logIn(data);
 		return {success: "Successfully logged in"};
 	} catch (e) {
 		const error = isApiError(e) ? e.message : "Error logging in";

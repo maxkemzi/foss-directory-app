@@ -1,15 +1,17 @@
 "use server";
 
-import {fetchApi} from "../actions";
+import {fetchApi, withAuth} from "../actions";
 import {calcHasMore, getPaginationHeaderValues} from "../helpers";
 import {FetchTagsResponse, FetchTagsSearchParams} from "./types";
+
+const fetchApiWithAuth = withAuth(fetchApi);
 
 const BASE_URL = "/tags";
 
 const fetchAll = async (
 	params?: FetchTagsSearchParams
 ): Promise<FetchTagsResponse> => {
-	const response = await fetchApi(BASE_URL, {params});
+	const response = await fetchApiWithAuth(BASE_URL, {params});
 
 	const data = await response.json();
 

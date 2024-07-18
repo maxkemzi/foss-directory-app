@@ -1,6 +1,7 @@
 import {projectActions} from "#src/entities/project";
 import {projectMessageActions} from "#src/entities/projectMessage";
-import {getServerSession, logOut} from "#src/shared/auth";
+import {authActions} from "#src/shared/actions";
+import {getServerSession} from "#src/shared/auth";
 import Chat from "./Chat";
 
 const PROJECTS_LIMIT = 10;
@@ -11,7 +12,7 @@ const ChatsChat = async ({params}: {params: {projectId: string}}) => {
 
 	const session = await getServerSession();
 	if (!session) {
-		return logOut();
+		return authActions.logOut();
 	}
 
 	const [projectsResponse, messagesResponse, projectResponse] =

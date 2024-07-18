@@ -9,7 +9,7 @@ import {CONNECT_VALIDATION} from "./validations";
 
 const githubRouter = Router();
 
-githubRouter.get("/", authChecker, rateLimitter, GithubController.getAuthUrl);
+githubRouter.get("/", authChecker(), rateLimitter, GithubController.getAuthUrl);
 githubRouter.get(
 	"/connect",
 	rateLimitter,
@@ -18,7 +18,7 @@ githubRouter.get(
 );
 githubRouter.get(
 	"/repos",
-	authChecker,
+	authChecker(),
 	rateLimitter,
 	validator(PAGINATION_VALIDATION, SEARCH_VALIDATION),
 	GithubController.getRepos

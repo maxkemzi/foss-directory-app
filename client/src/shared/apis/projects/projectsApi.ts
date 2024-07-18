@@ -1,7 +1,7 @@
 "use server";
 
-import {fetchApiWithAuth} from "#src/shared/auth";
 import {CacheTag} from "#src/shared/constants";
+import {fetchApi, withAuth} from "../actions";
 import {calcHasMore, getPaginationHeaderValues} from "../helpers";
 import {
 	CreateProjectBody,
@@ -11,6 +11,8 @@ import {
 	FetchProjectsResponse,
 	FetchProjectsVariant
 } from "./types";
+
+const fetchApiWithAuth = withAuth(fetchApi);
 
 const BASE_URL = "/projects";
 

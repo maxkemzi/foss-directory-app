@@ -1,12 +1,14 @@
 "use server";
 
-import {fetchApiWithAuth} from "../../../auth";
+import {fetchApi, withAuth} from "../../actions";
 import {calcHasMore, getPaginationHeaderValues} from "../../helpers";
 import {
 	FetchConnectionUrlResponse,
 	FetchReposResponse,
 	FetchReposSearchParams
 } from "./types";
+
+const fetchApiWithAuth = withAuth(fetchApi);
 
 const BASE_URL = "/integrations/github";
 

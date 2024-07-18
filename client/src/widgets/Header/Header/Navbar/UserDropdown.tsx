@@ -1,6 +1,5 @@
 "use client";
 
-import {logOut} from "#src/shared/auth";
 import {
 	CreateProjectModal,
 	CreateProjectModalProps
@@ -18,6 +17,7 @@ import {
 } from "@nextui-org/react";
 import {useRouter} from "next/navigation";
 import {FC, Key} from "react";
+import {authActions} from "#src/shared/actions";
 
 interface Props {
 	user: UserFromApi;
@@ -47,7 +47,7 @@ const UserDropdown: FC<Props> = ({user}) => {
 				router.push(Pathname.SETTINGS);
 				break;
 			case "log-out":
-				await logOut();
+				await authActions.logOut();
 				showToast({variant: "success", message: "Successfuly logged out"});
 				break;
 			default:

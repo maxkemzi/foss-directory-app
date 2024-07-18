@@ -1,5 +1,6 @@
 "use server";
 
+import {getServerSession} from "../auth";
 import {getUrlString} from "./helpers";
 import ApiError from "./lib/ApiError";
 import {SearchParams} from "./types";
@@ -14,6 +15,8 @@ const fetchApi = async (
 
 	const completeUrl = getUrlString(`${API_URL}${url}`, {params});
 	const response = await fetch(completeUrl, restOpts);
+
+	console.log(response);
 
 	if (!response.ok) {
 		const errorData = await response.json();
@@ -48,4 +51,25 @@ const withRetry = <Args extends any[], Return extends Response>(
 	};
 };
 
-export {fetchApi, withRetry};
+const withAuth = <Args extends Parameters<typeof fetchApi>>(
+	fetchFn: (...args: Args) => Promise<Response>
+) => {
+	return async (...args: Args) => {
+		const updatedArgs: Args = [...args];
+
+		const session = await getServerSession();
+		if (session) {
+			updatedArgs[1] = {
+				...updatedArgs[1],
+				headers: {
+					...updatedArgs[1]?.headers,
+					Authorization: `Bearer ${session.accessToken}`
+				}
+			};
+		}
+
+		return fetchFn(...updatedArgs);
+	};
+};
+
+export {fetchApi, withRetry, withAuth};

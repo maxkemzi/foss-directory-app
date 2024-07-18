@@ -9,7 +9,7 @@ import {ID_VALIDATION} from "../validations";
 
 const projectsRouter = Router();
 
-projectsRouter.use(authChecker, rateLimitter);
+projectsRouter.use(authChecker(), rateLimitter);
 projectsRouter.use("/requests", projectRequestsRouter);
 projectsRouter.use("/:id/messages", projectMessagesRouter);
 projectsRouter.use("/:id/users", projectUsersRouter);

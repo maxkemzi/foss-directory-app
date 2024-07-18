@@ -4,7 +4,7 @@ import UsersController from "./UsersController";
 
 const usersRouter = Router();
 
-usersRouter.use(authChecker, rateLimitter);
+usersRouter.use(authChecker(), rateLimitter);
 usersRouter.delete("/", UsersController.deleteAccount);
 
 export default usersRouter;
