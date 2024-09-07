@@ -21,6 +21,7 @@ FROM base AS runner
 WORKDIR /app
 
 COPY --from=builder /app/build ./build
+COPY --from=builder /app/.env.example ./build
 COPY --from=builder /app/entrypoint.sh ./
 
 # Make the entrypoint script executable
