@@ -312,3 +312,22 @@ CREATE OR REPLACE TRIGGER project_messages_updated_at
 BEFORE UPDATE ON project_messages
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();
+
+INSERT INTO tag (name) VALUES
+('Typescript'),
+('CSS'),
+('HTML'),
+('Next.js'),
+('C#'),
+('C++'),
+('Java'),
+('TailwindCSS');
+
+INSERT INTO role (name) VALUES
+('Designer'),
+('Software engineer'),
+('Manager'),
+('Tester'),
+('Backend developer'),
+('Frontend developer'),
+('Fullstack developer');

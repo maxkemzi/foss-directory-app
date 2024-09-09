@@ -2,31 +2,29 @@ services:
   postgres:
     image: postgres:16.3
     container_name: postgres
-    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: foss_directory
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
     networks:
       - backend
 
   backend:
     image: maxkemzi/foss-directory-server:latest
     container_name: backend
-    restart: always
     env_file: "./server/.env"
     depends_on:
       - postgres
     networks:
-      - frontend
       - backend
+      - frontend
 
   frontend:
     image: maxkemzi/foss-directory-client:latest
     container_name: frontend
-    restart: always
     env_file: "./client/.env"
     depends_on:
       - backend
@@ -36,7 +34,6 @@ services:
   nginx:
     image: nginx:1.27
     container_name: nginx
-    restart: always
     ports:
       - "80:80"
     volumes:
@@ -50,5 +47,5 @@ volumes:
   postgres-data:
 
 networks:
-  frontend:
   backend:
+  frontend:
