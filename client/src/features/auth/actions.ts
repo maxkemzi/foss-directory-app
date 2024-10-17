@@ -13,8 +13,7 @@ const safeLogIn: SafeAction<typeof authActions.logIn> = async data => {
 		await authActions.logIn(data);
 		return {success: "Successfully logged in"};
 	} catch (e) {
-		const error = isApiError(e) ? e.message : "Error logging in";
-		return {error};
+		return {error: getErrorMessage(e)};
 	}
 };
 
@@ -23,6 +22,7 @@ const signUp = async (data: SignupFormFields) => {
 		const response = await authApi.signUp(data);
 		return response;
 	} catch (e) {
+		console.log(e);
 		const message = isApiError(e) ? e.message : "Error signing up";
 		throw new AppError(message);
 	}

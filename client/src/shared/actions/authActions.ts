@@ -12,8 +12,14 @@ import {Pathname} from "../constants";
 import {AppError} from "../error";
 
 const logIn = async (data: LoginBody) => {
-	const response = await authApi.logIn(data);
-	await setServerAuthCookies(response.session, response.refreshToken);
+	try {
+		const response = await authApi.logIn(data);
+		await setServerAuthCookies(response.session, response.refreshToken);
+	} catch (e) {
+		console.log(e);
+		const message = isApiError(e) ? e.message : "Error logging in";
+		throw new AppError(message);
+	}
 };
 
 const logOut = async () => {
