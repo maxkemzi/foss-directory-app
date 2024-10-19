@@ -6,8 +6,8 @@ const CsrfTokenOption: {
 } = {
 	HTTP_ONLY: true,
 	MAX_AGE: 30 * 24 * 60 * 60,
-	IS_SECURE: process.env.CLIENT_URL
-		? process.env.CLIENT_URL.startsWith("https://")
+	IS_SECURE: process.env.PUBLIC_CLIENT_URL
+		? process.env.PUBLIC_CLIENT_URL.startsWith("https://")
 		: false,
 	SAME_SITE: "lax"
 };
