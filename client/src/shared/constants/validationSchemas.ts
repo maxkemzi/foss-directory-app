@@ -6,7 +6,7 @@ const ValidationSchema = {
 		.trim()
 		.min(1, "Username is required")
 		.min(5, "Username must be at least 5 characters long")
-		.max(15, "Username must contain not more than 15 characters"),
+		.max(15, "Username must be at most 15 characters long"),
 	EMAIL: z
 		.string({invalid_type_error: "Email must be a string"})
 		.trim()

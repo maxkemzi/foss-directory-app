@@ -5,7 +5,7 @@ const createUsernameValidation = () =>
 		.isString()
 		.withMessage("'username' must be a string.")
 		.trim()
-		.isLength({min: 3, max: 30})
+		.isLength({min: 3, max: 15})
 		.withMessage("'username' must be between 3 and 30 characters long.");
 const createEmailValidation = () =>
 	body("email", "'email' must be a valid email address.")
@@ -23,14 +23,12 @@ const createPasswordValidation = () =>
 		.trim()
 		.isLength({min: 8})
 		.withMessage("'password' must be at least 8 characters long.")
-		.matches(/\d/)
-		.withMessage("'password' must contain at least one number.")
-		.matches(/[a-z]/)
-		.withMessage("'password' must contain at least one lowercase letter.")
-		.matches(/[A-Z]/)
-		.withMessage("'password' must contain at least one uppercase letter.")
-		.matches(/[!@#$%^&*(),.?":{}|<>]/)
-		.withMessage("'password' must contain at least one special character.");
+		.matches(
+			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#+])[A-Za-z\d@$!%*?&#+]/
+		)
+		.withMessage(
+			"'password' must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+		);
 
 const SIGNUP_VALIDATION = [
 	createUsernameValidation(),
