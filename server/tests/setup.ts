@@ -19,7 +19,7 @@ vi.mock("#src/config", () => ({
 		PUBLIC_SERVER_URL: "http://localhost:5000",
 		SMTP_HOST: "smtp_host",
 		SMTP_PORT: 587,
-		SMPT_USER: "smtp_user",
+		SMTP_USER: "smtp_user",
 		SMTP_PASSWORD: "smtp_password"
 	}
 }));

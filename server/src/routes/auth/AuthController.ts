@@ -11,6 +11,16 @@ import {
 } from "./types";
 
 class AuthController {
+	private static SESSION_COOKIE_OPTIONS = {
+		...ApiCookie.SESSION.options,
+		secure: env.HTTPS_ENABLED
+	};
+
+	private static REFRESH_TOKEN_COOKIE_OPTIONS = {
+		...ApiCookie.REFRESH_TOKEN.options,
+		secure: env.HTTPS_ENABLED
+	};
+
 	static signUp: SignUpRequestHandler = async (req, res, next) => {
 		try {
 			const {username, email, password} = req.body;
@@ -32,12 +42,12 @@ class AuthController {
 			res.cookie(
 				ApiCookie.SESSION.name,
 				JSON.stringify({user, accessToken: tokens.access}),
-				ApiCookie.SESSION.options
+				this.SESSION_COOKIE_OPTIONS
 			);
 			res.cookie(
 				ApiCookie.REFRESH_TOKEN.name,
 				tokens.refresh,
-				ApiCookie.REFRESH_TOKEN.options
+				this.REFRESH_TOKEN_COOKIE_OPTIONS
 			);
 			res.redirect(env.PUBLIC_CLIENT_URL);
 		} catch (e) {
@@ -54,12 +64,12 @@ class AuthController {
 			res.cookie(
 				ApiCookie.SESSION.name,
 				JSON.stringify({user, accessToken: tokens.access}),
-				ApiCookie.SESSION.options
+				this.SESSION_COOKIE_OPTIONS
 			);
 			res.cookie(
 				ApiCookie.REFRESH_TOKEN.name,
 				tokens.refresh,
-				ApiCookie.REFRESH_TOKEN.options
+				this.REFRESH_TOKEN_COOKIE_OPTIONS
 			);
 			res.json({success: true});
 		} catch (e) {
@@ -79,7 +89,7 @@ class AuthController {
 			res.cookie(
 				ApiCookie.SESSION.name,
 				JSON.stringify({user, accessToken: tokens.access}),
-				ApiCookie.SESSION.options
+				this.SESSION_COOKIE_OPTIONS
 			);
 			res.json({success: true});
 		} catch (e) {

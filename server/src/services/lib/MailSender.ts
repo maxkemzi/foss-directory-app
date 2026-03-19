@@ -5,9 +5,9 @@ class MailSender {
 	static transporter = nodemailer.createTransport({
 		host: env.SMTP_HOST,
 		port: env.SMTP_PORT,
-		secure: false,
+		secure: env.HTTPS_ENABLED,
 		auth: {
-			user: env.SMPT_USER,
+			user: env.SMTP_USER,
 			pass: env.SMTP_PASSWORD
 		}
 	});
@@ -21,7 +21,7 @@ class MailSender {
 		const {to, subject, text, html} = opts;
 
 		await this.transporter.sendMail({
-			from: env.SMPT_USER,
+			from: env.SMTP_USER,
 			to,
 			subject,
 			text,

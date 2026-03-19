@@ -10,6 +10,7 @@ const VARS = {
 	POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
 	POSTGRES_DATABASE: process.env.POSTGRES_DATABASE,
 	POSTGRES_PORT: process.env.POSTGRES_PORT,
+	HTTPS_ENABLED: process.env.HTTPS_ENABLED,
 	JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
 	JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
 	JWT_CSRF_SECRET: process.env.JWT_CSRF_SECRET,
@@ -22,7 +23,7 @@ const VARS = {
 	PUBLIC_SERVER_URL: process.env.PUBLIC_SERVER_URL,
 	SMTP_HOST: process.env.SMTP_HOST,
 	SMTP_PORT: process.env.SMTP_PORT,
-	SMPT_USER: process.env.SMPT_USER,
+	SMTP_USER: process.env.SMTP_USER,
 	SMTP_PASSWORD: process.env.SMTP_PASSWORD
 };
 
@@ -41,6 +42,20 @@ const stringToNumber = (value: string, ctx: z.RefinementCtx) => {
 	}
 
 	return transformed;
+};
+
+const stringToBoolean = (value: string, ctx: z.RefinementCtx) => {
+	const lower = value.toLowerCase();
+
+	if (lower === "true") return true;
+	if (lower === "false") return false;
+
+	ctx.addIssue({
+		code: z.ZodIssueCode.custom,
+		message: "Not a boolean string. Use 'true' or 'false'."
+	});
+
+	return z.NEVER;
 };
 
 const createStringToBuffer = (length: number) => {
@@ -76,6 +91,7 @@ const VARS_VALIDATION_SCHEMA = z.object({
 	POSTGRES_PASSWORD: commonValidation(),
 	POSTGRES_DATABASE: commonValidation(),
 	POSTGRES_PORT: commonValidation().transform(stringToNumber),
+	HTTPS_ENABLED: commonValidation().transform(stringToBoolean),
 	JWT_ACCESS_SECRET: commonValidation(),
 	JWT_REFRESH_SECRET: commonValidation(),
 	JWT_CSRF_SECRET: commonValidation(),
@@ -88,7 +104,7 @@ const VARS_VALIDATION_SCHEMA = z.object({
 	PUBLIC_SERVER_URL: commonValidation().url(),
 	SMTP_HOST: commonValidation(),
 	SMTP_PORT: commonValidation().transform(stringToNumber),
-	SMPT_USER: commonValidation().email(),
+	SMTP_USER: commonValidation().email(),
 	SMTP_PASSWORD: commonValidation()
 });
 
